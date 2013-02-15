@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:sas="http://www.springactionscript.org/mxml/config"
+			   preinitialize="application1_preinitializeHandler(event)"
+			   backgroundColor="#000000"
+			   viewSourceURL="srcview/index.html">
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center"/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+
+			import org.as3commons.logging.api.LOGGER_FACTORY;
+			import org.as3commons.logging.setup.SimpleTargetSetup;
+			import org.as3commons.logging.setup.target.TraceTarget;
+			import org.springextensions.actionscript.configuration.AppConfig;
+			import org.springextensions.actionscript.context.config.impl.FullConfigurationPackage;
+			import org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext;
+			import org.springextensions.actionscript.module.ModulePolicy;
+			import org.springextensions.actionscript.samples.cafetownsend.presentation.MainView;
+			import org.springextensions.actionscript.samples.cafetownsend.stage.TownsendViewSelector;
+
+			{
+				TownsendViewSelector;
+			}
+
+			private function applicationContext_completeHandler(event:Event):void {
+				var view:MainView = new MainView();
+				view.id = "mainView";
+				addElement(view);
+			}
+
+			protected function application1_preinitializeHandler(event:FlexEvent):void {
+				LOGGER_FACTORY.setup = new SimpleTargetSetup(new TraceTarget());
+			}
+		]]>
+	</fx:Script>
+	<fx:Style source="../resources/assets/main.css"/>
+	<fx:Declarations>
+		<sas:MXMLApplicationContext configurations="{[AppConfig]}"
+									configurationPackage="{new FullConfigurationPackage()}"
+									id="MXMLContext"
+									autoLoad="true"
+									modulePolicy="{ModulePolicy.IGNORE}"
+									complete="{applicationContext_completeHandler(event)}"/>
+	</fx:Declarations>
+
+</s:Application>

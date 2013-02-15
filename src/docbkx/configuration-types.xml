@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter version="5.0" xml:id="configuration-types" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml"
+	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg">
+	<title>Configuration types</title>
+
+	<sect1 xml:id="configuration-type-list">
+		<title>A list of the different kinds of configuration</title>
+
+		<para>
+			<orderedlist>
+				<listitem>
+					<para>
+						<literal linkend="mxml-configuration">MXML based configuration</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal linkend="xml-configuration">XML based configuration</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal linkend="metadata-configuration">Metadata based configuration</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal linkend="actionscript-configuration">Actionscript based configuration</literal>
+					</para>
+				</listitem>
+			</orderedlist>
+		</para>
+		<para>These sections show the various ways of populating an application context with object
+			definitions. It is not an exhaustive guide to all the possibilities that an object definition
+			offers. Please refer to the section '<literal linkend="object-definitions">Object
+				Definitions</literal>' for a complete overview of this.</para>
+		<sect2 xml:id="mxml-configuration">
+			<title>MXML Configuration</title>
+			<para>For Flex based applications the <abbrev>MXML</abbrev> configuration offers a familiar
+				environment for populating the application context with object definitions.</para>
+			<para>To start an <abbrev>MXML</abbrev> configuration file create an <abbrev>MXML</abbrev>
+				component that extends SASObjects and you can add components to it of type
+				Object.<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;sas:Object class="{MyClass}" id="myClass"/>
+
+	&lt;sas:Object class="{MyOtherClass}" id="myOtherClass"/>
+
+&lt;/sas:SASObjects&gt;</programlisting></para>
+			<para>You can also add instances of objects explicitly to the configurations, these will be
+				treated as singletons by application context.</para>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;mx:RemoteObject id="myRemoteObject"/>
+
+	&lt;sas:Object class="{MyClass}" id="myClass"/>
+
+	&lt;sas:Object class="{MyOtherClass}" id="myOtherClass"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<para>These instances, of course, don't necesarrily have to be declared as MXML, they
+				can be regular <emphasis role="bold">public</emphasis> fields as well:</para>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+
+			public var mySimpleClass:SimpleClass = new SimpleClass();
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;mx:RemoteObject id="myRemoteObject"/>
+
+	&lt;sas:Object class="{MyClass}" id="myClass"/>
+
+	&lt;sas:Object class="{MyOtherClass}" id="myOtherClass"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<para>To inject an instance into the property of another instance, add a property definition
+				like this.</para>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+
+			public var <emphasis role="bold">mySimpleClass</emphasis>:SimpleClass = new SimpleClass();
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;mx:RemoteObject id="<emphasis role="bold">myRemoteObject</emphasis>"/>
+
+	&lt;sas:Object class="{MyClass}" id="myClass">
+		&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">myRemoteObject</emphasis>"/>
+		&lt;sas:Property name="myOtherClassInstance" ref="{<emphasis role="bold">myOtherClass</emphasis>}"/>
+		&lt;sas:Property name="mySimpleClassInstance" ref="{<emphasis role="bold">mySimpleClass</emphasis>}"/>
+	&lt;/sas:Object>
+
+	&lt;sas:Object class="{MyOtherClass}" id="<emphasis role="bold">myOtherClass</emphasis>"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<para>Method invocations are added like this:</para>
+			<programlisting language="xml">&lt;sas:Object class="{MyClass}" id="myClass">
+	&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">myRemoteObject</emphasis>"/>
+	&lt;sas:Property name="myOtherClassInstance" ref="{<emphasis role="bold">myOtherClass</emphasis>}"/>
+	<emphasis role="bold">&lt;sas:MethodInvocation name="myMethod">
+		&lt;sas:Arg ref="{someOtherObject}"/>
+		&lt;sas:Arg value="$(externalPropertyValue)"/>
+	&lt;/sas:MethodInvocation></emphasis>
+&lt;/sas:Object></programlisting>
+			<para>Notice the <emphasis role="bold">$(externalPropertyValue)</emphasis> placeholder, this
+				indicates that the value of this argument will be replaced by an external property value.
+				Check out the section '<literal linkend="using-property-files">Using property
+					files</literal>' for more information on this.</para>
+			<para>MXML configurations can easily be nested as well. So if a particular configuration
+				becomes too big and its hard to get an overview, breaking it up in smaller configurations
+				might prove helpful. In the example below it is assumed that both <abbrev>MXML</abbrev>
+				components are in separate files:</para>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+
+		&lt;mx:RemoteObject id="<emphasis role="bold">myRemoteObject</emphasis>"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"
+		xmlns:local="*"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;local:InnerConfig id="<emphasis role="bold">innerConfig</emphasis>"/>
+
+	&lt;sas:Object class="{MyClass}" id="myClass">
+		&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">innerConfig.myRemoteObject</emphasis>"/>
+		&lt;sas:Property name="myOtherClassInstance" ref="{<emphasis role="bold">myOtherClass</emphasis>}"/>
+	&lt;/sas:Object>
+
+	&lt;sas:Object class="{MyOtherClass}" id="<emphasis role="bold">myOtherClass</emphasis>"/>
+
+&lt;/sas:SASObjects&gt;</programlisting>
+			<para>You can set default properties for every object definition within a configuration
+				by adding them to the main &lt;sas:SASObjects/>
+				element:<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"
+		scope="{<emphasis role="bold">ObjectDefinitionScope.PROTOTYPE</emphasis>}"
+		skipPostProcessors="<emphasis role="bold">true</emphasis>">
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import com.classes.MyClass;
+			import com.classes.MyOtherClass;
+		]]&gt;
+	&lt;/fx:Script>
+
+	&lt;sas:Object class="{MyClass}" id="myClass">
+		&lt;sas:Property name="remoteObject" ref="innerConfig.myRemoteObject"/>
+		&lt;sas:Property name="myOtherClassInstance" ref="{myOtherClass}"/>
+	&lt;/sas:Object>
+
+	&lt;sas:Object class="{MyOtherClass}" id="myOtherClass"/>
+
+&lt;/sas:SASObjects></programlisting></para>
+			<para>Now to add the configuration to an application context instance, either create the
+					<abbrev>MXML</abbrev> specific <literal>MXMLApplicationContext</literal>:</para>
+			<programlisting language="xml">&lt;fx:Declarations&gt;
+  &lt;sas:MXMLApplicationContext id="MXMLContext"
+		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"
+		autoLoad="true"
+		complete="{onComplete(event)}"/&gt;
+&lt;/fx:Declarations&gt;</programlisting>
+			<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
+					<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
+			<programlisting language="actionscript">var provider:MXMLObjectDefinitionsProvider = new MXMLObjectDefinitionsProvider();
+provider.addConfiguration(<emphasis role="bold">ObjectsConfiguration</emphasis>);
+var applicationContext:IApplicationContext = new DefaultApplicationContext();
+applicationContext.addDefinitionProvider(provider);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+		</sect2>
+		<sect2 xml:id="xml-configuration">
+			<title>XML Configuration</title>
+			<para><abbrev>XML</abbrev> configuration gives a more flexible way of populating an
+				application context since the <abbrev>XML</abbrev> file(s) will be loaded at runtime. Which
+				means that without re-compiling the application it is possible to change the configuration.
+				It also comes with a number of downsides, most important of which is the necessity to
+				explicitly declare the classes that are defined in the <abbrev>XML</abbrev>, otherwise these
+				classes will not get compiled into the <abbrev>SWF</abbrev> file.</para>
+			<para>Various ways of ensuring this process are described in the section '<literal
+					linkend="class-inclusion">Forcing actionscript class inclusion</literal>'.</para>
+			<para>Start with creating an <abbrev>XML</abbrev> file that contains the following namespace
+				declaration and add <emphasis role="bold">&lt;object/></emphasis> elements to describe the
+				various object definitions:</para>
+			<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;objects xmlns="http://www.springactionscript.org/schema/objects"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+		 http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd">
+
+	&lt;object class="com.classes.MyClass" id="myClass"/>
+
+	&lt;object class="com.classes.myOtherClass" id="myOtherClass"/>
+
+&lt;/objects></programlisting>
+			<para>To inject an instance into the property of another instance, add a property definition
+				like
+				this.<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;objects xmlns="http://www.springactionscript.org/schema/objects"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+		 http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd">
+
+	&lt;object class="com.classes.MyClass" id="myClass">
+		&lt;property name="myOtherClassInstance">
+			&lt;ref><emphasis role="bold">myOtherClass</emphasis>&lt;/ref>
+		&lt;/property>
+	&lt;/object>
+
+	&lt;object class="com.classes.myOtherClass" id="<emphasis role="bold">myOtherClass</emphasis>"/>
+
+&lt;/objects></programlisting></para>
+			<para>Constructor arguments are added in this way:</para>
+			<programlisting language="xml">&lt;object class="com.classes.MyClass" id="myClass">
+<emphasis role="bold">	&lt;constructor-arg>
+		&lt;value>someString&lt;/value>
+	&lt;/constructor-arg>   
+</emphasis>	&lt;property name="myOtherClassInstance">
+		&lt;ref>myOtherClass&lt;/ref>
+	&lt;/property>
+&lt;/object></programlisting>
+			<para>Method invocations are added like this:</para>
+			<programlisting language="xml">&lt;object class="com.classes.MyClass" id="myClass">
+	&lt;constructor-arg>
+		&lt;value>someString&lt;/value>
+	&lt;/constructor-arg>   
+	&lt;property name="myOtherClassInstance">
+		&lt;ref>myOtherClass&lt;/ref>
+	&lt;/property>
+	<emphasis role="bold">&lt;method-invocation name="myMethod">
+		&lt;arg>
+			&lt;ref>someOtherObject&lt;/ref>
+		&lt;/arg>
+		&lt;arg>
+			&lt;value>${externalPropertyValue}&lt;/value>
+		&lt;/arg>
+	&lt;/method-invocation></emphasis>
+&lt;/object></programlisting>
+			<para> The <emphasis role="bold">&lt;property/></emphasis>, <emphasis role="bold"
+					>&lt;arg/></emphasis> and <emphasis role="bold"
+				>&lt;constructor-arg/&gt;</emphasis> elements also support the use of the '<emphasis
+					role="bold">value</emphasis>' and '<emphasis role="bold">ref</emphasis>' attributes, which
+				can lead to much more succinct configuration. When using the '<emphasis role="bold"
+					>value</emphasis>' and '<emphasis role="bold">ref</emphasis>'attributes, the above object
+				definition reads like so: </para>
+			<programlisting language="xml">&lt;object class="com.classes.MyClass" id="myClass"&gt;
+	&lt;constructor-arg value="someString"/&gt;
+	&lt;property name="myOtherClassInstance" ref="myOtherClass"/&gt;
+	&lt;method-invocation name="myMethod"&gt;
+		&lt;arg ref="someOtherObject"/&gt;
+		&lt;arg value="${externalPropertyValue}"/&gt;
+	&lt;/method-invocation&gt;
+&lt;/object&gt;</programlisting>
+			<para>Notice the <emphasis role="bold">${externalPropertyValue}</emphasis> placeholder, this
+				indicates that the value of this argument will be replaced by an external property value.
+				Check out the section '<literal linkend="using-property-files">Using property
+					files</literal>' for more information on this.</para>
+			<sect3>
+				<title>Inner objects</title>
+				<para>An <emphasis role="bold">&lt;object/></emphasis> element inside the <emphasis
+						role="bold">&lt;property/></emphasis> or <emphasis role="bold"
+						>&lt;constructor-arg/></emphasis> elements is used to define a so-called inner object.
+					An inner object definition does not need to have any id defined, and it is best not to
+					even specify any id value because the id value simply will be ignored by the
+					container.</para>
+				<programlisting language="xml">&lt;object id="outer" class="...">
+  <lineannotation>&lt; instead of using a reference to a target object, simply define the target object inline &gt;</lineannotation>
+  &lt;property name="target">
+    &lt;object class="com.example.Person"> <lineannotation>&lt; this is the inner object &gt;</lineannotation>
+      &lt;property name="name" value="Fiona Apple"/>
+      &lt;property name="age" value="25"/>
+    &lt;/object>
+  &lt;/property>
+&lt;/object></programlisting>
+				<para> Note that in the specific case of inner objects, the '<emphasis role="bold"
+						>scope</emphasis>' flag and any '<emphasis role="bold">id</emphasis>' attribute are
+					effectively ignored. Inner objects are always anonymous and they are always scoped as
+						prototypes. <emphasis role="italic">Please also note that it is not possible to inject
+						inner objects into collaborating objects other than the enclosing object.</emphasis>
+				</para>
+			</sect3>
+			<sect3>
+				<title>Collections</title>
+				<para>The <emphasis role="bold">&lt;array/></emphasis>, <emphasis role="bold"
+						>&lt;array-collection/></emphasis> ,<emphasis role="bold">&lt;dictionary/></emphasis>
+					and <emphasis role="bold">&lt;vector/></emphasis> elements allow properties and arguments
+					of the Actionscript collection type <emphasis role="italic">Array</emphasis>, <emphasis
+						role="italic">ArrayCollection</emphasis>, <emphasis role="italic">Dictionary</emphasis>
+					and <emphasis role="italic">Vector</emphasis>, respectively, to be defined and set. Be
+					aware that the <emphasis role="bold">array-collection</emphasis> type can only be used in
+					a Flex based application object since it is part of the framework.</para>
+				<programlisting language="xml">&lt;object id="moreComplexObject" class="example.ComplexObject">
+  &lt;property name="adminEmails">
+    &lt;dictionary>
+        &lt;entry key="administrator" value="administrator@example.org"/>
+        &lt;entry key="support" value="support@example.org"/>
+        &lt;!-- or a more verbose way of defining an entry --&gt;
+        &lt;entry>
+          &lt;key>development&lt;/key>
+          &lt;value>development@example.org&lt;/value>
+        &lt;/entry>
+    &lt;/dictionary>
+  &lt;/property>
+
+  &lt;property name="someList">
+    &lt;array>
+        &lt;value>a list element followed by a reference&lt;/value>
+        &lt;value>&lt;ref object="myOtherObject" />&lt;/value>
+    &lt;/array>
+  &lt;/property>
+
+&lt;!-- Only use this in a Flex based application --&gt;
+  &lt;property name="someOtherList">
+    &lt;array-collection>
+        &lt;value>a list element followed by a reference&lt;/value>
+        &lt;value>&lt;ref object="myOtherObject" />&lt;/value>
+    &lt;/array-collection>
+  &lt;/property>
+
+  &lt;property name="vectorProperty">
+    &lt;vector type="String">
+      &lt;value>string1&lt;/value>
+      &lt;value>string2&lt;/value>
+      &lt;ref>stringRef&lt;/ref>
+      &lt;object class="String">&lt;constructor-arg>string4&lt;/constructor-arg>&lt;/object>
+    &lt;/vector>
+  &lt;/property>
+
+  &lt;object id="stringRef" class="String">&lt;constructor-arg>string3&lt;/constructor-arg>&lt;/object>
+&lt;/object></programlisting>
+			</sect3>
+			<sect3>
+				<title>Adding the XML configuration to an application context</title>
+				<para>Now to add the configuration to an application context instance, either create the
+						<abbrev>XML</abbrev> specific <literal>XMLApplicationContext</literal>:</para>
+				<programlisting language="actionscript">var applicationContext:XMLApplicationContext = new XMLApplicationContext('application-context.xml');
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+				<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
+						<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
+				<programlisting language="actionscript">var provider:XMLObjectDefinitionsProvider = new XMLObjectDefinitionsProvider();
+provider.addLocation('application-context.xml');
+var applicationContext:IApplicationContext = new DefaultApplicationContext();
+applicationContext.addDefinitionProvider(provider);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+				<note>
+					<para>The <emphasis role="italic">addLocation()</emphasis> method can receive an instance
+						either of type <emphasis role="italic">String</emphasis>, <emphasis role="italic"
+							>Class</emphasis> or <emphasis role="italic"><abbrev>XML</abbrev></emphasis>. In case
+						of a <emphasis role="italic">String</emphasis> it is assumed to it is a
+							<abbrev>URL</abbrev> to an <abbrev>XML</abbrev> file, in case of a <emphasis
+							role="italic">Class</emphasis> it is assumed that its an embedded <abbrev>XML</abbrev>
+						file and in case of <emphasis role="italic"><abbrev>XML</abbrev></emphasis>, the
+							<emphasis role="italic"><abbrev>XML</abbrev></emphasis> instance is literally added to
+						the <emphasis role="italic">XMLObjectDefinitionsProvider</emphasis>.</para>
+				</note>
+			</sect3>
+		</sect2>
+		<sect2 xml:id="metadata-configuration">
+			<title>Metadata Configuration</title>
+			<para>In the case of a metadata based configuration there is no need for a separate config
+				file. The source code itself will act as the configuration.</para>
+			<para>For a class to be added as a definition to the application context all you need to do is
+				annotate it with the <emphasis role="bold">[Component]</emphasis> metadata.</para>
+			<programlisting language="actionscript">[Component(id="myClass")]
+public class MyClass {
+
+ public function MyClass() {
+    super();
+ }
+}</programlisting>
+			<para>Properties may be annotated with the <emphasis role="bold">[Property]</emphasis>
+				metadata to indicate they need to be injected.</para>
+			<programlisting language="actionscript">[Component(id="myClass")]
+public class MyClass {
+
+ public function MyClass() {
+  super();
+ }
+ 
+ [Property(ref="someObjectNameOfMyType")]
+ public var someProperty():MyType;
+
+ [Property(value="${externalPropertyValue}")]
+ public var someOtherProperty():String;
+
+}</programlisting>
+			<para>Notice the <emphasis role="bold">${externalPropertyValue}</emphasis> placeholder, this
+				indicates that the value of this argument will be replaced by an external property value.
+				Check out the section '<literal linkend="using-property-files">Using property
+					files</literal>' for more information on this.</para>
+			<para>A method invocation may be added using the [Invoke] metadata.</para>
+			<programlisting language="actionscript">[Component(id="myClass")]
+public class MyClass {
+
+ public function MyClass() {
+  super();
+ }
+ 
+ [Invoke]
+ public var someFunction():void;
+
+}   </programlisting>
+			<para>If the method needs to receieve any arguments they maybe added as metadata
+				arguments.</para>
+			<programlisting language="actionscript">[Component(id="myComponent",scope="prototype")]
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+  super();
+ }
+ 
+ [Invoke(args="ref=someObjectNameOfMyType, value=10")]
+ public var someFunction(arg1:SomeType, arg2:uint):void;
+
+}</programlisting>
+			<para>Naturally the arguments needs to be defined in the same order as the method expects
+				them.</para>
+			<para>Now the aforementioned annotations work really well when you have access to the source
+				code of the objects that you need to configure. But not if you want to add objects from a
+				third party library. Or maybe you don't want to clutter your sources with framework specific
+				metadata.</para>
+			<para>For this situation Spring Actionscript offers the ability to add all of this specific
+				metadata to a single configuration class. What you do is create a regular class and annotate
+				it with the [Configuration]
+				metadata:<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+}</programlisting></para>
+			<para>Now, this class will actually never be instantiated, it merely functions as a <emphasis
+					role="italic">placeholder</emphasis> for object definition specific metadata. For
+				instance, to add an object definition for the
+					<literal>DefaultAutowiringStageProcessor</literal>, add a property to the configuration
+				class:<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>And that's it, when the configuration has been parsed, an object definition with id
+					'<emphasis role="bold">defaultAutowiringStageProcessor</emphasis>' will have been added
+				with a class definition of 'DefaultAutowiringStageProcessor'.</para>
+			<para>To add the component specific properties as described above you need to add the
+				[Component] metadata to the
+				property.<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>This will set the resulting definition's lazyInit property to true and will register the
+				definition with id '<emphasis role="bold">processor</emphasis>' instead of '<emphasis
+					role="bold">defaultAutowiringStageProcessor</emphasis>'.</para>
+			<para>To define a property on the defintion, add the [Property]
+				metadata:<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+
+	[Property(name="wireOnlyOnce",value="true")]
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>The difference with annotaing a property on a [Component] class is that you need to
+				specify the property's name, whereas in the case of a [Component] class this is already
+				implied by the property itself that has been annotated.</para>
+			<para>Same thing applies for method
+				invocations:<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+
+	[Invoke(name="someMethodName",args="ref=objectName1, value=10")]
+	[Property(name="wireOnlyOnce",value="true")]
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>Or in the case of constructor
+				arguments:<programlisting language="actionscript">[Configuration]
+public class MyConfiguration {
+
+	[Constructor(args="ref=objectName2")]
+	[Invoke(name="someMethodName",args="ref=objectName1, value=10")]
+	[Property(name="wireOnlyOnce",value="true")]
+	[Component(id="processor",isLazyInit="true")]
+	public var defaultAutowiringStageProcessor:DefaultAutowiringStageProcessor;
+}</programlisting></para>
+			<para>And that's, simple add properties for each object you need to be defined, and you're
+				good to go. Just make sure that the configuration class gets compiled into your application
+				by declaring it somewhere. You have to make sure of this since the class never gets instantiated.<note>
+					<para>You can add multiple classes that are annotated with the [Configuration] metadata,
+						the object definitions will be aggregated.</para>
+				</note></para>
+			<para>Now to start using the metadata based configuration, either create the metadata specific
+					<literal>MetadataApplicationContext</literal>:</para>
+			<programlisting language="actionscript">var applicationContext:MetadataApplicationContext = new MetadataApplicationContext(FlexGlobals.topLevelApplication as DisplayObject);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+			<para>Notice how the topLevelApplication is passed into the constructor, the
+				MetadataApplicationContext requires a valid DisplayObject that is added to the stage (or a
+				direct reference to the Stage) to function correctly. It uses its loaderInfo property to
+				reach the loaderInfo.bytes so it can scan the SWF for [Component] and [Configuration]
+				annotated classes.</para>
+			<para>Or create a <literal>DefaultApplicationContext</literal>, add the appropriate
+					<literal>IObjectDefinitionsProvider</literal> and configure it like this:</para>
+			<programlisting language="actionscript">var provider:MetadataObjectDefinitionsProvider = new MetadataObjectDefinitionsProvider();
+applicationContext.addDefinitionProvider(provider);
+var applicationContext:IApplicationContext = new DefaultApplicationContext(null, FlexGlobals.topLevelApplication as DisplayObject);
+applicationContext.addEventListener(Event.COMPLETE, onComplete);
+applicationContext.load();</programlisting>
+		</sect2>
+		<!--sect2 xml:id="actionscript-configuration">
+			<title>Actionscript Configuration</title>
+			<para>...</para>
+		</sect2-->
+	</sect1>
+</chapter>

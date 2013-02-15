@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:sas="http://www.springactionscript.org/mxml/config"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:view="org.springextensions.actionscript.samples.cafetownsend.presentation.*"
+		  implements="org.springextensions.actionscript.samples.cafetownsend.ITownsendView">
+	<fx:Script>
+		<![CDATA[
+			import org.springextensions.actionscript.configuration.ModuleConfig;
+			import org.springextensions.actionscript.context.config.impl.FullConfigurationPackage;
+			import org.springextensions.actionscript.module.ModulePolicy;
+			import org.springextensions.actionscript.samples.cafetownsend.presentation.MainViewPresentationModel;
+
+			[Autowired]
+			[Bindable]
+			public var presentationModel:MainViewPresentationModel;
+
+			protected function MXMLContext_completeHandler(event:Event):void {
+				// TODO Auto-generated method stub
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<sas:MXMLApplicationContext configurations="{[ModuleConfig]}"
+									configurationPackage="{new FullConfigurationPackage()}"
+									id="MXMLModuleContext"
+									modulePolicy="{ModulePolicy.IGNORE}"
+									autoLoad="true"
+									complete="MXMLContext_completeHandler(event)"/>
+	</fx:Declarations>
+	<view:EmployeeList width="100%"
+					   height="100%"/>
+</s:Module>

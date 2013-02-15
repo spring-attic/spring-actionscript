@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book version="5.0" xml:id="spring-actionscript-reference-guide"
+	xmlns="http://docbook.org/ns/docbook" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude"
+	xmlns:ns5="http://www.w3.org/2000/svg" xmlns:ns4="http://www.w3.org/1998/Math/MathML"
+	xmlns:ns3="http://www.w3.org/1999/xhtml" xmlns:ns="http://docbook.org/ns/docbook">
+	<info>
+		<title>Spring ActionScript</title>
+
+		<subtitle>Reference Documentation</subtitle>
+
+		<releaseinfo>1.1</releaseinfo>
+	</info>
+
+	<toc/>
+
+	<preface xml:id="preface">
+		<title>Preface</title>
+
+		<para>Developing software applications is hard enough even with good tools and technologies.
+			Implementing applications using platforms which promise everything but turn out to be
+			heavy-weight, hard to control and not very efficient during the development cycle makes it
+			even harder. Spring Actionscript provides a full-featured IoC container and several low-level
+			extensions to existing frameworks which can make daily life for a developer a little
+			easier.</para>
+
+		<para>Spring Actionscript is modular, allowing you to use just those parts of it that you need,
+			without having to bring in the rest. You can use the IoC container, but leave the Cairngorm
+			extensions alone and use your own solutions instead.</para>
+
+		<para>Spring Actionscript aims to be non-obtrusive and not to impose any kind of unnecessary
+			structure to your application while still promoting best practices in software
+			development.</para>
+
+		<para>A lot the API's used by Spring Actionscript are available separately as autonomous
+			libraries that are part of the AS3Commons Project.</para>
+
+		<para>This document provides a reference guide to Spring Actionscript's features. Since this
+			document is still to be considered very much work-in-progress, if you have any requests or
+			comments, please post them on the user mailing list or on the support forums at <literal
+				xlink:href="http://forum.springframework.org/forumdisplay.php?f=60"
+				>http://forum.springframework.org/forumdisplay.php?f=60</literal>.</para>
+	</preface>
+
+	<part xml:id="step-by-step">
+		<title>Step by step</title>
+
+		<partintro>
+			<para>In the following sections we give a walkthrough of all the functionality offered by
+				Spring Actionscript, in convenient bite-sized chunks. Starting off with an introduction to
+				what Spring Actionscript is, where it came from and what it can mean for you.</para>
+			<para>After that an installation guide, a quick-start guide and after that step by step the
+				different API's and extension point will be introduced to you.</para>
+		</partintro>
+
+		<xi:include href="introduction.xml"/>
+
+		<xi:include href="getting-started.xml"/>
+
+		<xi:include href="configuration-types.xml"/>
+
+		<xi:include href="extending-configuration-types.xml"/>
+
+		<xi:include href="object-definitions.xml"/>
+
+		<xi:include href="autowiring.xml"/>
+
+		<xi:include href="extending-the-application-context.xml"/>
+
+		<xi:include href="advanced-context-features.xml"/>
+		
+		<xi:include href="eventbus-integration.xml"/>
+
+		<xi:include href="graphs.xml"/>
+
+		<!--xi:include href="integrations.xml"/-->
+
+	</part>
+
+	<part xml:id="appendixes">
+		<title>Appendixes</title>
+
+		<partintro>
+			<para/>
+		</partintro>
+
+		<xi:include href="xml-schema-based-configuration.xml"/>
+
+		<xi:include href="extensible-xml-authoring.xml"/>
+
+		<xi:include href="class-inclusion.xml"/>
+	</part>
+
+</book>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter version="5.0" xml:id="introduction" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml"
+	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg"
+	xmlns:ns="http://docbook.org/ns/docbook">
+	<title>Introduction</title>
+
+	<sect1 xml:id="what-is-spring-actionscript">
+		<title>What is Spring Actionscript?</title>
+
+		<para>Spring ActionScript is an offshoot of the Java-based Spring Framework written in
+			ActionScript 3. It is targeted for the Flash, Flex and AIR platforms. The framework contains
+			an extremely versatile Inversion of Control Container, a metadata handling system, a micro MVC
+			library and extensions for the Cairngorm and PureMVC frameworks. The container may be
+			configured with <abbrev>XML</abbrev>, <abbrev>MXML</abbrev>, metadata or actionscript, or even
+			a combination of these.</para>
+	</sect1>
+</chapter>

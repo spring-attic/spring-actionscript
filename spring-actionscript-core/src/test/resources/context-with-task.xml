@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+		 xmlns:t="http://www.springactionscript.org/schema/task"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd 
+		 http://www.springactionscript.org/schema/task http://www.springactionscript.org/schema/objects/spring-actionscript-task-2.0.xsd ">
+
+	<object class="org.as3commons.async.command.impl.MockAsyncCommand"
+			id="mockcommand">
+		<constructor-arg value="false"/>
+		<constructor-arg value="200"/>
+	</object>
+
+	<t:task id="testTask">
+		<t:and>
+			<object class="org.as3commons.async.command.impl.MockAsyncCommand">
+				<constructor-arg value="false"/>
+				<constructor-arg value="500"/>
+			</object>
+		</t:and>
+		<t:and command="mockcommand"/>
+		<t:and>
+			<object class="org.as3commons.async.command.impl.MockAsyncCommand">
+				<constructor-arg value="false"/>
+				<constructor-arg value="400"/>
+			</object>
+		</t:and>
+		<t:pause duration="5"/>
+	</t:task>
+
+	<t:task id="testCustomTask"
+			lazy-init="true">
+	</t:task>
+
+</objects>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:view="org.springextensions.actionscript.samples.cafetownsend.presentation.*"
+				layout="vertical"
+				backgroundColor="#000000"
+				creationComplete="creationCompleteHandler(event)"
+				viewSourceURL="srcview/index.html"
+				name="cafe-townsend">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+
+			import org.springextensions.actionscript.context.config.impl.xml.FullXMLConfigurationPackage;
+			import org.springextensions.actionscript.context.impl.xml.XMLApplicationContext;
+			import org.springextensions.actionscript.eventbus.process.EventHandlerMetadataProcessor;
+			import org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController;
+			import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryAuthenticationService;
+			import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryEmployeeService;
+			import org.springextensions.actionscript.samples.cafetownsend.presentation.MainView;
+			import org.springextensions.actionscript.samples.cafetownsend.stage.TownsendViewSelector;
+			import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
+
+			{
+				TownsendViewSelector;
+			}
+
+			// --------------------------------------------------------------------
+			//
+			// Private Variables
+			//
+			// --------------------------------------------------------------------
+
+			private var _compiledClasses:Array = [DefaultAutowiringStageProcessor, EventHandlerMetadataProcessor, ApplicationController, InMemoryAuthenticationService, InMemoryEmployeeService];
+			private var _appContext:XMLApplicationContext = new XMLApplicationContext();
+
+			// --------------------------------------------------------------------
+			//
+			// Private Methods
+			//
+			// --------------------------------------------------------------------
+
+			private function creationCompleteHandler(event:FlexEvent):void {
+				_appContext.addLocation("application-context.xml");
+				_appContext.addEventListener(Event.COMPLETE, applicationContext_completeHandler);
+				_appContext.addEventListener(IOErrorEvent.IO_ERROR, applicationContext_ioErrorHandler);
+				_appContext.configure(new FullXMLConfigurationPackage());
+				_appContext.load();
+			}
+
+			private function applicationContext_completeHandler(event:Event):void {
+				addChild(new MainView());
+			}
+
+			private function applicationContext_ioErrorHandler(event:IOErrorEvent):void {
+				Alert.show("An error occurred when loading the xml for the application context: '" + event.text + "'", "Error Loading Application Context");
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Style source="../resources/assets/main.css"/>
+
+</mx:Application>

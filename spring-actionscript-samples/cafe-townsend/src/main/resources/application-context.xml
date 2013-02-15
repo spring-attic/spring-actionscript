@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+		 xmlns:stage="http://www.springactionscript.org/schema/stageprocessing"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+					http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd
+					http://www.springactionscript.org/schema/stageprocessing
+		 			http://www.springactionscript.org/schema/objects/spring-actionscript-stageprocessing-2.0.xsd">
+
+	<!--
+		Spring ActionScript config
+	-->
+
+	<stage:autowiringstageprocessor object-selector="viewSelector"/>
+
+	<object id="viewSelector"
+			class="org.springextensions.actionscript.samples.cafetownsend.stage.TownsendViewSelector"/>
+
+	<object id="eventHandlerProcessor"
+			class="org.springextensions.actionscript.eventbus.process.EventHandlerMetadataProcessor"/>
+
+	<!--
+		Application
+	-->
+
+	<object id="applicationController"
+			class="org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController">
+		<constructor-arg ref="authenticationService"/>
+	</object>
+
+	<!--
+		Infrastructure: services
+	-->
+
+	<object id="authenticationService"
+			class="org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryAuthenticationService"
+			lazy-init="true"/>
+
+	<object id="employeeService"
+			class="org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryEmployeeService"
+			lazy-init="true"/>
+
+	<!--
+		Presentation: presentation models
+	-->
+
+	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.EmployeeLoginPresentationModel"
+			lazy-init="true">
+		<constructor-arg ref="authenticationService"/>
+	</object>
+
+	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.MainViewPresentationModel"
+			lazy-init="true"
+			init-method="init"/>
+
+	<object class="org.springextensions.actionscript.samples.cafetownsend.presentation.EmployeeListPresentationModel"
+			lazy-init="true">
+		<constructor-arg ref="employeeService"/>
+	</object>
+
+</objects>

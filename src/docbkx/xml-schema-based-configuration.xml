@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<appendix annotations="" version="5.0" xml:id="xml-schema-based-configuration"
+          xmlns="http://docbook.org/ns/docbook"
+          xmlns:xs="http://www.w3.org/2001/XMLSchema"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          xmlns:ns5="http://www.w3.org/1998/Math/MathML"
+          xmlns:ns4="http://www.w3.org/2000/svg"
+          xmlns:ns3="http://www.w3.org/1999/xhtml"
+          xmlns:ns="http://docbook.org/ns/docbook">
+  <title>XML Schema-based configuration</title>
+
+  <section xml:id="schema_based_configuration_introduction">
+    <title>Introduction</title>
+
+    <para>This appendix details the <abbrev>XML</abbrev> Schema-based
+    configuration introduced in Spring Actionscript version 0.8.</para>
+
+    <para>The central motivation for using <abbrev>XML</abbrev> Schema based
+    configuration files was to make Spring <abbrev>XML</abbrev> configuration
+    easier. The 'classic' <literal
+    xlink:href="dtd://anchor_objectType">&lt;object/&gt;</literal>-based
+    approach is good, but its generic-nature comes with a price in terms of
+    configuration overhead.</para>
+
+    <para>From the Spring Actionscript <abbrev>IoC</abbrev> containers
+    point-of-view, everything is an object. That's great news for the Spring
+    Actionscript <abbrev>IoC</abbrev> container, because if everything is an
+    object then everything can be treated in the exact same fashion. The same,
+    however, is not true from a developer's point-of-view. The objects defined
+    in a Spring Actionscript <abbrev>XML</abbrev> configuration file are not
+    all generic, vanilla objects. Usually, each object requires some degree of
+    specific configuration.</para>
+
+    <para>Spring Actionscript <abbrev>XML </abbrev>Schema-based configuration
+    addresses this issue. The <literal
+    xlink:href="dtd://anchor_objectType">&lt;object/&gt;</literal> element is
+    still present, and if you wanted to, you could continue to write the exact
+    same style of Spring Actionscript <abbrev>XML</abbrev> configuration using
+    only <literal
+    xlink:href="dtd://anchor_objectType">&lt;object/&gt;</literal> elements.
+    The <abbrev>XML</abbrev> Schema-based configuration does, however, make
+    Spring Actionscript <abbrev>XML</abbrev> configuration files substantially
+    clearer to read. In addition, it allows you to express the intent of an
+    object definition.</para>
+
+    <para>The key thing to remember is that the new custom tags work best for
+    infrastructure or integration objects: for example, collections,
+    transactions, integration with 3rd-party frameworks, while the existing
+    object tags are best suited to application-specific objects, such as
+    <abbrev>DAO</abbrev>s, service layer objects, validators, etc. The
+    examples included below will hopefully convince you that
+    <abbrev>XML</abbrev> Schema support is a good idea. Please note the fact
+    that this configuration mechanism is totally customisable and extensible.
+    This means you can write your own domain-specific configuration tags that
+    would better represent your application's domain; the process involved in
+    doing so is covered in the appendix entitled <link
+    linkend="extensible_xml_authoring">Appendix B, Extensible XML
+    authoring</link>.</para>
+  </section>
+
+  <section xml:id="xml_schema_based_configuration">
+    <title>XML Schema-based configuration</title>
+
+    <section xml:id="referencing_the_schemas">
+      <title>Referencing the schemas</title>
+
+      <para>To use the <abbrev>XML</abbrev> Schema-style, you need to add the
+      following declarations to your <abbrev>XML</abbrev> file.</para>
+
+      <programlisting>&lt;?xml version="1.0" encoding="UTF-8"&gt;
+&lt;objects
+  xmlns="http://www.springactionscript.org/schema/objects"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+  http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd"&gt;
+
+<lineannotation>&lt;!-- &lt;object/&gt; definitions here --&gt;</lineannotation>
+
+&lt;/objects&gt;</programlisting>
+
+      <note>
+        <para>The 'xsi:schemaLocation' fragment is not actually required, but
+        can be included to reference a local copy of a schema (which can be
+        useful during development).</para>
+      </note>
+
+      <para>The above Spring Actionscript <abbrev>XML</abbrev> configuration
+      fragment is boilerplate that you can copy and paste (!) and then plug
+      <literal xlink:href="dtd://anchor_objectType">&lt;object/&gt;</literal>
+      definitions into like you have always done. The section entitled, <link
+      linkend="the_util_schema">"The util schema"</link> demonstrates how you
+      can start immediately by using some of the more common utility tags. The
+      rest of this chapter is devoted to showing examples of the Spring
+      Actionscript <abbrev>XML</abbrev> Schema based configuration, with at
+      least one example for every new tag. The format follows a before and
+      after style, with a before snippet of XML showing the old (but still
+      100% legal and supported) style, followed immediately by an after
+      example showing the equivalent in the new XML Schema-based style.</para>
+    </section>
+  </section>
+
+  <section xml:base="" xml:id="the_util_schema">
+    <title>The util schema</title>
+
+    <para>First up is coverage of the util tags. As the name implies, the util
+    tags deal with common, utility configuration issues, such as configuring
+    collections, referencing constants, and suchlike.</para>
+
+    <para>To use the tags in the util schema, you need to have the following
+    preamble at the top of your Spring Actionscript <abbrev>XML</abbrev>
+    configuration file; the emboldened text in the snippet below references
+    the correct schema so that the tags in the util namespace are available to
+    you.</para>
+
+    <programlisting>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;objects
+  xmlns="http://www.springactionscript.org/schema/objects"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <emphasis role="bold">xmlns:util="http://www.springactionscript.org/schema/util"</emphasis>
+  xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+  http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+  <emphasis role="bold">http://www.springactionscript.org/schema/objects/spring-actionscript-util-1.0.xsd</emphasis>"&gt;
+
+<lineannotation>&lt;!-- &lt;object/&gt; definitions here --&gt;</lineannotation>
+
+&lt;/objects&gt;</programlisting>
+
+    <para>You also need to register the namespace handler with the application
+    context, like this (invoke this method <emphasis>before</emphasis> you
+    load the configuration):</para>
+
+    <programlisting>applicationContext.addNamespaceHandler(new UtilNamespaceHandler());</programlisting>
+
+    <para>Not all util functions have been implemented yet in Spring
+    Actionscript, the ones that are already present are described
+    below.</para>
+
+    <section xml:id="util_constant">
+      <title>&lt;util:constant/&gt;</title>
+
+      <para>Before...</para>
+
+      <programlisting>&lt;object id="..." class="..."&gt;
+  &lt;property name="version"&gt;
+    &lt;object class="org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject"&gt;
+      &lt;property name="targetClass" value="mx.core.FlexVersion"/&gt;
+      &lt;property name="staticField" value="CURRENT_VERSION"/&gt;
+    &lt;/object&gt;
+  &lt;/property&gt;
+&lt;/object&gt;</programlisting>
+
+      <para>The above configuration uses a Spring Actionscript <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.IFactoryObject">IFactoryObject</literal>
+      implementation, the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject">FieldRetrievingFactoryObject</literal>,
+      to set the value of the 'test' property on an object to the value of the
+      'mx.core.FlexVersion.CURRENT_VERSION' constant. This is all well and
+      good, but it is a tad verbose and (unnecessarily) exposes Spring
+      Actionscript's internal plumbing to the end user.</para>
+
+      <para>The following <abbrev>XML</abbrev> Schema-based version is more
+      concise and clearly expresses the developer's intent ('inject this
+      constant value'), and it just reads better.</para>
+
+      <programlisting>&lt;object id="..." class="..."&gt;
+  &lt;property name="test"&gt;
+    &lt;util:constant static-field="mx.core.FlexVersion.CURRENT_VERSION"/&gt;
+  &lt;/property&gt;
+&lt;/object&gt;</programlisting>
+    </section>
+
+    <section xml:id="util_invoke">
+      <title>&lt;util:invoke/&gt;</title>
+
+      <para>Before...</para>
+
+      <programlisting>&lt;object class="org.springextensions.actionscript.ioc.factory.config.MethodInvokingFactoryObject"&gt;
+      &lt;property name="targetClass" value="mx.resources.ResourceManager"/&gt;
+      &lt;property name="targetMethod" value="getInstance"/&gt;
+&lt;/object&gt;</programlisting>
+
+      <para>After...</para>
+
+      <programlisting>&lt;util:invoke target-class="mx.resources.ResourceManager" target-method="getInstance" id="<emphasis
+          role="bold">resourceManager</emphasis>"/&gt;</programlisting>
+
+      <para>To pass arguments to the specified method use &lt;arg/&gt; child
+      elements:</para>
+
+      <programlisting>&lt;util:invoke target-object="<emphasis role="bold">resourceManager</emphasis>" target-method="getString"&gt;
+      &lt;arg value="bundleName"/&gt;
+      &lt;arg value="resourceName"/&gt;
+&lt;/util:invoke&gt;</programlisting>
+    </section>
+  </section>
+
+  <section xml:id="the_messaging_schema">
+    <title>The messaging schema</title>
+
+    <para>The messaging schema, to no great surprise, covers all objects that
+    deals with messaging, such as channels, producers, consumers, etc.</para>
+
+    <para>To use the tags in the messaging schema, you need to have the
+    following preamble at the top of your Spring Actionscript
+    <abbrev>XML</abbrev> configuration file; the emboldened text in the
+    snippet below references the correct schema so that the tags in the
+    messaging namespace are available to you.</para>
+
+    <programlisting>&lt;?xml version="1.0" encoding="UTF-8"&gt;
+&lt;objects
+  xmlns="http://www.springactionscript.org/schema/objects"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <emphasis role="bold">xmlns:messaging="http://www.springactionscript.org/schema/messaging"</emphasis>
+  xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+  http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+  <emphasis role="bold">http://www.springactionscript.org/schema/objects/spring-actionscript-messaging-1.0.xsd</emphasis>"&gt;
+
+<lineannotation>&lt;!-- &lt;object/&gt; definitions here --&gt;</lineannotation>
+
+&lt;/objects&gt;</programlisting>
+
+    <para>You also need to register the namespace handler with the application
+    context, like this (invoke this method <emphasis>before</emphasis> you
+    load the configuration):</para>
+
+    <programlisting>applicationContext.addNamespaceHandler(new MessagingNamespaceHandler());</programlisting>
+
+    <para>In the following section we will briefly show you what new tags the
+    messaging schema will offer you.</para>
+
+    <section xml:id="messaging_channelset">
+      <title>&lt;messaging:channel-set&gt;</title>
+
+      <para>To declare a channelset using the messaging schema, add this
+      markup to you <abbrev>XML</abbrev> configuration:</para>
+
+      <programlisting>&lt;channel-set clustered="false" initial-destination-id="remote-destination" id="myChannelSet"&gt;</programlisting>
+
+      <para>"remote-destination" is just a generic name in this example, you
+      will need to change this to a destination id that is suitable for your
+      server environment.</para>
+    </section>
+
+    <section xml:id="messaging_channel">
+      <title>&lt;messaging:channel&gt;</title>
+
+      <para>Now to add a channel to our previously declared channelset, you
+      can add the following:</para>
+
+      <programlisting>&lt;channel id="<emphasis role="bold">myChannel</emphasis>" connect-timeout="50"
+ failover-uris="http://myfailoverserver.com/flex,http://localhost/flex" request-timeout="200" uri="http://myserver.com/flex"/&gt;</programlisting>
+
+      <para>Then, to add the channel to the channelset, add this attribute to
+      your channelset declaration:</para>
+
+      <programlisting>&lt;channel-set clustered="false" initial-destination-id="remote-destination" id="myChannelSet" channels="<emphasis
+          role="bold">myChannel</emphasis>"/&gt;</programlisting>
+
+      <para>To add more than one channel, just comma delimit the channel
+      names:</para>
+
+      <programlisting>&lt;channel-set clustered="false" initial-destination-id="remote-destination" id="myChannelSet" channels="<emphasis
+          role="bold">myChannel,myOtherChannel</emphasis>"/&gt;</programlisting>
+
+      <section xml:id="messaging_amf_channel">
+        <title>&lt;messaging:amf-channel&gt;</title>
+
+        <para>The amf-channel tag merely adds a few attributes to the regular
+        channel tag that apply to <abbrev>AMF</abbrev> specifically:</para>
+
+        <programlisting>&lt;amf-channel id="myChannel" connect-timeout="50"
+ failover-uris="http://myfailoverserver.com/flex,http://localhost/flex" request-timeout="200" uri="http://myserver.com/flex"
+ <emphasis role="bold">piggybacking-enabled="false"
+ polling-enabled="true"
+ polling-interval="200</emphasis>"/&gt;</programlisting>
+
+        <para>Other than that there is also the
+        <literal>&lt;secure-amf-channel/&gt;</literal>,
+        <literal>&lt;streaming-amf-channel/&gt;</literal> and the
+        <literal>&lt;secure-streaming-amf-channel/&gt;</literal>, who map to
+        the <literal>SecureAMFChannel</literal>,
+        <literal>StreamingAMFChannel</literal> and
+        <literal>SecureStreamingAMFChannel</literal> respectively but who
+        offer no extra attributes as of yet.</para>
+      </section>
+    </section>
+
+    <section xml:id="messaging_abstract_consumer">
+      <title>&lt;messaging:abstract-consumer&gt;</title>
+
+      <para><emphasis>Coming soon...</emphasis></para>
+
+      <section xml:id="messaging_consumer">
+        <title>&lt;messaging:consumer&gt;</title>
+
+        <para><emphasis>Coming soon...</emphasis></para>
+      </section>
+
+      <section xml:id="messaging_multi_topic_consumer">
+        <title>&lt;messaging:multi-topic-consumer&gt;</title>
+
+        <para><emphasis>Coming soon...</emphasis></para>
+      </section>
+    </section>
+
+    <section xml:id="messaging_producer">
+      <title>&lt;messaging:producer&gt;</title>
+
+      <para><emphasis>Coming soon...</emphasis></para>
+
+      <section xml:id="messaging_multi_topic_producer">
+        <title>&lt;messaging:multi-topic-producer&gt;</title>
+
+        <para><emphasis>Coming soon...</emphasis></para>
+      </section>
+    </section>
+  </section>
+
+  <section xml:id="the_rpc_schema">
+    <title>The RPC schema</title>
+
+    <para><emphasis>Coming soon...</emphasis></para>
+  </section>
+
+  <section xml:id="the_stage_processing_schema">
+    <title>The stage processing schema</title>
+
+    <para>The stage processing schema offers markup directly geared towards
+    the <literal
+    xlink:href="asdoc://org.springextensions.actionscript.stage.GenericStageProcessor">GenericStageProcessor</literal>
+    class.</para>
+
+    <para>To use the tags in the stage processing schema, you need to have the
+    following preamble at the top of your Spring Actionscript
+    <abbrev>XML</abbrev> configuration file; the emboldened text in the
+    snippet below references the correct schema so that the tags in the stage
+    processing namespace are available to you.</para>
+
+    <programlisting>&lt;?xml version="1.0" encoding="UTF-8"&gt;
+&lt;objects
+  xmlns="http://www.springactionscript.org/schema/objects"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <emphasis role="bold">xmlns:si="http://www.springactionscript.org/schema/stageprocessing "</emphasis>
+  xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+  http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+  <emphasis role="bold">http://www.springactionscript.org/schema/objects/spring-actionscript-stageprocessing-1.0.xsd</emphasis>"&gt;
+
+<lineannotation>&lt;!-- &lt;object/&gt; definitions here --&gt;</lineannotation>
+
+&lt;/objects&gt;</programlisting>
+
+    <para>You also need to register the namespace handler with the application
+    context, like this (invoke this method <emphasis>before</emphasis> you
+    load the configuration):</para>
+
+    <programlisting>applicationContext.addNamespaceHandler(new StageProcessorNamespaceHandler());</programlisting>
+
+    <para>In the following section we will briefly show you what new tags the
+    stage processing schema will offer you.</para>
+
+    <section xml:id="genericstageprocessor">
+      <title>&lt;si:genericstageprocessor&gt;</title>
+
+      <para>Currently there is just one tag in the stage processing namespace,
+      to add a <literal
+      xlink:href="asdoc://org.springextensions.actionscript.stage.GenericStageProcessor">GenericStageProcessor</literal>
+      to your application simply use this markup:</para>
+
+      <programlisting>&lt;si:genericstageprocessor target-object="stageRegistry" target-method="register"
+                     object-selector="registrySelector" id="genericStageProcessor"/&gt;</programlisting>
+
+      <para>Where the target-object and object-selector attributes are
+      references to existing objects in your application context.</para>
+    </section>
+  </section>
+</appendix>

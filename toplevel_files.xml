@@ -1,0 +1,14 @@
+<files>
+	<toplevels>
+		<file moduleName="spring-actionscript-core">/target/site/asdoc/toplevel.xml</file>
+		<file moduleName="spring-actionscript-flex">/target/site/asdoc/toplevel.xml</file>
+		<file moduleName="spring-actionscript-mvc">/target/site/asdoc/toplevel.xml</file>
+		<file moduleName="spring-actionscript-security">/target/site/asdoc/toplevel.xml</file>
+	</toplevels>
+	<toplevel_classes>
+		<file moduleName="spring-actionscript-core">/target/site/asdoc/toplevel_classes.xml</file>
+		<file moduleName="spring-actionscript-flex">/target/site/asdoc/toplevel_classes.xml</file>
+		<file moduleName="spring-actionscript-mvc">/target/site/asdoc/toplevel_classes.xml</file>
+		<file moduleName="spring-actionscript-security">/target/site/asdoc/toplevel_classes.xml</file>
+	</toplevel_classes>
+</files>

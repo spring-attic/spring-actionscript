@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter version="5.0" xml:id="eventbus-integration" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml" xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg">
+	<title>Eventbus integration</title>
+
+	<sect1 xml:id="eventbus-introduction">
+		<title>Introduction</title>
+		<para>Spring Actionscript uses the <literal
+				xlink:href="http://as3commons.org/as3-commons-eventbus/index.html"
+				>as3commons-eventbus</literal> project internally to facilitate decoupled
+			communication between objects. To learn more about about as3commons's eventbus, take a
+			look at its <literal
+				xlink:href="http://as3commons.org/as3-commons-eventbus/introduction.html"
+				>introduction page</literal>.</para>
+		<para>As an extension to this functionality Spring Actionscript offers a number of
+			configuration shortcuts that will make using the eventbus a lot easier. Actually, the
+			eventbus will be entirely invisible to your project in most cases.</para>
+		<para>The following sections will cover the various ways that Spring Actionscript can be
+			configured for use with the eventbus.</para>
+		<sect2 xml:id="event-dispatching"><title>Event dispatching</title>
+			<para>The configuration may be used to describe which events that are dispatched by a specified
+				object will be routed through the eventbus.</para>
+			<para>The <abbrev>XML</abbrev> way requires a bit of preparation in the main
+				configuration file, first add this namespace and schema
+				location:<programlisting language="xml">&lt;objects xmlns="http://www.springactionscript.org/schema/objects"
+   <emphasis role="bold">xmlns:eventbus="http://www.springactionscript.org/schema/eventbus"</emphasis>
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+   http://www.springactionscript.org/schema/objects/spring-actionscript-objects-2.0.xsd
+   <emphasis role="bold">http://www.springactionscript.org/schema/eventbus
+   http://www.springactionscript.org/schema/objects/spring-actionscript-eventbus-2.0.xsd"</emphasis>>
+&lt;/objects></programlisting></para>
+			<para>Now, let's say there is a class called <literal>MyEventDispatcher</literal>, and a
+				regular object definition for this exists in the
+				configuration:<programlisting language="xml">&lt;object id="myDispatcher" class="com.myclasses.MyEventDispatcher"/></programlisting></para>
+			<para>This objects dispatches a <literal>CustomEvent</literal> called <emphasis
+					role="italic">changed</emphasis> and it is required to be routed through the
+				eventbus, the configuration added for this
+				is:<programlisting language="xml">&lt;eventbus:event-router instance="myDispatcher">
+  &lt;eventbus:routing-configuration event-names="<emphasis role="bold">changed</emphasis>"/>
+&lt;/eventbus:event-router></programlisting></para>
+			<para>In <abbrev>MXML</abbrev> the configuration is slightly
+					simpler:<programlisting language="xml">&lt;sas:Object id="myDispatched" clazz="{MyEventDispatcher}">
+	&lt;sas:EventRouterConfiguration eventNames="{<emphasis role="bold">CustomEvent.CHANGED</emphasis>}"/>
+&lt;/sas:Object></programlisting>For
+					metadata configurations, add this metadata to the
+				class:<programlisting language="actionscript">[RouteEvents(events="<emphasis role="bold">initialized</emphasis>,<emphasis role="bold">changed</emphasis>")]
+public class MyEventDispatcher {
+}</programlisting></para>
+			<para>The as3commons-eventbus also supports topic filtering, this can also be be part of the
+				configuration. Let's imagine there is a simple string based topic called
+				"mySecretTopic":<programlisting language="xml">&lt;eventbus:event-router instance="myDispatcher">
+  &lt;eventbus:routing-configuration event-names="changed" topics="<emphasis role="bold">mySecretTopic</emphasis>"/>
+&lt;/eventbus:event-router></programlisting></para>
+			<para><abbrev>MXML</abbrev>
+				configuration:<programlisting language="xml">&lt;sas:Object id="myDispatched" clazz="{MyEventDispatcher}">
+	&lt;sas:EventRouterConfiguration eventNames="{<emphasis role="bold">CustomEvent.CHANGED</emphasis>}" topics="mySecretTopic"/>
+&lt;/sas:Object></programlisting></para>
+			<para>Metadata
+				configuration:<programlisting language="actionscript">[RouteEvents(events="initialized,changed", topics="mySecretTopic")]
+public class MyEventDispatcher {
+}</programlisting></para>
+			<note>
+				<para>The 'topics' property is indeed plural, so it is possible to dispatch the event
+					using multiple properties. In each implementation they can be added as comma
+					separated lists.</para>
+			</note>
+			<para>It might be possible that the specific topic is a complex object that is assigned
+				to a property on the event dispatcher, the name of this property can be defined like
+				this so it will be automatically used as the topic under which the event will be
+				dispatched:<programlisting language="xml">&lt;eventbus:event-router instance="myDispatcher">
+  &lt;eventbus:routing-configuration event-names="changed" topic-properties="<emphasis role="bold">topicProperty</emphasis>"/>
+&lt;/eventbus:event-router></programlisting></para>
+			<para><abbrev>MXML</abbrev>
+				configuration:<programlisting language="xml">&lt;sas:Object id="myDispatched" clazz="{MyEventDispatcher}">
+	&lt;sas:EventRouterConfiguration eventNames="{CustomEvent.CHANGED}" topicProperties="<emphasis role="bold">topicProperty</emphasis>"/>
+&lt;/sas:Object></programlisting></para>
+			<para>Metadata configuration:<programlisting language="actionscript">[RouteEvents(events="initialized,changed", topicProperties="<emphasis role="bold">topicProperty</emphasis>")]
+public class MyEventDispatcher {
+}</programlisting><note>
+					<para>Just like the topics property the topicProperties can be defined as a
+						comma separated list to dispatch the event under multiple topics.</para>
+				</note></para>
+		</sect2>
+		<sect2><title>Event handling</title>
+			<para>To configure objects that will handle events there is the following <abbrev>XML</abbrev>
+				markup:</para>
+			<para>Let's say there is an object of class <literal>MyEventHandler</literal> that
+				handles <literal>CustomEvent.CHANGED</literal> events using its <emphasis
+					role="italic">handleChanged()</emphasis>
+				method:<programlisting language="xml">&lt;object id="<emphasis role="bold">myHandler</emphasis>" class="com.myclasses.MyEventHandler"/>
+
+&lt;eventbus:event-router instance="<emphasis role="bold">myHandler</emphasis>">
+    &lt;eventbus:event-handler-method method-name="handleChanged" event-name="<emphasis role="bold">changed</emphasis>"/>  
+&lt;/eventbus:event-router></programlisting></para>
+			<para>If the event that needs to be handled is dispatched under a certain topic, specify the
+				topic like
+				this:<programlisting>&lt;object id="myHandler" class="com.myclasses.MyEventHandler"/>
+
+&lt;eventbus:event-router instance="myHandler">
+    &lt;eventbus:event-handler-method method-name="handleChanged" event-name="changed" topic="<emphasis role="bold">mySecretTopic</emphasis>"/>
+&lt;/eventbus:event-router></programlisting></para>
+			<para><abbrev>MXML</abbrev>
+				configuration:<programlisting>&lt;sas:Object id="myHandler" clazz="{MyEventHandler}">
+	&lt;sas:EventHandlerConfiguration />
+&lt;/sas:Object></programlisting></para></sect2>
+		<sect2><title>Event interception</title>
+			<para>The <literal xlink:href="http://as3commons.org/as3-commons-eventbus/index.html"
+					>AS3commons-eventbus</literal> supports the concept of <literal
+					xlink:href="http://as3commons.org/as3-commons-eventbus/introduction.html#EventBus_event_intercepting"
+					>event interceptors</literal>. These interceptors can be easily defined in the
+				Spring configuration in the following ways.</para>
+			<para>Using <abbrev>XML</abbrev> configuration, this would be the
+				way:<programlisting>&lt;object id="<emphasis role="bold">myInterceptor</emphasis>" class="com.myclasses.MyEventInterceptor"/>
+
+&lt;eventbus:event-interceptor instance="<emphasis role="bold">myInterceptor</emphasis>">
+    &lt;eventbus:interception-configuration event-name="changed"/>
+&lt;/eventbus:event-interceptor></programlisting></para>
+			<para>Of course, interception for event classes is also possible:</para>
+			<programlisting>&lt;eventbus:interception-configuration event-class="com.classes.events.MyCustomEvent"/></programlisting>
+			<para>Each of these configuration can also contain
+				topics:<programlisting>&lt;eventbus:interception-configuration event-class="com.classes.events.MyCustomEvent" topics="<emphasis role="bold">mySecretTopic</emphasis>"/></programlisting></para>
+		</sect2>
+	</sect1>
+
+</chapter>

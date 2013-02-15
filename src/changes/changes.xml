@@ -1,0 +1,486 @@
+<document xmlns="http://maven.apache.org/changes/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
+  <properties>
+    <title>Spring ActionScript changes</title>
+  </properties>
+  <body>
+
+  <release version="2.0" date="2011-..-.." description="Release of version 2.0">
+  	<action system="jira" type="add" dev="rzwaga" date="01/08/2011">Complete overhaul of the 1.x code base</action>
+  </release>
+
+  <release version="1.2" date="2011-..-.." description="Release of version 1.2">
+  	<action system="jira" type="fix" dev="rzwaga" date="10/01/2011">Added topics and topicProperties metadata argument support to RouteEventsMetadataProcessor and EventHandlerMetadataProcessor.</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="10/01/2011">Refactored RouteEventsMetadataProcessor, EventHandlerMetadataProcessor and introduced EventInterceptorMetadataProcessor to make use of the new EventBus system.</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="10/01/2011">Refactored EventBus out of the core and into the new as3commons-eventbus project.</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="12/12/2010">Fixed issue when disposing a FlexXMLApplicationContext with an assigned module that caused the disposal of application stage processors. (Thanks Christoph)</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="08/12/2010" issue="121">AbstractOperation.dispatchCompleteEvent() did not set result property value if result argument was 0 or "" (empty string) or false etc.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="30/10/2010">Added ObjectFactoryEvent.OBJECT_WIRED and made AbstractObjectFactory dispatch it after an object has been wired. (Also sent through the EventBus).</action>
+  	<action system="jira" type="add" dev="rzwaga" date="24/11/2010">Added isReady property to IObjectFactory interface, when true it means the IObjectFactory instance is ready for use.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="25/11/2010">Added ApplicationContextLifeCycleEvent and dispatched it in its appropriate places in the context and objectfactory.</action>
+  </release>
+
+  <release version="1.1" date="2010-10-28" description="Release of version 1.1">
+  	<action system="jira" type="fix" dev="rzwaga" date="28/09/2010" issue="114">MXMLApplicationContext gets initialized properly when no configuration object is passed to the constructor.</action>
+	<action system="jira" type="fix" dev="cherreman" date="xx/xx/2010" issue="113">Added support for PostConstruct and PreDestroy metadata.</action>
+	<action system="jira" type="fix" dev="cherreman" date="24/09/2010" issue="112">ObjectFactoryPostProcessors defined in parent contexts, can now optionally be invoked on a child context by setting the 'useParentObjectFactoryPostProcessors' on the child context. The default is false.</action>
+	<action system="jira" type="fix" dev="cherreman" date="24/09/2010">PropertyPlaceholderConfigurer now has a 'properties' accessor.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="31/08/2010">Added context property to ITask interface and Task implementation to be able to exchange arbitrary data between Task commands.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="09/09/2010">Added addOperation() method to ICompositeCommand interface and implemented it in the CompositeCommand class.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="10/09/2010">Fixed crash bug in OperationHandler class error handling (oh, the irony).</action>
+  	<action system="jira" type="add" dev="rzwaga" date="10/09/2010">ITask.next() and .and() now accept either an ICommand instance or an IOperation with optional constructor arguments.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="10/09/2010">Added the static createNew() factory method to GenericOperationCommand.</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="11/09/2010" issue="107">LoadStyleModuleOperation no longer gives deprecation warning when compiling with the Flex 4 SDK</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="11/09/2010">LoadURLOperation now invokes URLLoader.load() after a setTimeout to make sure eventlisteners added to the IOperation will be invoked.</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="11/09/2010" issue="111">Fixed faulty information in the documentation. DefaultObjectDefinitionResolver is NOT created by default anymore.</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="11/09/2010" issue="106">Fixed registration of MXML based object definitions where some properties were not properly set on the IObjectDefinition that was registered with the context.</action>
+  	<action system="jira" type="fix" dev="alewisohn" date="11/09/2010">Added Spring Actionscript Test Framework module.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="12/09/2010">Added static OrderedUtils class with a helper method for ordering arrays of IOrdered and normal instances.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="12/09/2010">Added the org.springextensions.actionscript.context.metadata.* package containing the Class scanning system.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="12/09/2010">Updated sourcemate metadata config file with [Component] metadata information.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="18/09/2010">Added stage wiring support for non-Flex application by introducing the FlashStageProcessorRegistry.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="19/09/2010">Introduced IStageDestroyer an extension of IStageProcessor that can be invoked when components are removed from the stage.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="19/09/2010">Added node parsers for the task namespace that provide shortcuts for adding LoadURL, LoadModule, LoadPropertiesBatch, LoadProperties, LoadResourceModule, LoadStyleModule and LoadURLStream operations to a task.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="21/09/2010">Added ObjectFactoryEvent.OBJECT_CREATED and ObjectFactoryEvent.OBJECT_RETRIEVED and made AbstractObjectFactory dispatch them (they are also sent through the EventBus).</action>
+  	<action system="jira" type="add" dev="rzwaga" date="21/09/2010">Added composite-command XML shortcut to the Task namespace handler.</action>
+  	<action system="jira" type="add" dev="rzwaga" date="06/10/2010">Added support for [Inject] metadata tag as an alias for [Autowired] to improve compatibility with other frameworks.</action>
+  </release>
+
+  <release version="1.0"  date="2010-08-28" description="Release of version 1.0">
+  	<action system="jira" type="fix" dev="rzwaga" date="27/08/2010">Autowiring by type didn't take a potential parent factory into account while searching for a candidate</action>
+  	<action system="jira" type="add" dev="rzwaga" date="16/08/2010">added org.springextensions.actionscript.core.operation.OperationHandler helper class for handling IOperation events</action>
+  	<action system="jira" type="add" dev="rzwaga" date="02/07/2010">added destroy-method for object definitions</action>
+  	<action system="jira" type="add" dev="rzwaga" date="20/06/2010">added IDisposable interface and made FlexXMLApplicationContext and several other framework classes implement it</action>
+  	<action system="jira" type="add" dev="rzwaga" date="20/06/2010">added IMetadataProcessor interface and corresponding metadata handling system</action>
+  	<action system="jira" type="add" dev="cherreman" date="10/06/2010">added ordered execution of object factory post processors</action>
+  	<action system="jira" type="add" dev="cherreman" date="1/06/2010">findAutowireCandidateNames() now also returns names of explicit singletons</action>
+  	<action system="jira" type="add" dev="cherreman" date="1/06/2010">added wiring of explicit singletons when pre-instantiating singletons</action>
+  	<action system="jira" type="add" dev="cherreman" date="27/05/2010">fixed issue with NamedUtil.createUniqueName</action>
+  	<action system="jira" type="add" dev="cherreman" date="20/05/2010" issue="104">added support for timeouts in operations</action>
+  	<action system="jira" type="add" dev="cherreman" date="20/05/2010">removed mvcs package</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/05/2010">SOSTarget now sends XML messages in CDATA</action>
+  	<action system="jira" type="add" dev="cherreman" date="29/04/2010" issue="103">added amf-channel, secure-amf-channel and secure-streaming-amf-channel</action>
+  	<action system="jira" type="add" dev="cherreman" date="23/04/2010">removed references to Entity and replaced by IEntity in EntityUtil</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/04/2010">fixed id getter in AbstractApplicationContext</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/04/2010" issue="94">added stage autowiring (thanks Malcolm)</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/04/2010" issue="101">contexts for modules are now properly unregistered (thanks Alain J.)</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/04/2010" issue="97">applied community patch to safely resolve mx and spark application parameters (thanks Jon Buffington)</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/04/2010" issue="98">result is now set before urlLoader is set to null in LoadURLOperation</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/04/2010" issue="99">references to constants are now properly resolved</action>
+  	<action system="jira" type="add" dev="cherreman" date="19/04/2010">added sources goal to generate sources jar file</action>
+  	<action system="jira" type="add" dev="cherreman" date="16/04/2010" issue="97">ApplicationPropertiesResolver now supports both mx and spark Application</action>
+  	<action system="jira" type="add" dev="cherreman" date="16/04/2010" issue="96">child components are now processed</action>
+  	<action system="jira" type="add" dev="cherreman" date="9/04/2010" issue="95">preventCache parameter is now available on PropertyPlaceHolderConfigurer</action>
+  	<action system="jira" type="add" dev="cherreman" date="7/04/2010">useWeakReference is now false by default in EventBus</action>
+  	<action system="jira" type="add" dev="cherreman" date="2/04/2010">DefaultAutowiringStageProcessor is now compiled in the swc</action>
+  	<action system="jira" type="add" dev="cherreman" date="2/04/2010">module policy is now default set to AUTOWIRE (was IGNORED)</action>
+  	<action system="jira" type="add" dev="cherreman" date="1/04/2010">forwarding of an error event is now delayed to prevent the queue from completing before an inner queue is complete in OperationQueue</action>
+  	<action system="jira" type="add" dev="cherreman" date="25/03/2010">added getter for applicationDomain in BaseObject</action>
+  	<action system="jira" type="add" dev="cherreman" date="25/03/2010">fixed parameters getter in AbstractRPC</action>
+  	<action system="jira" type="add" dev="rzwaga" date="07/03/2010">added Café Townsend MVC sample application</action>
+  	<action system="jira" type="add" dev="rzwaga" date="07/03/2010">added core.mvc.* package containing a metadata driven MVC micro-framework</action>
+  	<action system="jira" type="add" dev="cherreman" date="06/03/2010">added Café Townsend sample application</action>
+  	<action system="jira" type="add" dev="rzwaga" date="04/03/2010">added getObjectDefinitionsOfType(type:Class) method to IObjectDefinitionRegistry and implemented it in DefaultListableObjectFactory</action>
+  	<action system="jira" type="add" dev="rzwaga" date="13/04/2010">added unregisterContext() method to the IStageProcessorRegistry interface and an implementation of this to the FlexStageProcessorRegistry</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="04/03/2010" issue="90">fixed interface merging in case of multiple merged XML configurations</action>
+  </release>
+
+  <release version="1.0RC1" date="2010-03-01" description="Release of version 1.0 RC1">
+  	<action system="jira" type="fix" dev="rzwaga" issue="62" date="19/09/2009">fixed constructor-arg type attribute was not declared in spring-actionscript-objects-1.0.xsd</action>
+  	<action system="jira" type="add" dev="rzwaga" date="19/09/2009">added unregisterStageProcessor() method to the IStageProcessorRegistry interface</action>
+  	<action system="jira" type="add" dev="rzwaga" date="21/09/2009">added DefaultFlexAutowireProcessor that handles binding using the [Autowired(name="objectName",property="property.chain")] metadata</action>
+  	<action system="jira" type="add" dev="rzwaga" date="22/09/2009">added PureMVC documentation section</action>
+  	<action system="jira" type="add" dev="rzwaga" date="23/09/2009">added autowiring support for injecting external property values using [Autowired(externalProperty="propertyName")]</action>
+  	<action system="jira" type="add" dev="rzwaga" date="30/09/2009" issue="48">added parent context support to IObjectFactory interface and AbstractObjectFactory implementation</action>
+  	<action system="jira" type="add" dev="rzwaga" date="30/09/2009">added skip-postprocessor and skip-metadata support for ObjectDefinition</action>
+  	<action system="jira" type="add" dev="rzwaga" date="09/10/2009">added name and value attribute support to the property XML element, for defining external properties directly in the configuration instead of an external properties file</action>
+  	<action system="jira" type="add" dev="rzwaga" date="09/10/2009">added parent properties support to XMLObjectFactory</action>
+  	<action system="jira" type="add" dev="rzwaga" date="09/10/2009">added IStageProcessorRegistry interface and FlexStageProcessorRegistry implementation to support stage wiring in a multi-module situation (Thanks to Arnoud for helping debug this)</action>
+  	<action system="jira" type="add" dev="rzwaga" date="10/10/2009">added extra functionality to the CairngormFrontController that enables to add commands that are being created by the application context (basically using the context as a commandFactory)</action>
+  	<action system="jira" type="update" dev="rzwaga" date="18/10/2009">renamed SASCairngormEvent to SASCairngormModuleEvent</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="30/10/2009" issue="74">ObjectUtils no longer has a dependency on the Flex framework</action>
+  	<action system="jira" type="add" dev="cherreman" date="28/10/2009">added core.* package containing the Operation API</action>
+  	<action system="jira" type="add" dev="cherreman" date="10/11/2009">added core.event.* package containing the EventBus classes</action>
+  	<action system="jira" type="add" dev="cherreman" date="22/11/2009">added EventHandlerMetaDataPostProcessor for automatic handling of EventBus events</action>
+	<action system="jira" type="fix" dev="rzwaga" issue="84" date="04/12/2009">added parallel or sequencential execution to CompositeCommand class</action>
+	<action system="jira" type="add" dev="rzwaga" date="04/12/2009">added core.task.* package</action>
+	<action system="jira" type="add" dev="rzwaga" date="12/01/2010">added support for property chain retrieval in the FieldRetrievingObjectFactory, for example: Application.application.systemManager.stage can now be retrieved.</action>
+	<action system="jira" type="add" dev="cherreman" date="15/01/2010">added support for compound property names in XML config</action>
+	<action system="jira" type="add" dev="cherreman" date="19/01/2010" issue="86">added support for factory-object in AbstractObjectFactory</action>
+	<action system="jira" type="add" dev="rzwaga" date="19/01/2010">added TaskNamespaceHandler for core.task.* package</action>
+  	<action system="jira" type="add" dev="rzwaga" date="03/02/2010">added createInstance(clazz:Class, constructorArguments:Array = null) method to the IObjectFactory interface to enable a factory to create objects with only annotations and have no object definition.</action>
+	<action system="jira" type="add" dev="cherreman" date="8/02/2010">added operation and service for remoting via NetConnection</action>
+	<action system="jira" type="add" dev="rzwaga" date="12/02/2010" issue="67">added support for vector type in XML configuration.</action>
+  	<action system="jira" type="fix" dev="rzwaga" issue="41" date="12/02/2010">Allow adding mx.flash.Event items to EventSequence and facilitate custom trigger calculation. (Thanks Jurgen)</action>
+  	<action system="jira" type="fix" dev="rzwaga" issue="70" date="12/02/2010">Added modulePolicy of type ModulePolicy to FlexStageProcessorRegistry that determines how modules will be handled</action>
+  	<action system="jira" type="fix" dev="rzwaga" issue="69" date="12/02/2010">Minor documentation fixes. (Thanks Mark)</action>
+	<action system="jira" type="add" dev="rzwaga" date="14/02/2010">added RouteEventsMetaDataPostProcessor to re-route events from arbitrary objects through the EventBus</action>
+	<action system="jira" type="add" dev="rzwaga" date="19/02/2010">Added IApplicationDomainAware and ApplicationDomainAwarePostProcessor to automatically inject the context's application domain in objects that need a reference</action>
+	<action system="jira" type="add" dev="rzwaga" date="25/02/2010">Added MethodInvokingFactoryObject to be able to inject method results from other objects</action>
+	<action system="jira" type="add" dev="rzwaga" date="25/02/2010">Added util:invoke element as a configuration shortcut for the MethodInvokingFactoryObject</action>
+	<action system="jira" type="add" dev="rzwaga" date="26/02/2010">Added support for injecting the application context by using ref="this" in the configuration</action>
+	<action system="jira" type="add" dev="rzwaga" date="27/02/2010">Added Maven mojo to generate a flex-config file from an application context (Thanks Ryan)</action>
+   </release>
+
+  <release version="0.8.1" date="2009-09-14" description="Release of version 0.8.1">
+	<action system="jira" type="fix" dev="cherreman" issue="60" date="28/07/2009">fixed recursive resolve of properties</action>
+	<action system="jira" type="add" dev="rzwaga" date="27/07/2009">added module support to CairngormFrontController</action>
+	<action system="jira" type="fix" dev="cherreman" issue="49" date="31/07/2009">fixed parsing of empty value nodes</action>
+	<action system="jira" type="fix" dev="cherreman" issue="50" date="31/07/2009">fixed imports</action>
+  	<action system="jira" type="fix" dev="rzwaga" date="31/07/2009" issue="52">fixed error in example code in the documentation</action>
+	<action system="jira" type="fix" dev="rzwaga" date="31/07/2009" issue="51">fixed Flex dependency in XMLObjectFactory</action>
+	<action system="jira" type="fix" dev="rzwaga" date="31/07/2009" issue="57">fixed autowiring stage components in modules that are loaded in a different applicationDomain</action>
+	<action system="jira" type="add" dev="rzwaga" date="20/08/2009">added IStageProcessor and IStageProcessorRegistry interfaces in org.springextensions.actionscript.stage package</action>
+	<action system="jira" type="add" dev="rzwaga" date="20/08/2009">refactored the stage autowiring into separate IStageProcessor implementation called DefaultAutowiringStageProcessor</action>
+	<action system="jira" type="add" dev="rzwaga" date="27/08/2009">stage components are now autowired only once by default, can be optionally turned off in DefaultAutowiringStageProcessor by setting the autowireOnce property to false.</action>
+	<action system="jira" type="update" dev="rzwaga" date="21/08/2009">renamed stage interception schema to stage processing schema</action>
+	<action system="jira" type="add" dev="rzwaga" date="24/08/2009">added org.springextensions.actionscript.localization package and corresponding sample application</action>
+	<action system="jira" type="add" dev="rzwaga" date="28/08/2009">added org.springextensions.actionscript.security package and corresponding sample application</action>
+	<action system="jira" type="update" dev="rzwaga" date="27/08/2009">moved the IObjectSelector interface to org.springextensions.actionscript.stage package</action>
+	<action system="jira" type="fix" dev="rzwaga" date="02/09/2009" issue="59">inner singleton objects are now automatically marked as lazy-init</action>
+	<action system="jira" type="add" dev="rzwaga" date="03/09/2009">added support for interface definitions, both in XML and MXML configurations</action>
+	<action system="jira" type="fix" dev="rzwaga" date="04/09/2009" issue="61">autowire byType now also works for objects created by an IFactoryObject</action>
+	<action system="jira" type="fix" dev="rzwaga" date="07/09/2009" issue="29">fixed random suffix on property file URL is now optional, use prevent-cache=false on the import tag (is true by default)</action>
+	<action system="jira" type="fix" dev="cherreman" date="09/09/2009" issue="43">changed implementation of method-invocation elements</action>
+	<action system="jira" type="update" dev="rzwaga" date="11/09/2009">changed implementation of MethodInvocations in MXML support to match the new implementation</action>
+	<action system="jira" type="add" dev="rzwaga" date="12/09/2009">added stagewiring sample application</action>
+  </release>
+
+  <release version="0.8" date="2009-07-16" description="Release of version 0.8">
+	<action system="jira" type="add">new website at www.springactionscript.org</action>
+	<action system="jira" type="add">factored out common functionality into the AS3Commons projects (www.as3commons.org)</action>
+	<action system="jira" type="add">major update to the documentation</action>
+	<action system="jira" type="add">added autowire support</action>
+	<action system="jira" type="add">added custom namespace handler support</action>
+	<action system="jira" type="add">restructured subversion repository</action>
+	<action system="jira" type="add">updated samples</action>
+	<action system="jira" type="add">various performance improvements</action>
+	<action system="jira" type="add">added IDataTranslator and IDataTranslatorAware interfaces</action>
+	<action system="jira" type="add">added AbstractDataTranslatorAwareBusinessDelegate base class</action>
+	<action system="jira" type="add" issue="47">added 'batch command' support to CairngormFrontController</action>
+	<action system="jira" type="add">added entire package for MXML support for application contexts</action>
+	<action system="jira" type="remove">moved Enum to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved ICloneable to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved IEquals to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved IllegalArgumentError to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved IllegalStateError to AS3Commons-Lang</action>
+	<action system="jira" type="remove">removed RuntimeError</action>
+	<action system="jira" type="add">added "factoryObjectName" property to IObjectDefinition and ObjectDefinition</action>
+	<action system="jira" type="add">added ObjectDefinitionStoreError</action>
+	<action system="jira" type="add">added StageComponentInterceptionPostProcessor</action>
+	<action system="jira" type="fix">fixed e4x query to select nodes with Required metadata in RequiredMetadataObjectPostProcessor</action>
+	<action system="jira" type="update">changed "getObject" and "getObjectType" so we can also return Function references from methods in FieldRetrievingFactoryObject</action>
+	<action system="jira" type="add">added "getObjectDefinition" in IConfigurableListableObjectFactory</action>
+	<action system="jira" type="add">added ApplicationPropertiesResolver</action>
+	<action system="jira" type="remove">removed "allowObjectDefinitionOverriding" getter and setter from IObjectDefinitionRegistry</action>
+	<action system="jira" type="add">added error is now thrown when overriding an object definition while it is not allowed in DefaultListableObjectFactory</action>
+	<action system="jira" type="add">added support for retrieving factory objects and autowiring in AbstractObjectFactory</action>
+	<action system="jira" type="add">added ObjectDefinitionBuilder</action>
+	<action system="jira" type="fix">fixed bug with caching of factory objects in AbstractObjectFactory</action>
+	<action system="jira" type="add">added StageInterceptionNamespaceHandler</action>
+	<action system="jira" type="add">added spring-actionscript-stageinterception-1.0.xsd</action>
+	<action system="jira" type="add">added spring_actionscript_stageinterception namespace</action>
+	<action system="jira" type="add">added RPCNamespaceHandler</action>
+	<action system="jira" type="add">added spring-actionscript-rpc-1.0.xsd</action>
+	<action system="jira" type="add">added spring_actionscript_rpc namespace</action>
+	<action system="jira" type="add">added UtilNamespaceHandler</action>
+	<action system="jira" type="add">added spring-actionscript-util-1.0.xsd</action>
+	<action system="jira" type="add">added spring_actionscript_util namespace</action>
+	<action system="jira" type="add">added MessagingNamespaceHandler</action>
+	<action system="jira" type="add">added spring-actionscript-messaging-1.0.xsd</action>
+	<action system="jira" type="add">added spring_actionscript_messaging namespace</action>
+	<action system="jira" type="add">added "resolveID" to AbstractObjectDefinitionParser method that allow object name lookup and generation</action>
+	<action system="jira" type="fix">fixed XMLObjectDefinitionsParser so that abstract definitions are no longer parsed</action>
+	<action system="jira" type="fix">fixed XMLObjectDefinitionsParser to support nested custom nodes</action>
+	<action system="jira" type="fix">fixed ObjectNodeParser to support nested custom nodes</action>
+	<action system="jira" type="add">added StageInterceptorNodeParser</action>
+	<action system="jira" type="fix">fixed parent properties not being overridden by child properties in ParentAttributePreprocessor</action>
+	<action system="jira" type="fix">fixed bug with properties replacement</action>
+	<action system="jira" type="remove">removed AbstractService</action>
+	<action system="jira" type="add">added IApplicationController</action>
+	<action system="jira" type="add">added AbstractApplicationController</action>
+	<action system="jira" type="add">added ApplicationEvent</action>
+	<action system="jira" type="add">added ApplicationEventDispatcher</action>
+	<action system="jira" type="add">added IApplicationEventListener</action>
+	<action system="jira" type="add">added ApplicationUtils</action>
+	<action system="jira" type="remove">moved ArrayUtils to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved Assert to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved DictionaryUtils to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved ObjectUtils to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved StringUtils to AS3Commons-Lang</action>
+	<action system="jira" type="remove">moved XMLUtils to AS3Commons-Lang</action>
+	<action system="jira" type="remove">removed TypedProxy</action>
+	<action system="jira" type="add">added object-definition-parser-builder sample project</action>
+    </release>
+
+    <release version="0.7.1" date="2009-05-02" description="Release of version 0.7.1">
+	<action system="jira" type="add">added random suffix to urlrequest in Properties to avoid caching</action>
+	<action system="jira" type="add">added INamed interface</action>
+	<action system="jira" type="add">added NamedEntity class</action>
+	<action system="jira" type="add">added NamedUtil class</action>
+	<action system="jira" type="remove">removed ClassNotFoundError since this is now part of AS3Reflect</action>
+	<action system="jira" type="fix">fixed object creation with circular references in AbstractObjectFactory</action>
+	<action system="jira" type="fix">fixed lookup of import nodes in XMLObjectFactory</action>
+	<action system="jira" type="add">added "Assert.isTrue"</action>
+    </release>
+
+    <release version="0.7" date="2009-01-20" description="Release of version 0.7">
+	<action system="jira" type="add">Prana Framework is now Spring ActionScript</action>
+	<action system="jira" type="add">Reflection API is now a separate project (as3reflect: http://code.google.com/p/as3reflect/)</action>
+	<action system="jira" type="add">Cairngorm and PureMVC extensions removed from the core framework sources</action>
+	<action system="jira" type="add">added support for parent objects in XML config</action>
+	<action system="jira" type="add">added support for depends-on attribute in XML config</action>
+	<action system="jira" type="add">fixed issues with object factory post processors</action>
+	<action system="jira" type="add">added Maven build file</action>
+	<action system="jira" type="add">introduced experimental MVCS framework</action>
+	<action system="jira" type="add">added PropertiesParser</action>
+	<action system="jira" type="update">refactored loader complete event to use PropertiesParser in Properties</action>
+	<action system="jira" type="add">added remove methods in EntityCollection</action>
+	<action system="jira" type="add">added auto-registration and invocation of object factory post processors</action>
+	<action system="jira" type="add">added "XMLApplicationContext.invokeObjectFactoryPostProcessor" method</action>
+	<action system="jira" type="update">renamed  ValueObject to BaseObject</action>
+	<action system="jira" type="add">added ICloneable, ICopyFrom, IEquals interfaces</action>
+	<action system="jira" type="remove">removed  IValueObject interface</action>
+	<action system="jira" type="add">added check for simple objects in "BaseObject.cloneField" method</action>
+	<action system="jira" type="fix">fixed "BaseObject.copyFrom" method to also copy variables</action>
+	<action system="jira" type="fix">fixed "BaseObject.copyFrom" so that it is no longer allowed if the other object is the same instance</action>
+	<action system="jira" type="fix">fixed "BaseObject.clonePropertyValue", enums should not be cloned</action>
+	<action system="jira" type="update">"BaseObject.doEquals()" now check for IEquals implementations</action>
+	<action system="jira" type="add">added support for &lt;null/&gt; nodes</action>
+	<action system="jira" type="add">added LogEvent</action>
+	<action system="jira" type="add">added CustomEditorConfigurer</action>
+	<action system="jira" type="add">added LoggingTargetObjectPostProcessor for auto registration of ILoggingTarget objects</action>
+	<action system="jira" type="fix">fixed assertion in AbstractObjectFactory</action>
+	<action system="jira" type="update">changed logging of pre-instantiated singletons in DefaultListableObjectFactory</action>
+	<action system="jira" type="fix">fixed "getObjectNamesForType" and "getObjectsOfType", did not check correctly for matching objects in DefaultListableObjectFactory</action>
+	<action system="jira" type="update">refactored property assignment to handle custom editor configurers in AbstractObjectFactory</action>
+	<action system="jira" type="update">"AbstractObjectFactory.resolveReference" now return null if passed in property is null</action>
+	<action system="jira" type="add">added "addEmbeddedConfig" method to XMLObjectFactory for embedded XML config</action>
+	<action system="jira" type="update">"XMLObjectFactory.load" method now throws an IllegalStateError when loading a context without config locations or XML</action>
+	<action system="jira" type="update">made "parser" property public in XMLObjectFactory to allow registration of xml preprocessors through application context</action>
+	<action system="jira" type="update">changed order of preprocessors in XMLObjectDefinitionsParser so that id preprocessor is first</action>
+	<action system="jira" type="add">added NullNodeParser</action>
+	<action system="jira" type="add">added ParentAttributePreprocessor</action>
+	<action system="jira" type="fix">fixed id assignment of MethodInvokingObject objects in MethodInvocationPreprocessors</action>
+	<action system="jira" type="update">"singleton" attribute is now removed after prepocessing in ScopeAttributePreprocessor</action>
+	<action system="jira" type="remove">removed  xml serializer because it is no longer supported</action>
+	<action system="jira" type="add">added experimental package for MVCS support</action>
+	<action system="jira" type="update">updated to PureMVC Standard v2.0.4</action>
+	<action system="jira" type="remove">automatic initialization of IoC facade is dropped. Immediately after construction IocFacade doesn't support IoC features any more (only standard PureMVC features are available). To enable IoC features one must invoke initializeIocContainer() method. Please look for examples in "PranaSampleAnotherArch101Demo.mxml".</action>
+	<action system="jira" type="add">IocFacade.addConfigSource() method is added. It enables specification of configuration sources for new IocFacade instances in XML, String and Array of strings formats. To be effective, method must be called before invoking of initializeIocContainer() method. Please look for examples in "PranaSampleAnotherArch101Demo.mxml". Addition of this  method also enables support for embedded configurations as shown in examples.</action>
+	<action system="jira" type="fix">fixed bug with command names map which was not initialized properly during explicit ioc facade initialization.</action>
+	<action system="jira" type="add">added "StringUtils.tokenizeToArray" method</action>
+	<action system="jira" type="add">added "StringUtils.isWhiteSpace" method</action>
+	<action system="jira" type="add">added "StringUtils.isDigit" method</action>
+	<action system="jira" type="add">added "StringUtils.naturalCompare" method</action>
+	<action system="jira" type="add">added ArrayCollectionUtils</action>
+	<action system="jira" type="add">added MultilineString</action>
+	<action system="jira" type="fix">fixed "XMLUtils.convertAttributeToNode" to support FP10 (possible bug in playerglobal.swc)</action>
+	<action system="jira" type="add">added "ArrayUtils.getItemsByType" method</action>
+	<action system="jira" type="add">added "StringUtils.removeChars" method</action>
+	<action system="jira" type="add">added "StringUtils.replaceChars" method</action>
+	<action system="jira" type="add">added "StringUtils.nthIndexOf" method</action>
+	<action system="jira" type="update">"StringUtils.hasText" now returns false if an invalid string is passed</action>
+	<action system="jira" type="remove">removed "ObjectUtils.getClassInfo" method: had Flex dependency and was not used in the framework anyway</action>
+    </release>
+
+    <release version="0.6" date="2008-07-03" description="Release of version 0.6">
+	<action system="jira" type="update">major refactoring of the IoC container, parser and application context to remove dependencies on the Flex framework classes. For ActionScript only projects use the XMLApplicationContext, for Flex/AIR projects use the FlexXMLApplicationContext.</action>
+	<action system="jira" type="add">added new prana/puremvc integration sample - "prana-sample-anotherArch101Demo". Description of new features is given in "prana-sample-anotherArch101Demo/resources/docs/pranaPureMvcIntegration-FurtherDevelopment.txt" document.</action>
+	<action system="jira" type="update">object postprocessors are now automatically instantiated when placed in XML context</action>
+	<action system="jira" type="add">introduced reference resolvers to handle references in application contexts</action>
+	<action system="jira" type="add">introduced node parsers to allow extensibility of the application context parser</action>
+	<action system="jira" type="add">introduced property editors</action>
+	<action system="jira" type="update">refactored package layout</action>
+	<action system="jira" type="add">added abstract business delegate</action>
+	<action system="jira" type="add">added support for command factories in frontcontroller</action>
+	<action system="jira" type="add">introduced domain package for base domain objects</action>
+	<action system="jira" type="add">added Entity, Enum, ValueObject</action>
+	<action system="jira" type="add">added "FlexUnitTestCase.assertLength"</action>
+	<action system="jira" type="add">added "FlexUnitTestCase.assertArrayContains"</action>
+	<action system="jira" type="update">"ObjectDefinitionScope.fromName" now returns SINGLETON if scope was not found</action>
+	<action system="jira" type="update">AbstractObjectFactory now uses configurable reference resolvers</action>
+	<action system="jira" type="add">added FlexXMLApplicationContext</action>
+	<action system="jira" type="fix">fixed object creation from static factory method (arguments were not passed)</action>
+	<action system="jira" type="fix">fixed bug in XML merging from imports</action>
+	<action system="jira" type="update">refactored XSD to use group for subtypes</action>
+	<action system="jira" type="add">added support for "import" tag in XMLObjectFactory</action>
+	<action system="jira" type="add">added MethodInvocationPreprocessor that handles "method-invocation" elements</action>
+	<action system="jira" type="fix">fixed replacement of template parameters in TemplatePreprocessor</action>
+	<action system="jira" type="add">added property editors</action>
+	<action system="jira" type="add">added IIocConfigNameAware and IocConfigNameAwarePostProcessors. This addition enables much more natural usage of configured pure mvc elements (proxies, mediators, commands) in prana/puremvc integration.</action>
+	<action system="jira" type="update">IocProxy, IocMediator, IocSimpleCommand, IocMacroCommand and IocFacade are now extended from theirs puremvc counterparts. Usage patterns are same as before. Classes extended from IocProxy, IocMediator, IocSimpleCommand and IocMacroCommand are now fully compatible with typical "pure" PureMVC applications and can be used there without modification if they are not using IoC specific API.</action>
+	<action system="jira" type="add">added IocManagedMacroCommand</action>
+	<action system="jira" type="remove">removed methods retrieveProxyByConfigName(), removeProxyByConfigName(), removeMediatorByConfigName() and retrieveMediatorByConfigName() from IIocFacade and its corresponding default IocFacade implementation. Instead of these methods, "standard" PureMvc method implementations (retrieveProxy(), removeProxy(), retrieveMediator() and removeMediator()) in IocFacade should be used.</action>
+	<action system="jira" type="update">IocFacade can now be constructed without configSource parameter. Now initializeIocContainer() method can be used for IoC container initialization after construction. This can be very useful in scenarios when application needs a control over GUI before IoC container can be initialized. For example, during application startup, when application wants to bring some kind of splash screen or something, controlled by PureMVC elements.</action>
+	<action system="jira" type="update">replaced Map with Object for cache implementation in Type</action>
+	<action system="jira" type="add">added IInvocationHandler to handle invocations on a proxy</action>
+	<action system="jira" type="add">added "Assert.arrayContains"</action>
+	<action system="jira" type="update">renamed "ClassUtils.getParentClasss" to "ClassUtils.getSuperClass"</action>
+	<action system="jira" type="add">added "ClassUtils.getName"</action>
+	<action system="jira" type="add">added "ClassUtils.getNameFromFullyQualifiedName"</action>
+	<action system="jira" type="add">added "ClassUtils.getSuperClassName"</action>
+	<action system="jira" type="add">added "ClassUtils.getFullyQualifiedSuperClassName"</action>
+	<action system="jira" type="add">added "ClassUtils.getImplementedInterfaceNames"</action>
+	<action system="jira" type="add">added "ClassUtils.getFullyQualifiedImplementedInterfaceNames"</action>
+	<action system="jira" type="add">added "ClassUtils.getImplementedInterfaces"</action>
+	<action system="jira" type="add">added "ClassUtils.convertFullyQualifiedName"</action>
+	<action system="jira" type="add">added "ObjectUtils.getNumProperties"</action>
+	<action system="jira" type="add">added "ObjectUtils.getKeys"</action>
+	<action system="jira" type="add">added "DictionaryUtils.getKeys"</action>
+    </release>
+
+    <release version="0.5" date="2008-04-21" description="Release of version 0.5">
+	<action system="jira" type="update">improved documentation</action>
+	<action system="jira" type="add">added support for loading property files in application context</action>
+	<action system="jira" type="remove">removed modified Cairngorm Store by Renaun Erickson</action>
+	<action system="jira" type="add">added updated Cairngorm Store that uses AMF3 and Mock data</action>
+	<action system="jira" type="update">prana-sample-puremvcArch101Demo updated to match PureMVC 2.0.3 related change (thanks to Ryan Gardner for supplying a patch)</action>
+	<action system="jira" type="update">project layout refactored for all Prana's projects</action>
+	<action system="jira" type="add">build system added and refactored for all Prana's projects</action>
+	<action system="jira" type="add">prana-install project introduced to ease configuration of Prana's projects for Eclipse/Flex Builder and Ant environments</action>
+	<action system="jira" type="add">prana-tools project added with initial version of template based project creation tool</action>
+	<action system="jira" type="add">"sample" template added in prana-tools</action>
+	<action system="jira" type="update">prana-tools-internal project added to host internal utilities (i.e. release build script)</action>
+	<action system="jira" type="add">XSD is now available for xml object definition files - http://www.pranaframework.org/schema/objects/prana-objects-0.5.xsd</action>
+	<action system="jira" type="add">added namespace support for xml object definition files</action>
+	<action system="jira" type="add">introduced Application Context concept as an XMLObjectFactory extension</action>
+	<action system="jira" type="fix">fixed changewatcher for property chain in EventSequence (thx Tony Hillerson)</action>
+	<action system="jira" type="update">"responder" property now has a public setter</action>
+	<action system="jira" type="add">added IResponderAware that defines a "responder" setter</action>
+	<action system="jira" type="update">made the responder argument optional in AbstractRemoteObjectDelegate</action>
+	<action system="jira" type="update">changed order of constructor arguments AbstractRemoteObjectDelegate</action>
+	<action system="jira" type="add">added Properties</action>
+	<action system="jira" type="add">added IApplicationContext</action>
+	<action system="jira" type="add">added IApplicationContextAware</action>
+	<action system="jira" type="add">added IConfigurableApplicationContext</action>
+	<action system="jira" type="add">added ApplicationContextAwareProcessor</action>
+	<action system="jira" type="add">added XMLApplicationContext</action>
+	<action system="jira" type="add">XmlObjectDefinitionsLoader handles loading of property files</action>
+	<action system="jira" type="add">added IConfigurableListableObjectFactory</action>
+	<action system="jira" type="add">added IConfigurableObjectFactory</action>
+	<action system="jira" type="add">added IObjectFactoryPostProcessor</action>
+	<action system="jira" type="update">replaced ObjectFactory with AbstractObjectFactory</action>
+	<action system="jira" type="update">"parse" method in XmlObjectDefinitionsParser now gets an optional Properties collection</action>
+	<action system="jira" type="fix">fixed parsing of inline Dictionary entries</action>
+	<action system="jira" type="add">added PropertiesPreprocessor to apply properties to object definitions</action>
+	<action system="jira" type="add">added DictionaryUtils for working with Dictionary objects</action>
+	<action system="jira" type="add">added PropertiesUtils for working with Properties objects</action>
+	<action system="jira" type="add">added XMLUtils for working with XML objects</action>
+	<action system="jira" type="add">added "ObjectUtils.getClassInfo" which is the same as ObjectUtil.getClassInfo() in the Flex framework but adds support for primitive types</action>
+	<action system="jira" type="fix">fixed "ObjectUtils.forInstance" to support primitive types</action>
+	<action system="jira" type="add">added support for Application Domains in "ClassUtils.forName" and "ClassUtils.forInstance"</action>
+	<action system="jira" type="update">updated dependencies to PureMVC 2.0.3 (thanks to Ryan Gardner for supplying a patch)</action>
+	<action system="jira" type="update">support for multiple configuration files added in PureMvc integration</action>
+    </release>
+
+    <release version="0.4" date="2008-01-26" description="Release of version 0.4">
+	<action system="jira" type="update">introduction of PureMVC support</action>
+	<action system="jira" type="add">added PureMVC sample application</action>
+	<action system="jira" type="add">nightly builds available at http://prana.herrodius.com</action>
+	<action system="jira" type="fix">fixed config.xsl to ignore _svn folders</action>
+	<action system="jira" type="fix">fixed early dispatching of events in EventSequence</action>
+	<action system="jira" type="add">added "remove" method to IMap and Map</action>
+	<action system="jira" type="update">changed "size" and "values" methods to getters</action>
+	<action system="jira" type="update">Map now extends Dictionary instead of Proxy</action>
+	<action system="jira" type="update">AppSettings now extends Proxy instead of Map</action>
+	<action system="jira" type="add">added check for valid IList before creating cursor</action>
+	<action system="jira" type="add">added "isLazyInit" and "initMethod" properties to IObjectDefinition and ObjectDefinition</action>
+	<action system="jira" type="add">added support for init method in ObjectContainer</action>
+	<action system="jira" type="add">added "removeObjectFromInternalCache" method</action>
+	<action system="jira" type="update">enhancements to "getObject"</action>
+	<action system="jira" type="add">added post processing capabilities to ObjectContainer</action>
+	<action system="jira" type="add">added IObjectContainerAware</action>
+	<action system="jira" type="add">added ObjectContainerAwarePostProcessor</action>
+	<action system="jira" type="add">added LoggingTargetFactoryObject</action>
+	<action system="jira" type="add">added support for lazy init and init method in XmlObjectDefinitionsParser</action>
+	<action system="jira" type="fix">fixed "parseProperties" because of Map refactoring, keys were not strings in XmlObjectDefinitionsParser</action>
+	<action system="jira" type="add">initial release of org.pranaframework.puremvc package</action>
+	<action system="jira" type="add">added Parse port from the Fit framework</action>
+	<action system="jira" type="add">added HtmlUtils utility methods for working with html</action>
+	<action system="jira" type="add">added "isExplicitInstanceOf" method to ObjectUtils</action>
+    </release>
+
+    <release version="0.3.1" date="2007-12-26" description="Release of version 0.3.1">
+	<action system="jira" type="update">improved documentation</action>
+	<action system="jira" type="update">build file now handles releases</action>
+	<action system="jira" type="update">IMap and Map now have "get" and "put" methods to support data binding</action>
+	<action system="jira" type="update">IMap now implements ICollectionView</action>
+	<action system="jira" type="add">added MapViewCursor</action>
+	<action system="jira" type="remove">AppSettings no longer implements IEventDispatcher because Map now does</action>
+	<action system="jira" type="add">added support for factory objects in ObjectContainer through IFactoryObject interface</action>
+	<action system="jira" type="add">added ObjectDefinitionScope enum</action>
+	<action system="jira" type="update">IObjectDefinition now has "scope" getter and setter</action>
+	<action system="jira" type="add">added "scope" getter and setter to ObjectDefinition</action>
+	<action system="jira" type="update">"isSingleton" in ObjectDefinition now alters scope property instead of having a private member</action>
+	<action system="jira" type="update">ObjectContainer.getObject() is now able to return singleton or prototype objects</action>
+	<action system="jira" type="add">added "isSingleton" getter to IFactoryObject</action>
+	<action system="jira" type="add">added AbstractFactoryObject base class for factory objects</action>
+	<action system="jira" type="add">added RandomNumberFactoryObject to return random numbers</action>
+	<action system="jira" type="add">added FieldRetrievingFactoryObject to retrieve static or non-static fields from an object</action>
+	<action system="jira" type="add">added scopeAttributePreprocessor to XmlObjectDefintionsParser to set up scope attributes on object definitions</action>
+	<action system="jira" type="add">added singleton and scope attributes to Constants</action>
+	<action system="jira" type="add">added Field as a base class for all fields</action>
+	<action system="jira" type="update">Accessor now extends Field instead of AbstractMember</action>
+	<action system="jira" type="update">Constant now extends Field instead of AbstractMember</action>
+	<action system="jira" type="update">Type now extends Field instead of AbstractMember</action>
+	<action system="jira" type="update">Variable now extends Field instead of AbstractMember</action>
+	<action system="jira" type="update">TypeConverter.execute() can now return a class</action>
+    </release>
+
+    <release version="0.3" date="2007-11-24" description="Release of version 0.3">
+	<action system="jira" type="add">added Movie sample application based on article by Martin Fowler</action>
+	<action system="jira" type="update">improved documentation</action>
+	<action system="jira" type="update">moved Cairngorm related classes to org.pranaframework.cairngorm</action>
+	<action system="jira" type="update">Cairngorm Store sample now has different configuration of service locator</action>
+	<action system="jira" type="add">added support for event sequencing</action>
+	<action system="jira" type="update">CairngormFrontController now checks for commands implementing the ICommands interface</action>
+	<action system="jira" type="add">implementation of CairngormServiceLocator</action>
+	<action system="jira" type="add">added ClassNotFoundError for retrieving a class by name when class was not found</action>
+	<action system="jira" type="add">added serializer to create an application context from an object</action>
+	<action system="jira" type="add">added support for initializing object with IInitializingObject</action>
+	<action system="jira" type="add">added support for templates in application context</action>
+	<action system="jira" type="add">added support for &lt;map&gt; definitions, parsed to Dictionary</action>
+	<action system="jira" type="add">added support for &lt;list&gt; definitions, parsed to ArrayList</action>
+	<action system="jira" type="update">made container spring context compliant</action>
+	<action system="jira" type="update">improved error handling when creating object from object definitions</action>
+	<action system="jira" type="update">rewrote preprocessing of xml application context, now using chain of preprocessors</action>
+	<action system="jira" type="fix">fixed creation of object without id, id is now auto generated</action>
+	<action system="jira" type="fix">fixed order for object definitions so that they no longer need to be chronological</action>
+	<action system="jira" type="add">added metadata introspection</action>
+	<action system="jira" type="add">added "getFullName" method to Method class</action>
+	<action system="jira" type="update">changed arguments in "invoke" method from ... to array</action>
+	<action system="jira" type="add">added "forName" method in ClassUtils for retrieving Class objects via class names</action>
+	<action system="jira" type="add">added "getParentClass" method in ClassUtils that returns the parent class of a given class</action>
+	<action system="jira" type="add">added "isSubclassOf" method in ClassUtils that returns if a class extends another class</action>
+	<action system="jira" type="add">added StringUtils</action>
+	<action system="jira" type="add">added DisplayObjectContainerUtils</action>
+	<action system="jira" type="add">added MethodInvoker to support initializing objects from application context</action>
+	<action system="jira" type="add">added "state" method to Assert class</action>
+	<action system="jira" type="update">changed TypeConverter so that it can return Class objects</action>
+    </release>
+
+    <release version="0.2" date="2007-04-26" description="Release of version 0.2">
+	<action system="jira" type="update">changed general classpath from be.indiegroup.prana to org.pranaframework</action>
+	<action system="jira" type="add">added first implementation of a Reflection API</action>
+	<action system="jira" type="update">improved documentation</action>
+	<action system="jira" type="add">added XMLSocketEvent with eventname enum</action>
+	<action system="jira" type="add">added SOSTarget for SOS console logging</action>
+	<action system="jira" type="add">first implementation of the org.pranaframework.reflection package</action>
+	<action system="jira" type="add">added ClassUtils which provides general utilities for working with Class objects</action>
+    </release>
+
+    <release version="0.1.1" date="2007-04-10" description="Release of version 0.1.1">
+	<action system="jira" type="update">improved documentation</action>
+	<action system="jira" type="add">added IFactoryObject interface</action>
+	<action system="jira" type="add">added AbstractFactoryObject class</action>
+	<action system="jira" type="add">added CairngormFrontController</action>
+    </release>
+
+    <release version="0.1" date="2007-04-08" description="Release of version 0.1">
+    	<action system="jira" type="add">initial release: basic implementation of an Inversion of Control (IoC) container</action>
+    </release>
+
+  </body>
+</document>

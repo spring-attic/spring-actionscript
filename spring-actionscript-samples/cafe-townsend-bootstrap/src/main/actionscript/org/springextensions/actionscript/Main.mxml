@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:sas="http://www.springactionscript.org/mxml/config"
+			   backgroundColor="#000000"
+			   preinitialize="application1_preinitializeHandler(event)"
+			   viewSourceURL="srcview/index.html">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+
+			import org.as3commons.logging.api.LOGGER_FACTORY;
+			import org.as3commons.logging.setup.SimpleTargetSetup;
+			import org.as3commons.logging.setup.target.TraceTarget;
+			import org.springextensions.actionscript.configuration.AppConfig;
+			import org.springextensions.actionscript.context.config.impl.FullConfigurationPackage;
+			import org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext;
+
+			protected function application1_preinitializeHandler(event:FlexEvent):void {
+				LOGGER_FACTORY.setup = new SimpleTargetSetup(new TraceTarget());
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<sas:MXMLApplicationContext configurations="{[AppConfig]}"
+									configurationPackage="{new FullConfigurationPackage()}"
+									id="MXMLContext"
+									autoLoad="true"/>
+	</fx:Declarations>
+	<s:VGroup id="mainContainer"
+			  width="100%"
+			  height="100%"/>
+</s:Application>

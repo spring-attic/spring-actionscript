@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:view="org.springextensions.actionscript.samples.cafetownsend.presentation.*"
+		 implements="org.springextensions.actionscript.samples.cafetownsend.ITownsendView">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+
+			import org.as3commons.reflect.Type;
+
+			public function handleLoginSuccess():void {
+				mainStack.selectedIndex = 1;
+			}
+
+			public function handleLogoutSuccess():void {
+				loginView.clear();
+				mainStack.selectedIndex = 0;
+			}
+
+			protected function loader_creationCompleteHandler(event:FlexEvent):void {
+				loader.applicationDomain = Type.currentApplicationDomain;
+				loader.url = "org/springextensions/actionscript/modules/ApplicationModule.swf";
+			}
+
+			protected function mainStack_creationCompleteHandler(event:FlexEvent):void {
+				mainStack.selectedIndex = 0;
+			}
+		]]>
+	</mx:Script>
+	<mx:Image source="assets/header.jpg"
+			  width="700"/>
+	<mx:HBox paddingBottom="10"
+			 paddingLeft="10"
+			 paddingRight="10"
+			 paddingTop="10"
+			 backgroundColor="#ffffff"
+			 width="700">
+		<mx:VBox width="100%"
+				 verticalScrollPolicy="off"
+				 paddingRight="10">
+			<mx:ViewStack id="mainStack"
+						  width="100%"
+						  paddingBottom="10"
+						  paddingTop="10"
+						  resizeToContent="true"
+						  creationComplete="mainStack_creationCompleteHandler(event)">
+				<view:EmployeeLogin id="loginView"/>
+				<mx:ModuleLoader id="loader"
+								 width="100%"
+								 height="100%"
+								 creationComplete="loader_creationCompleteHandler(event)"/>
+			</mx:ViewStack>
+		</mx:VBox>
+	</mx:HBox>
+
+</mx:VBox>

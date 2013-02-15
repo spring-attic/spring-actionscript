@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter version="5.0" xml:id="getting-started" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1999/xhtml"
+	xmlns:ns4="http://www.w3.org/1998/Math/MathML" xmlns:ns3="http://www.w3.org/2000/svg">
+	<title>Getting started</title>
+
+	<sect1 xml:id="installing-spring-actionscript">
+		<title>Installing Spring Actionscript</title>
+		<para>To start using Spring Actionscript in your project you will need to download either the
+			all-in-one swc or the archive with all of the separate extensions:</para>
+		<para>
+			<literal
+				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-2.0-distribution.zip"
+				xlink:title="Spring Actionscript v2.0 Core Package">Spring Actionscript Core</literal>
+		</para>
+		<para>
+			<literal
+				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-2.0-distribution-with-dependencies.zip"
+				xlink:title="Spring Actionscript v2.0 Core Package including dependencies">Spring
+				Actionscript Core with dependencies</literal>
+		</para>
+		<para>If you want to use the Flex specific functionality you will need to additionally download
+			this .swc as well:</para>
+		<para>
+			<literal
+				xlink:href="http://beta.springactionscript.org/downloads/spring-actionscript-flex-2.0.zip"
+				xlink:title="Spring Actionscript 2.0 Flex Extensions">Spring Actionscript Flex
+				Extensions</literal>
+		</para>
+		<para>One you've downloaded them place them in your project's library path. In a Flashbuilder
+			project, for instance, this simply means you need to copy them into your 'libs' folder.</para>
+
+	</sect1>
+
+	<sect1 xml:id="creating-an-application-context">
+		<title>Creating an Application Context</title>
+		<para>The main entry point for the Spring Actionscript library is the application context. There
+			are a number of different context flavours, but for now we'll use the <literal>MXMLApplicationContext</literal> as this is probably the most commonly used one.</para>
+		<para>Obviously the <literal>MXMLApplicationContext</literal> can only be used in a Flex based
+			application, in a pure actionscript environment you can choose any of the other availabe
+				'<literal linkend="configuration-types">Configuration types</literal>'.</para>
+		<para>To create an instance of the <literal>MXMLApplicationContext</literal> simply add it as an
+				<abbrev>MXML</abbrev> component to your application.</para>
+		<programlisting language="xml">&lt;fx:Declarations&gt;
+  &lt;sas:MXMLApplicationContext id="MXMLContext"/&gt;
+&lt;/fx:Declarations&gt;</programlisting>
+		<para>Now, this in itself won't do much of course. We need to tell the application context where
+			to find it's configuration and make sure we know when it has finished loading them.</para>
+		<para>Let's add a few properties to the context declaration:</para>
+		<programlisting language="xml">&lt;fx:Declarations&gt;
+  &lt;sas:MXMLApplicationContext id="MXMLContext"
+		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"/&gt;
+&lt;/fx:Declarations&gt;</programlisting>
+		<para>In the section we take a look at how we create a configuration file for our <literal
+				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
+				>MXMLApplicationContext</literal>.</para>
+	</sect1>
+
+	<sect1 xml:id="creating-a-configuration">
+		<title>Creating a configuration for the MXMLApplicationContext</title>
+		<para>A configuration file for an <literal
+				xlink:href="asdoc://org.springextensions.actionscript.context.impl.mxml.MXMLApplicationContext"
+				>MXMLApplicationContext</literal> is just a regular <abbrev>MXML</abbrev> component
+			which can be created using the <emphasis>File-&gt;New-&gt;MXML Component</emphasis>
+			menu.</para>
+		<para>Choose <emphasis>SASObjects</emphasis> for the <abbrev>MXML</abbrev> component type, call
+			it <emphasis>ObjectsConfiguration</emphasis> and you will get an empty component like
+			this:</para>
+		<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+&lt;/sas:SASObjects&gt;</programlisting>
+		<para>The SASObjects component can contain children of type Object which are components that
+			represent so called <emphasis>Object Definitions</emphasis>. These definitions act as a
+			sort of recipe for an object's instantiation and configuration. Let's say we want a
+			presentation model to be managed by the application context. We add a definition for it
+			like
+			this:<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+		]]&gt;
+	&lt;/fx:Script>
+	&lt;fx:Declarations>
+		&lt;sas:Object clazz="{MainPresentationModel}" id="<emphasis role="bold">mainModel</emphasis>"/>
+	&lt;fx:Declarations>
+&lt;/sas:SASObjects&gt;</programlisting></para>
+		<para>Now, to enable the application context to actually create an instance of the
+			MainPresentationModel class it'll be necessary to start the context and let it notify us when
+			it's
+			ready.<programlisting language="xml">&lt;fx:Declarations&gt;
+  &lt;sas:MXMLApplicationContext id="MXMLContext"
+		configurations="{[<emphasis role="bold">ObjectsConfiguration</emphasis>]}"
+		autoLoad="true"
+		complete="{onComplete(event)}"/&gt;
+&lt;/fx:Declarations&gt;
+
+&lt;fx:Script>
+	&lt;![CDATA[
+		private function onComplete(event:Event):void {
+			var presentationModel:MainPresentationModel = MXMLContext.getObject('<emphasis role="bold">mainModel</emphasis>');
+		}
+	]]&gt;
+&lt;/fx:Script></programlisting></para>
+		<para>It would be nice to have this presentation model injected into the view that needs it. For
+			this we can annotate the view in question with some metadata and have Spring
+			Actionscript take care of the rest.<programlisting language="xml">&lt;s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+			
+			<emphasis role="bold">[Inject]</emphasis>
+			public var presentationModel:MainPresentationModel;
+		]]&gt;
+	&lt;/fx:Script>
+&lt;/s:VGroup></programlisting><note>
+				<para>Don't forget to add this compiler switch to the Flex project when using
+						<emphasis role="bold">[Inject]</emphasis> metadata: <emphasis role="bold"
+						>-keep-as3-metadata+=Inject</emphasis>.</para>
+			</note></para>
+		<para>Spring Actionscript just needs an extra bit of configuration to make sure that
+				<abbrev>MXML</abbrev> (and any other stage) components will be injected, by default
+			this functionality is turned off, but its easy to turn on. You need to add one custom
+			object definition to the
+			configuration:<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+		]]&gt;
+	&lt;/fx:Script>
+	&lt;fx:Declarations>
+		<emphasis role="bold">&lt;sas:StageAutowireProcessor/></emphasis>
+
+		&lt;sas:Object clazz="{MainPresentationModel}" id="<emphasis role="bold">mainModel</emphasis>"/>
+	&lt;/fx:Declarations>
+&lt;/sas:SASObjects&gt;</programlisting>And
+			that's it, now after the view component has been aded to the stage it will be injected
+			with the presentation model instance created by the application context.</para>
+		<para>However, the presentation model might have some dependencies of its own that you would like
+			to configure. For instance, it might have a dependency on an
+				<emphasis>IMainService</emphasis> implementation. Just add the service to the
+			configuration and let the application context inject it into a specified property of the
+			presentationmodel.<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+			import my.classes.services.MainService;
+		]]&gt;
+	&lt;/fx:Script>
+	&lt;fx:Declarations>
+		<emphasis role="bold">&lt;sas:StageAutowireProcessor/></emphasis>
+
+		&lt;sas:Object clazz="{MainService}" id="mainService"/>
+
+		&lt;sas:Object clazz="{MainPresentationModel}" id="<emphasis role="bold">mainModel</emphasis>">
+			&lt;sas:Property name="service" ref="{mainService}"/>
+		&lt;/sas:Object>
+	&lt;/fx:Declarations>
+&lt;/sas:SASObjects&gt;</programlisting>What
+			if the presentation model wants to initialize itself after each of its dependencies have
+			been satisfied? Use the initMethod property on the object definition for that:</para>
+		<programlisting language="xml">&lt;sas:Object clazz="{MainPresentationModel}" id="mainModel" initMethod="<emphasis role="bold">initModel</emphasis>">
+	&lt;sas:Property name="service" ref="{mainService}"/>
+&lt;/sas:Object></programlisting>
+		<para>If the method actually needs some arguments, then use the method invocation markup.</para>
+		<programlisting language="xml">&lt;sas:Object clazz="{MainPresentationModel}" id="mainModel">
+	&lt;sas:Property name="service" ref="{mainService}"/>
+	&lt;sas:MethodInvocation name="<emphasis role="bold">initModel</emphasis>">
+		&lt;sas:Arg value="myStringValue"/>
+	&lt;/sas:MethodInvocation>
+&lt;/sas:Object></programlisting>
+		<para>By default objects are considered to be singletons when they are managed by the application
+			context, which means only one instance of them is ever created. Each subsequent call to
+			the get <emphasis role="italic">Object()</emphasis> method will just return the same
+			instance. If this is not desired the <emphasis role="italic">scope</emphasis> of the
+			object definition might be set to <emphasis role="bold">prototype</emphasis>.</para>
+		<programlisting language="xml">&lt;sas:Object class="{MainPresentationModel}" id="mainModel" scope="<emphasis role="bold">prototype</emphasis>"/></programlisting>
+		<para>When an object doesn't need any particular configuration, but just needs to be accesible as
+			a singleton to the application context it may be directly declared in the
+				<abbrev>MXML</abbrev> configuration. For instance, a remote object might be declared
+			like
+			this:<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+			import my.classes.services.MainService;
+		]]&gt;
+	&lt;/fx:Script>
+	&lt;fx:Declarations>
+		&lt;mx:RemoteObject id="<emphasis role="bold">remoteObject</emphasis>"/>
+
+		&lt;sas:StageAutowireProcessor/>
+
+		&lt;sas:Object clazz="{MainService}" id="mainService">
+			&lt;sas:Property name="remoteObject" ref="<emphasis role="bold">remoteObject</emphasis>"/>
+		&lt;/sas:Object>
+
+		&lt;sas:Object clazz="{MainPresentationModel}" id="mainModel">
+			&lt;sas:Property name="service" ref="{mainService}"/>
+		&lt;/sas:Object>
+	&lt;/fx:Declarations>
+&lt;/sas:SASObjects&gt;</programlisting>The
+			RemoteObject instance will be added to the application context cache as well, so it may
+			be retrieved from the context by
+			name:<programlisting language="java">var ro:RemoteObject = MXMLContext.getObject('remoteObject');</programlisting>In
+			the same way actionscript properties may be added to the <abbrev>MXML</abbrev>
+			configuration as well, they work in the same way as their <abbrev>MXML</abbrev>
+			versions.<programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;sas:SASObjects xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:sas="http://www.springactionscript.org/mxml/config"&gt;
+	&lt;fx:Script>
+		&lt;![CDATA[
+			import my.classes.presentationmodels.MainPresentationModel;
+			import my.classes.services.MainService;
+
+			public var <emphasis role="bold">collection</emphasis>:ArrayCollection = new ArrayCollection(["myValue1","myValue2","myValue3"]);
+		]]&gt;
+	&lt;/fx:Script>
+	&lt;fx:Declarations>
+		&lt;mx:RemoteObject id="remoteObject"/>
+
+		&lt;sas:StageAutowireProcessor/>
+
+		&lt;sas:Object clazz="{MainService}" id="mainService">
+			&lt;sas:Property name="remoteObject" ref="remoteObject"/>
+		&lt;/sas:Object>
+
+		&lt;sas:Object clazz="{MainPresentationModel}" id="mainModel">
+			&lt;sas:Property name="service" ref="{mainService}"/>
+			&lt;sas:Property name="list" ref="<emphasis role="bold">collection</emphasis>"/>
+		&lt;/sas:Object>
+	&lt;/fx:Declarations>
+&lt;/sas:SASObjects&gt;</programlisting></para>
+		<para>The next step is to let objects communicate with each other using events. To inform
+			Spring Actionscript about which objects dispatch which events and which objects handle
+			those events there are a number of configuration extensions.</para>
+		<para>Here's how to configure an event dispatcher, let's imagine that the presentation model
+			dispatches CustomEvents called <emphasis role="italic">initialized</emphasis> and
+				<emphasis role="italic"
+			>changed</emphasis>:<programlisting language="xml">&lt;sas:Object clazz="{MainPresentationModel}" id="mainModel">
+	&lt;sas:Property name="service" ref="{mainService}"/>
+	&lt;sas:Property name="list" ref="collection"/>
+	&lt;sas:EventRouterConfiguration eventNames="<emphasis role="bold">{CustomEvent.INITIALIZED}</emphasis>,<emphasis role="bold">{CustomEvent.CHANGED}</emphasis>"/>
+&lt;/sas:Object></programlisting></para>
+		<para>To configure the object that listens for these events, let's say there is an
+			ApplicationManager class that has two methods called <emphasis role="italic"
+				>initializedHandler()</emphasis> and <emphasis role="italic"
+				>changedHandler()</emphasis>:<programlisting language="xml">&lt;sas:Object clazz="{ApplicationManager}" id="applicationManager">
+	&lt;sas:EventHandlerConfiguration eventName="<emphasis role="bold">{CustomEvent.INITIALIZED}</emphasis>" name="initializedHandler"/>
+	&lt;sas:EventHandlerConfiguration eventName="<emphasis role="bold">{CustomEvent.CHANGED}</emphasis>" name="changedHandler"/>
+&lt;/sas:Object></programlisting></para>
+		<para>To learn more about event configuration, head on over to the <link
+				linkend="eventbus-integration">Eventbus integration</link> section.</para>
+		<para>These are the basic pieces of functionality of the object configuration in Spring
+			Actionscript. A more in-depth look at all of the <abbrev>MXML</abbrev> configuration
+			possibilities is available in the '<literal linkend="mxml-configuration">MXML
+				Configuration</literal>' section.</para>
+		<note>
+			<para>To find out more about object definitions, check out the section '<literal
+					linkend="object-definitions">Object Definitions</literal>'</para>
+			<para>To find out more about the different kinds of configuration, check out the section
+					'<literal linkend="configuration-types">Configuration types</literal>'</para>
+		</note>
+		<sect2 xml:id="using-property-files">
+			<title>Using property files</title>
+			<para>To share string values that need to be injected in object instances, think of URL's, path
+				names, translations, etc, you can define an external properties file in your object
+				configuration. The declaration works like this:</para>
+			<programlisting language="xml">&lt;sas:PropertyPlaceholder URI="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
+			<para>The contents of the myproperties.txt file are very simple, they consist of name/value
+				pairs delimited by an equals ('<emphasis role="bold">=</emphasis>') character.</para>
+			<programlisting language="ini">property1=myvalue1
+property2=myvalue2</programlisting>
+			<para>The content itself will be resolved as well, so its possible to make composite
+				properties like this.</para>
+			<programlisting language="ini">property1=myvalue1
+property2=myvalue2
+property3=<emphasis role="bold">${property1}</emphasis>_<emphasis role="bold">${property2}</emphasis></programlisting>
+			<para>To inject an external property value into, say, a object definition property, this
+				syntax is used:</para>
+			<programlisting language="xml">&lt;sas:Property name="service" ref="<emphasis role="bold">$(property3)</emphasis>"/></programlisting>
+			<sect3>
+				<title>How to declare property files in the other types of configuration</title>
+				<para>In an <abbrev>XML</abbrev> configuration you would add a reference to the property
+					file by adding this element:</para>
+				<programlisting language="xml">&lt;property location="<emphasis role="bold">myproperties.txt</emphasis>"/></programlisting>
+				<para>In a metadata configuration you would add this annotation to any class in your project
+					(just make sure the class gets compiled into the resulting SWF):</para>
+				<programlisting language="actionscript">[ExternalProperties(location="<emphasis role="bold">myproperties.txt</emphasis>")]</programlisting>
+			</sect3>
+			<note>
+				<para>Notice that in the <abbrev>MXML</abbrev> the property placeholder is defined like this
+						<emphasis role="bold">$(property3)</emphasis> and inside the properties file
+					like this <emphasis role="bold">${property3}</emphasis>. This is because in
+						<abbrev>MXML</abbrev> the curly braces will be interpreted as
+					bindings.</para>
+			</note>
+		</sect2>
+	</sect1>
+
+</chapter>

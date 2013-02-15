@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>org.springextensions.actionscript</groupId>
+		<artifactId>spring-actionscript-superpom</artifactId>
+		<version>2.0.1-SNAPSHOT</version>
+	</parent>
+	
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>spring-actionscript-flex</artifactId>
+	<packaging>swc</packaging>
+	<version>2.0.1-SNAPSHOT</version>
+	<name>Spring Actionscript Flex Extensions</name>
+	<description>IoC Container Flex Support</description>
+	<inceptionYear>2007</inceptionYear>
+
+	<properties>
+		<assembly.file.name>springactionscript-flex-latest-snapshot</assembly.file.name>
+		<as3commons-async-flex.version>1.0.0-SNAPSHOT</as3commons-async-flex.version>
+	</properties>
+	
+	<build>
+		<plugins>
+		
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+				    <execution>
+					<id>copy-dependencies</id>
+					<phase>process-sources</phase>
+					<goals>
+					    <goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<includeGroupIds>org.as3commons,org.springextensions.actionscript</includeGroupIds>
+						<includeScope>runtime</includeScope> 
+						<excludeScope>test</excludeScope>
+						<excludeScope>external</excludeScope>
+						<includeTypes>swc</includeTypes>
+						<overWriteIfNewer>true</overWriteIfNewer>
+						<excludeTransitive>true</excludeTransitive>
+					</configuration>
+				    </execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.flexmojos</groupId>
+				<artifactId>flexmojos-maven-plugin</artifactId>
+      
+				<configuration>
+					<includeFiles>
+  						<include>design.xml</include>
+  						<include>manifest.xml</include>
+  					</includeFiles>
+					<namespaces>
+						<namespace>
+							<uri>http://www.springactionscript.org/mxml/config</uri>
+							<manifest>src/main/resources/manifest.xml</manifest>
+						</namespace>
+					</namespaces>
+					<includeNamespaces>
+						<namespace>http://www.springactionscript.org/mxml/config</namespace>
+					</includeNamespaces>
+					<includeSources>
+						<param>src/main/actionscript</param>
+					</includeSources>
+            			</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>sources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+		    <groupId>org.springextensions.actionscript</groupId>
+		    <artifactId>spring-actionscript-core</artifactId>
+		    <type>swc</type>
+		    <scope>internal</scope>
+		    <version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>framework</artifactId>
+			<version>${flex-sdk.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>mx</artifactId>
+			<version>${flex-sdk.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.adobe.flex.framework</groupId>
+			<artifactId>rpc</artifactId>
+			<version>${flex-sdk.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.as3commons</groupId>
+			<artifactId>as3commons-async-flex</artifactId>
+			<version>${as3commons-async-flex.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.adobe.flex.framework</groupId>
+					<artifactId>playerglobal</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.adobe.flex.framework</groupId>
+					<artifactId>common-framework</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+	</dependencies>
+
+	<scm>
+		<developerConnection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as/tags/${project.version}/springactionscript-flex/</developerConnection>
+		<connection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as</connection>
+		<url>https://fisheye.springframework.org/browse/se-springactionscript-as</url>
+	</scm>
+
+</project>

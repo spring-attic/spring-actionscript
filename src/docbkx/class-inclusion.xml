@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<appendix annotations="" version="5.0" xml:id="Class-inclusion"
+	xmlns="http://docbook.org/ns/docbook" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns5="http://www.w3.org/1998/Math/MathML"
+	xmlns:ns4="http://www.w3.org/2000/svg" xmlns:ns3="http://www.w3.org/1999/xhtml"
+	xmlns:ns="http://docbook.org/ns/docbook">
+	<title>Forcing Actionscript class inclusion</title>
+
+	<section xml:id="forcing_class_inclusion_introduction">
+		<title>Introduction</title>
+
+		<para>Once you move the configuration of your objects out of your source code and into an
+				<ns:abbrev>XML</ns:abbrev> configuration you will notice a very common problem.
+			Because there is not always a direct reference to certain classes inside your source
+			code these classes will not end up being compiled into the resulting .swf file. Then,
+			while running your application, you will encounter the dreaded "Error: A class with the
+			name 'XXXXX' could not be found." message.</para>
+
+		<para>There is a variety of ways to force the compiler to include certain classes, in this
+			section we will look at most of them.</para>
+
+		<section xml:id="Adding_an_anonymous_code_block">
+			<title>Adding an anonymous code block</title>
+
+			<para>Place this anywhere in your code, at the top of your application source for
+				instance:</para>
+
+			<programlisting>{
+  Myclass1, Myclass2
+}</programlisting>
+		</section>
+
+		<section xml:id="declaring_a_list_of_variables">
+			<title>Declaring a list of variables</title>
+
+			<para>Another way is to just declare a whole list of dummy variables with the required
+				types:</para>
+
+			<programlisting>private var _dummy1:Myclass1;
+private var _dummy2:Myclass2;</programlisting>
+
+			<para>or just one array of class declarations:</para>
+
+			<programlisting>private var _includeClass:Array = [Myclass1,Myclass2];</programlisting>
+		</section>
+
+		<section xml:id="Using_the_frame_metadata">
+			<title>Using the [Frame] metadata</title>
+
+			<para>There is an undocumented piece of metadata that will force the compiler to include a
+				second or third class to an existing class source.</para>
+
+			<programlisting>package com.myclasses
+{
+    [Frame(extraClass="com.myclasses.Myclass1")]
+    [Frame(extraClass="com.myclasses.Myclass2")]
+    public class MyMainClass
+    {
+    }
+}</programlisting>
+
+			<para>After that you only need to declare one variable of type MyMainClass in your source
+				code.</para>
+		</section>
+
+		<section xml:id="Using_a_resource_bundle">
+			<title>Using a resource bundle</title>
+
+			<para>Its possible to create a .properties file that contains all the class references you.
+				Create a file in your project called <emphasis>classreferences.properties</emphasis> and add
+				your classes like this:</para>
+
+			<programlisting>Class1   = ClassReference("com.myclasses.Myclass1")
+Class2   = ClassReference("com.myclasses.Myclass2")</programlisting>
+
+			<para>Then in your application source code add a reference to the resource like this:</para>
+
+			<programlisting>[ResourceBundle("classreferences")]
+private var _classReferences:ResourceBundle;</programlisting>
+		</section>
+
+		<section xml:id="Using_an_ANT_task_as_a_prebuilder_to_generate_a_compiler_config_file">
+			<title>Using an ANT task as a prebuilder to generate a compiler config file</title>
+
+			<para>The last solution is a little more involved but can eventually automate the whole task
+				of class inclusion, in this section we will explain step-by-step how to configure
+				Flexbuilder to run a prebuilder.</para>
+
+			<section xml:id="step1_add_a_compiler_switch_to_your_project">
+				<title>Step 1 - Add a compiler switch to your project</title>
+
+				<para>Right click on your project in Eclipse/Flexbuilder and choose the menu item
+					'Properties', in the following popup add the compiler switch like this:</para>
+
+				<para>
+					<inlinemediaobject>
+						<imageobject>
+							<imagedata fileref="images/prebuilder_step1.png"/>
+						</imageobject>
+					</inlinemediaobject>
+				</para>
+			</section>
+
+			<section xml:id="step2_create_an_xslt_task">
+				<title>Step 2 – Create an XSLT ANT Task</title>
+
+				<para>Step 2 – Create an <abbrev>XSLT</abbrev>
+					<abbrev>ANT</abbrev> Task In your project root (<emphasis role="bold">NOT</emphasis> your
+					'src' directory) create an <abbrev>XML</abbrev> file, call it 'springasprebuild.xml' (the
+					same filename you used in the compiler switch), and in this file add the following
+					code:</para>
+
+				<programlisting><lineannotation>&lt;!--
+======================================================================
+Nov 17, 2008 4:33:15 PM
+project SpringAS Pre build
+description Extracts all the class paths from a Spring Actionscript
+configuration file and dumps them into
+a config file that can be added with a compiler
+switch (i.e. -load-config+=custom.config)
+Roland Zwaga
+====================================================================== -
+-&gt;</lineannotation>
+&lt;project name="project" default="default"&gt;
+&lt;description&gt;
+Extracts all the class paths from a Spring Actionscript configuration file and
+dumps them in a config file that can be added with a compiler switch
+(i.e. -load-config+=custom.config)
+&lt;/description&gt;
+<lineannotation>&lt;!--
+=================================
+target: default
+=================================
+--&gt;</lineannotation>
+&lt;target name="default" description="description"&gt;
+&lt;xslt in="src/application-context.xml" out="src/springas.config"
+style="xslt/springasconfig.xsl" reloadstylesheet="false"&gt;&lt;/xslt&gt;
+&lt;/target&gt;
+&lt;/project&gt;</programlisting>
+
+				<para>Take notice of <abbrev>XSLT</abbrev> element in the code, it has4 attributes:</para>
+
+				<itemizedlist>
+					<listitem>
+						<para><emphasis role="bold">in</emphasis> – this is the path to your Spring Actionscript
+							configuration file</para>
+					</listitem>
+
+					<listitem>
+						<para><emphasis role="bold">out</emphasis> – this is the path to the output file for the
+								<abbrev>XSLT</abbrev> task, this is the file that was added as a compiler switch in
+							the previous step.</para>
+					</listitem>
+
+					<listitem>
+						<para><emphasis role="bold">style</emphasis> – This is the actual stylesheet that
+							contains the necessary code to generate the output.</para>
+					</listitem>
+
+					<listitem>
+						<para><emphasis role="bold">reloadstylesheet</emphasis> – only set this to true when you
+							have made changes to the <abbrev>XSLT</abbrev>, otherwise leave it set to
+							false.</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+
+			<section xml:id="step3_add_the_xslt_to_your_project">
+				<title>Step 3 – Add the XSLT to your project</title>
+
+				<para>Create a new directory in your project root and call it 'xslt', create a new file in
+					this directory called 'springasconfig.xsl'. Add the following code to the file:</para>
+
+				<programlisting>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsl:stylesheet version="1.0"
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+xmlns:springas="http://www.springactionscript.org/schema/objects"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+                http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd "
+exclude-result-prefixes="xsi springas"&gt;
+  &lt;xsl:output method="xml" indent="yes"/&gt;
+  &lt;xsl:key name="restriction" match="//springas:object" use="@class" /&gt;
+  &lt;xsl:key name="proprestriction" match="//springas:property"
+  use="@value" /&gt;
+  &lt;xsl:key name="valrestriction" match="//springas:value" use="." /&gt;
+  &lt;xsl:template match="/"&gt;
+    &lt;flex-config&gt;
+      &lt;includes append="true"&gt;
+        &lt;xsl:for-each
+        select="//springas:object[count(.|key('restriction',@class)[1]) = 1]"&gt;
+          &lt;xsl:sort select="@class"/&gt;
+          &lt;xsl:if test="@class!=''"&gt;
+            &lt;symbol&gt;
+              &lt;xsl:value-of select="@class"/&gt;
+            &lt;/symbol&gt;
+          &lt;/xsl:if&gt;
+        &lt;/xsl:for-each&gt;
+        &lt;xsl:for-each
+        select="//springas:property[count(.|key('proprestriction',@value)[1]) = 1]"&gt;
+          &lt;xsl:sort select="@value"/&gt;
+          &lt;xsl:if test="@type='Class'"&gt;
+            &lt;symbol&gt;
+              &lt;xsl:value-of select="@value"/&gt;
+            &lt;/symbol&gt;
+          &lt;/xsl:if&gt;
+        &lt;/xsl:for-each&gt;
+        &lt;xsl:for-each
+        select="//springas:value[count(.|key('valrestriction',.)[1]) = 1]"&gt;
+          &lt;xsl:sort select="."/&gt;
+          &lt;xsl:if test="@type='Class'"&gt;
+            &lt;symbol&gt;
+              &lt;xsl:value-of select="."/&gt;
+            &lt;/symbol&gt;
+          &lt;/xsl:if&gt;
+        &lt;/xsl:for-each&gt;
+      &lt;/includes&gt;
+    &lt;/flex-config&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;</programlisting>
+			</section>
+
+			<section xml:id="step4_add_the_ant_task_as_a_builder">
+				<title>Step 4 – Add the ANT task as a builder</title>
+
+				<para>In the last step you add the <abbrev>ANT</abbrev> task as a builder to your project,
+					do this by right clicking on your project, Choose 'Properties' and select the tab called
+					'Builders':</para>
+
+				<para>
+					<inlinemediaobject>
+						<imageobject>
+							<imagedata fileref="images/prebuilder_step2.png"/>
+						</imageobject>
+					</inlinemediaobject>
+				</para>
+
+				<para>Click on 'New' and choose '<abbrev>ANT</abbrev> Builder' and click 'OK', this dialog
+					should appear:</para>
+
+				<para>
+					<inlinemediaobject>
+						<imageobject>
+							<imagedata fileref="images/prebuilder_step3.png"/>
+						</imageobject>
+					</inlinemediaobject>
+				</para>
+
+				<para>Give the builder a logical name, something like 'Spring AS Prebuilder', afterwards
+					click 'Browse workspace' beneath the 'Buildfile' input field, in the following dialog
+					choose the Buildfile from the root of your current project. In case of this example its
+					called 'springasprebuild.xml':</para>
+
+				<para>
+					<inlinemediaobject>
+						<imageobject>
+							<imagedata fileref="images/prebuilder_step4.png"/>
+						</imageobject>
+					</inlinemediaobject>
+				</para>
+
+				<para>Then click 'OK' to return to the builder list. The builder you just added is in the
+					wrong order still though. We want it to be the first builder to be executed in the build
+					process, so select the ‘Spring AS Prebuilder’ in the list and click on 'Up', after this
+					the list will look like this:</para>
+
+				<para>
+					<inlinemediaobject>
+						<imageobject>
+							<imagedata fileref="images/prebuilder_step5.png"/>
+						</imageobject>
+					</inlinemediaobject>
+				</para>
+
+				<para>Click 'OK' and your project is configured!. To test whether everything is in working
+					order, build your project. If all went according to plan then in the root of your source
+					folder a new file has been created called 'springas.config'. The contents of this file
+					will look something like this:</para>
+
+				<programlisting>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;flex-config&gt;
+  &lt;includes append="true"&gt;
+    &lt;symbol&gt;mx.messaging.channels.AMFChannel&lt;/symbol&gt;
+    &lt;symbol&gt;mx.messaging.ChannelSet&lt;/symbol&gt;
+    &lt;symbol&gt;mx.rpc.remoting.mxml.RemoteObject&lt;/symbol&gt;
+  &lt;/includes&gt;
+&lt;/flex-config&gt;</programlisting>
+
+				<para>And that's it, once in place this will take care of filtering out the classes from
+					your Spring Actionscript configuration file.</para>
+
+				<para>Well, at least in most cases :)</para>
+			</section>
+		</section>
+
+		<section xml:id="using_maven">
+			<title>Using Maven</title>
+
+			<para>If you use Maven as a build system for your application, Spring Actionscript also offers
+				a mojo that will generate a flex compiler config file based on an application context. You
+				can download the mojo <literal
+					xlink:href="http://www.springactionscript.org/maven/spring-actionscript-prebuild-mojo.zip"
+					>here</literal>.</para>
+
+			<para>Download the zip file and open the directory it is contained in and run "<emphasis
+					role="bold">mvn install</emphasis>" on the mojo to get it into your local
+				repository.</para>
+
+			<para>Then use it your build like this:</para>
+
+			<programlisting>...
+&lt;!-- set up properties to make it easy for both plugins (the prebuild and the maven-mojo) to use the same file locations --&gt;
+    &lt;properties&gt;
+        &lt;generatedCompilerConfigName&gt;spring-as-includes.config&lt;/generatedCompilerConfigName&gt;
+        &lt;generatedCompilerConfigDir&gt;${project.build.sourceDirectory}&lt;/generatedCompilerConfigDir&gt;
+    &lt;/properties&gt;
+ &lt;build&gt;
+       ...
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springextensions.actionscript&lt;/groupId&gt;
+                &lt;artifactId&gt;prebuild-mojo&lt;/artifactId&gt;
+                &lt;version&gt;0.1-SNAPSHOT&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;generate-resources&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;generate-compiler-config&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+                &lt;configuration&gt;
+                    &lt;springActionscriptContextFiles&gt;
+                        &lt;param&gt;${basedir}/src/main/flex/YOUR-CONTEXT-FILE.xml&lt;/param&gt;
+                    &lt;/springActionscriptContextFiles&gt;                    
+                    &lt;outputDirectory&gt;${generatedCompilerConfigDir}&lt;/outputDirectory&gt;
+                    &lt;generatedConfigFileName&gt;${generatedCompilerConfigName}&lt;/generatedConfigFileName&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.sonatype.flexmojos&lt;/groupId&gt;
+                &lt;artifactId&gt;flexmojos-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;3.6-SNAPSHOT&lt;/version&gt;
+                &lt;configuration&gt;
+            ...
+                    &lt;configFiles&gt;
+                       &lt;file&gt;${generatedCompilerConfigDir}/${generatedCompilerConfigName}&lt;/file&gt;
+                    &lt;/configFiles&gt;
+       ...
+                &lt;/configuration&gt;
+
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+...</programlisting>
+
+			<para>And that's all there is to it!</para>
+		</section>
+	</section>
+</appendix>

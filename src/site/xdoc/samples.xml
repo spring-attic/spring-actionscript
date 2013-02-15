@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd"
+          xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <properties>
+  	<title></title>
+    <author email="roland@stackandheap.com">Roland Zwaga</author>
+  </properties>
+
+  <head>    
+  	<title>Sample applications</title>
+  </head>
+
+  <body>
+    <section name="Sample applications">
+    	<ul>
+    		<li><a href="/samples/cafe-townsend/Main.html" target="_blank">Cafe Townsend - XML Configuration</a> - (<a href="/samples/cafe-townsend/srcview/index.html" target="_blank">source view</a>)</li>
+    		<li><a href="/samples/cafe-townsend-mxml/Main.html" target="_blank">Cafe Townsend - MXML Configuration</a> - (<a href="/samples/cafe-townsend-mxml/srcview/index.html" target="_blank">source view</a>)</li>
+    		<li><a href="/samples/cafe-townsend-metadata/Main.html" target="_blank">Cafe Townsend - Metadata Configuration</a> - (<a href="/samples/cafe-townsend-metadata/srcview/index.html" target="_blank">source view</a>)</li>
+    		<li><a href="/samples/cafe-townsend-multi-module/Main.html" target="_blank">Cafe Townsend - Multi-module implementation</a> - (<a href="/samples/cafe-townsend-multi-module/srcview/index.html" target="_blank">source view</a>)</li>
+    	</ul>
+    </section>
+  </body>
+</document>
