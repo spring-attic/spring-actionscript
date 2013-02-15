@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<Objects
+		xmlns="http://www.springactionscript.org/mxml/config"
+		xmlns:mx="http://www.adobe.com/2006/mxml"
+		defaultLazyInit="false"
+		defaultAutowire="autodetect"
+		defaultDependencyCheck="all"
+		defaultInitMethod="init">
+	
+</Objects>

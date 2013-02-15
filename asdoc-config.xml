@@ -1,0 +1,42 @@
+<flex-config>
+	<keep-xml>true</keep-xml>
+	<skip-xsl>true</skip-xsl>
+	<packages>
+		<package>
+			<string>org.springextensions.actionscript.cairngorm</string>
+			<string>main package for ther Spring Actionscript Cairngorm extensions.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.cairngorm.business</string>
+			<string>Spring Actionscript Cairngorm extensions delegate related classes and interfaces.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.cairngorm.commands</string>
+			<string>Spring Actionscript Cairngorm extensions command related classes and interfaces.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.cairngorm.control</string>
+			<string>Spring Actionscript Cairngorm extensions controller related classes and interfaces.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.collections</string>
+			<string>Classes and interfaces for collections.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.config</string>
+			<string>Classes and interfaces for configutation related functionality.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.context</string>
+			<string>Interfaces that describe application context related objects.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.context.support</string>
+			<string>Concrete implementations of application context related interfaces.</string>
+		</package>
+		<package>
+			<string>org.springextensions.actionscript.context.support.mxml</string>
+			<string>MXML specific implementations of application context related interfaces.</string>
+		</package>
+	</packages>
+</flex-config> 

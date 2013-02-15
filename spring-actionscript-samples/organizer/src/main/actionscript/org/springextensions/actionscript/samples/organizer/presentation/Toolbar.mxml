@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         width="100%"
+         height="40"
+         paddingTop="6"
+         paddingBottom="14"
+         verticalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+		import mx.controls.Menu;
+		import mx.events.MenuEvent;
+
+		import org.as3commons.lang.Enum;
+		import org.springextensions.actionscript.core.event.EventBus;
+		import org.springextensions.actionscript.samples.organizer.application.events.ApplicationEvents;
+		import org.springextensions.actionscript.samples.organizer.application.events.ChangeContactsViewModeEvent;
+		import org.springextensions.actionscript.samples.organizer.application.events.ContactEvent;
+		import org.springextensions.actionscript.samples.organizer.application.events.SearchEvent;
+		import org.springextensions.actionscript.samples.organizer.application.model.ContactsViewMode;
+
+		// ----------------------------------------------------------------
+		//
+		// Public Fields
+		//
+		// ----------------------------------------------------------------
+
+		[Autowired]
+		[Bindable]
+		public var presentationModel:ToolbarPM;
+
+		// ----------------------------------------------------------------
+		//
+		// Event Handlers
+		//
+		// ----------------------------------------------------------------
+
+		protected function addContactButton_clickHandler(event:MouseEvent):void {
+			EventBus.dispatchEvent(new ContactEvent(ContactEvent.ADD));
+		}
+
+		protected function saveContactButton_clickHandler(event:MouseEvent):void {
+			EventBus.dispatchEvent(new Event(ApplicationEvents.SAVE_SELECTED_CONTACT));
+		}
+
+		protected function deleteContactButton_clickHandler(event:MouseEvent):void {
+			EventBus.dispatchEvent(new Event(ApplicationEvents.DELETE_CONTACT));
+		}
+
+		private var myMenu:Menu;
+
+
+		private function viewModeButton_creationCompleteHandler(event:Event):void {
+			myMenu = new Menu();
+			var dp:Object = [
+				{
+					id:"LIST",
+					label: "List"
+				},
+				{
+					id:"TILES",
+					label: "Tiles"
+				}
+			];
+			myMenu.dataProvider = dp;
+			myMenu.selectedIndex = 0;
+			myMenu.addEventListener("itemClick", itemClickHandler);
+			viewModeButton.popUp = myMenu;
+			viewModeButton.label = myMenu.dataProvider[myMenu.selectedIndex].label;
+		}
+
+		// Define the event listener for the Menu control's itemClick event.
+		private function itemClickHandler(event:MenuEvent):void {
+			var label:String = event.item.label;
+			viewModeButton.label = label;
+			viewModeButton.close();
+
+			var mode:ContactsViewMode = ContactsViewMode(Enum.getEnum(ContactsViewMode, event.item.id));
+			EventBus.dispatchEvent(new ChangeContactsViewModeEvent(mode));
+		}
+
+		protected function searchButton_clickHandler(event:MouseEvent):void {
+			EventBus.dispatchEvent(new SearchEvent(searchTextInput.text));
+		}
+
+		]]>
+	</mx:Script>
+
+	<mx:Button id="addContactButton"
+	           label="New"
+	           toolTip="Add Contact"
+	           click="addContactButton_clickHandler(event)"/>
+
+	<mx:Button id="deleteContactButton"
+	           label="Delete"
+	           toolTip="Delete Contact"
+	           enabled="{presentationModel.deleteAllowed}"
+	           click="deleteContactButton_clickHandler(event)"/>
+
+	<mx:VRule height="100%"/>
+
+	<mx:Label text="View:"/>
+	<mx:PopUpButton id="viewModeButton" creationComplete="viewModeButton_creationCompleteHandler(event)"/>
+
+	<mx:Spacer width="100%"/>
+
+	<mx:TextInput id="searchTextInput"/>
+	<mx:Button id="searchButton" label="Search" click="searchButton_clickHandler(event)"/>
+
+</mx:HBox>

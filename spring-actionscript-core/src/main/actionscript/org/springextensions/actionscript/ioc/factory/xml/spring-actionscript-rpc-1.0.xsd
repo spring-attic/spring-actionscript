@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.springactionscript.org/schema/rpc"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://www.springactionscript.org/schema/rpc"
+			elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			Spring ActionScript Framework 1.0 RPC Schema
+			Schema Authors: Christophe Herreman
+			]]>
+		</xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:import namespace="http://www.springactionscript.org/schema/objects"/>
+
+	<xsd:element name="remote-object" type="remoteObjectType"/>
+	<xsd:element name="web-service" type="webServiceType"/>
+	
+	<xsd:complexType name="abstractServiceType" mixed="true" abstract="true">
+		<xsd:attribute type="xsd:string" name="id" use="optional"/>
+		<xsd:attribute type="xsd:string" name="channel-set" use="optional"/>
+		<xsd:attribute type="xsd:string" name="destination" use="optional"/>
+		<xsd:attribute type="xsd:int" name="request-timeout" use="optional"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="remoteObjectType" mixed="true">
+		<xsd:complexContent>
+			<xsd:extension base="abstractServiceType">
+				<xsd:attribute name="concurrency" use="optional">
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:enumeration value="multiple"/>
+							<xsd:enumeration value="single"/>
+							<xsd:enumeration value="last"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute type="xsd:string" name="endpoint" use="optional"/>
+				<xsd:attribute type="xsd:boolean" name="make-objects-bindable" use="optional"/>
+				<xsd:attribute type="xsd:boolean" name="show-busy-cursor" use="optional"/>
+				<xsd:attribute type="xsd:string" name="source" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="webServiceType" mixed="true">
+		<xsd:complexContent>
+			<xsd:extension base="abstractServiceType">
+				<xsd:attribute type="xsd:string" name="description" use="optional"/>
+				<xsd:attribute type="xsd:string" name="endpoint-uri" use="optional"/>
+				<xsd:attribute type="xsd:boolean" name="make-objects-bindable" use="optional"/>
+				<xsd:attribute type="xsd:string" name="port" use="optional"/>
+				<xsd:attribute type="xsd:string" name="root-url" use="optional"/>
+				<xsd:attribute type="xsd:string" name="service" use="optional"/>
+				<xsd:attribute type="xsd:boolean" name="use-proxy" use="optional"/>
+				<xsd:attribute type="xsd:string" name="wsdl" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+</xsd:schema>

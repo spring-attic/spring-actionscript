@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shipping>
+  <company name="US Mail (3-7 business days)" rate="5.99"/>
+  <company name="UPS (2 business days)" rate="12.99"/>
+  <company name="FedEx (Overnight Priority)" rate="18.99"/>
+</shipping>

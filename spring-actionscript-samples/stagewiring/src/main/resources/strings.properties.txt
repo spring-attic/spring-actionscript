@@ -1,0 +1,2 @@
+s1=This is autowired text, wired by property name
+

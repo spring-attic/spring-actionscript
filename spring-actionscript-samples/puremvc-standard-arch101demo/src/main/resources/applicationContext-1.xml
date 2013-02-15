@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Author: Damir Murat
+  Version: $Revision: 872 $, $Date: 2008-10-12 21:27:26 +0200 (zo, 12 okt 2008) $, $Author: dmurat1 $
+  Since: 0.4
+-->
+<objects
+    xmlns="http://www.springactionscript.org/schema/objects"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springactionscript.org/schema/objects
+        http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+
+  <!--
+  <object id="traceTarget" class="mx.logging.targets.TraceTarget">
+    <property name="includeCategory" value="true"/>
+    <property name="includeDate" value="true"/>
+    <property name="includeLevel" value="true"/>
+    <property name="includeTime" value="true"/>
+
+    <property name="level" value="0"/>
+    <property name="filters">
+      <array>
+        <value>USER_LOG</value>
+        <value>org.puremvc.*</value>
+        <value>mx.rpc..*</value>
+        <value>mx.messaging.*</value>
+      </array>
+    </property>
+  </object>
+
+  <object id="log" class="org.pranaframework.ioc.factory.MethodInvokingObject">
+    <property name="target" value="mx.logging.Log" type="Class"/>
+    <property name="method" value="addTarget"/>
+    <property name="arguments">
+      <array>
+        <ref>traceTarget</ref>
+      </array>
+    </property>
+  </object>
+  -->
+
+  <!-- Magic name object -->
+  <object id="proxyNamesMap" class="flash.utils.Dictionary">
+    <property name="userProxy" value="userProxyObject"/>
+  </object>
+
+  <!-- Magic name object -->
+  <object id="mediatorNamesMap" class="flash.utils.Dictionary">
+    <property name="userListMediator" value="userListMediatorObject"/>
+  </object>
+
+  <!-- Magic name object -->
+  <object id="commandNamesMap" class="flash.utils.Dictionary">
+    <property name="startupCommand" value="startupCommandObject"/>
+  </object>
+
+  <object id="userLoadDelegate" class="org.puremvc.arch_101.unit_03.lab_02.model.delegate.impl.UserLoadDelegate">
+    <property name="serviceUrl" value="assets/data/user/users.xml"/>
+  </object>
+
+  <object id="roleProxy" class="org.puremvc.arch_101.unit_03.lab_02.model.impl.RoleProxy"/>
+  <object id="userProxyObject" class="org.puremvc.arch_101.unit_03.lab_02.model.impl.UserProxy">
+    <property name="userLoadDelegate" ref="userLoadDelegate"/>
+  </object>
+
+  <!--
+  <object id="userListMediatorObject" class="org.puremvc.arch_101.unit_03.lab_02.view.mediator.UserListMediator"
+          lazy-init="true" init-method="init">
+    <property name="userProxy" ref="userProxyObject"/>
+  </object>
+  <object id="rolePanelMediator" class="org.puremvc.arch_101.unit_03.lab_02.view.mediator.RolePanelMediator"
+          lazy-init="true"/>
+
+  <object id="startupCommandObject" class="org.puremvc.arch_101.unit_03.lab_02.controller.StartupCommand"/>
+  <object id="deleteUserCommand" class="org.puremvc.arch_101.unit_03.lab_02.controller.DeleteUserCommand">
+    <property name="userProxy" ref="userProxyObject"/>
+  </object>
+  -->
+</objects>

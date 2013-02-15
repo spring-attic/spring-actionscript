@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.springactionscript.org/schema/context"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://www.springactionscript.org/schema/context"
+			elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			Spring ActionScript Framework 1.0 Context Schema
+			Schema Authors: Christophe Herreman
+			]]>
+		</xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="component-scan">
+		<xsd:annotation>
+			<xsd:documentation>
+	Scans classes for Component metadata and registers object definitions for these components.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:ID"/>
+			<xsd:attribute name="base-package" type="xsd:string" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="metadata-config">
+		<xsd:annotation>
+			<xsd:documentation>
+	Registers the processors for the Autowired/Inject, Required, PostConstruct, PreDestroy, EventHandler and RouteEvents metadata.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:ID"/>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

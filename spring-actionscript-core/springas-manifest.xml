@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<componentPackage>
+	<component id="MXMLApplicationContext" class="org.springextensions.actionscript.context.support.MXMLApplicationContext"/>
+	<component id="Objects" class="org.springextensions.actionscript.context.support.mxml.MXMLObjects"/>
+	<component id="Object" class="org.springextensions.actionscript.context.support.mxml.MXMLObjectDefinition"/>
+	<component id="Property" class="org.springextensions.actionscript.context.support.mxml.Property"/>
+	<component id="PropertyPlaceholder" class="org.springextensions.actionscript.context.support.mxml.PropertyPlaceholder"/>
+	<component id="ConstructorArg" class="org.springextensions.actionscript.context.support.mxml.ConstructorArg"/>
+	<component id="Arg" class="org.springextensions.actionscript.context.support.mxml.Arg"/>
+	<component id="Param" class="org.springextensions.actionscript.context.support.mxml.Param"/>
+	<component id="Template" class="org.springextensions.actionscript.context.support.mxml.Template"/>
+	<component id="MethodInvocation" class="org.springextensions.actionscript.context.support.mxml.MethodInvocation"/>
+	<component id="Interface" class="org.springextensions.actionscript.context.support.mxml.Interface"/>
+</componentPackage>

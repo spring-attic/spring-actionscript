@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+                       xmlns:s="library://ns.adobe.com/flex/spark"
+                       xmlns:mx="library://ns.adobe.com/flex/halo"
+                       xmlns:ui="org.springextensions.actionscript.samples.organizer.presentation.*"
+                       backgroundColor="0xefebe7"
+                       creationComplete="loadApplicationContext()"
+                       xmlns:local="*"
+                       xmlns="http://www.springactionscript.org/mxml/config">
+
+	<fx:Script>
+		<![CDATA[
+		import org.as3commons.logging.ILogger;
+		import org.as3commons.logging.LoggerFactory;
+		import org.springextensions.actionscript.context.support.FlexXMLApplicationContext;
+		import org.springextensions.actionscript.core.event.EventBus;
+		import org.springextensions.actionscript.ioc.factory.config.EventHandlerMetadataProcessor;
+		import org.springextensions.actionscript.ioc.factory.config.RequiredMetadataProcessor;
+		import org.springextensions.actionscript.ioc.factory.xml.RPCNamespaceHandler;
+		import org.springextensions.actionscript.samples.organizer.application.controller.*;
+		import org.springextensions.actionscript.samples.organizer.application.events.*;
+		import org.springextensions.actionscript.samples.organizer.infrastructure.repository.*;
+		import org.springextensions.actionscript.samples.organizer.infrastructure.repository.sqlite.DataSource;
+		import org.springextensions.actionscript.samples.organizer.infrastructure.repository.sqlite.SQLiteDatabase;
+		import org.springextensions.actionscript.samples.organizer.infrastructure.service.ContactImageFileSystemService;
+		import org.springextensions.actionscript.samples.organizer.infrastructure.ui.*;
+		import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
+
+		// compile these classes
+		DefaultAutowiringStageProcessor;
+		EventHandlerMetadataProcessor;
+		RequiredMetadataProcessor;
+
+		AIRAlertFactory;
+		ApplicationController;
+		ContactInMemoryRepository;
+		ContactRemoteObjectRepository;
+		ContactSqliteRepository;
+		DataSource;
+		SQLiteDatabase;
+		KeyBindingController;
+		ContactController;
+		ContactWindowManager;
+		// service
+		ContactImageFileSystemService;
+
+		private static var logger:ILogger = LoggerFactory.getLogger("org.springextensions.actionscript.samples.organizer.Main");
+
+		private var applicationContext:FlexXMLApplicationContext;
+
+		/**
+		 * Loads the application context
+		 */
+		private function loadApplicationContext():void {
+			applicationContext = new FlexXMLApplicationContext("application-context.xml");
+			applicationContext.addNamespaceHandler(new RPCNamespaceHandler());
+			applicationContext.addEventListener(Event.COMPLETE, applicationContext_completeHandler);
+			applicationContext.load();
+		}
+
+		/**
+		 * Application context complete handler.
+		 */
+		private function applicationContext_completeHandler(event:Event):void {
+			logger.debug("application context loaded");
+
+			// initialize the native menu
+			var menuController:MenuController = applicationContext.getObject("menuController");
+			nativeWindow.menu = menuController.menu;
+
+			// load all contacts
+			EventBus.dispatchEvent(new Event(ApplicationEvents.LOAD_ALL_CONTACTS));
+		}
+		]]>
+	</fx:Script>
+
+	<ui:MainView/>
+
+</s:WindowedApplication>

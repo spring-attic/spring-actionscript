@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd ">
+
+	<interface class="org.springextensions.actionscript.objects.testinterfaces.ITestInterfaceWithSimpleProperty">
+		<property name="testProperty" value="test value"/>
+	</interface>
+
+	<interface class="org.springextensions.actionscript.objects.testinterfaces.ITestInterfaceWithInitMethod" init-method="initialize"/>
+	
+	<object id="testImpl" class="org.springextensions.actionscript.objects.testclasses.ImplementsTestInterfaceWithSimpleProperty"/>
+	
+	<!--  object class="org.springextensions.actionscript.objects.testclasses.ImplementsTestInterfaceWithSimplePropertyAndInitMethod"/-->
+
+</objects>

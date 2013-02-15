@@ -1,0 +1,2343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter annotations="" version="5.0" xml:id="extensions-documentation"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1998/Math/MathML"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook">
+  <title>Spring Actionscript extensions</title>
+
+  <section xml:id="spring_actionscript_extensions_introduction">
+    <title>Introduction</title>
+
+    <para>In this section we describe several extensions of Spring
+    Actionscript that will make the integration with other frameworks a little
+    easier.</para>
+
+    <section xml:id="cairngorm">
+      <title>Cairngorm 2</title>
+
+      <para>Spring Actionscript offers several extensions to the Cairngorm 2
+      micro-architecture that will make it easier to configure the various
+      objects by the Spring Actionscript <abbrev>IoC</abbrev> container. And
+      some of them will just make life a little easier when working with
+      Cairngorm. What follows is a description of how to setup a configuration
+      file that will allow you to manage the Cairngorm framework
+      externally.</para>
+
+      <note>
+        <para>As you can see, we refer in this section to Cairngorm 2, the
+        micro-architecture. A while ago <literal
+        xlink:href="http://opensource.adobe.com/wiki/display/cairngorm/Cairngorm+3">Cairngorm
+        3</literal> was released, which isn't a framework anymore but a set of
+        guidelines, best practices and accompanying tools.</para>
+      </note>
+
+      <section xml:id="the_modellocator">
+        <title>The ModelLocator</title>
+
+        <para>One of the main criticisms on Cairngorm you'll read on the
+        internet is its heavy use of the singleton pattern. To obtain a
+        reference to your model instance you need to call the static
+        <emphasis>ApplicationModel.getInstance()</emphasis> method every time
+        you need one. This tightly couples your code to a specific
+        implementation of your model, which in a world of 'High Cohesion and
+        Loose Coupling' is somewhat of a sin.</para>
+
+        <para>To circumvent this problem it's a good plan to first create an
+        interface for your model and have your concrete model implement this
+        interface. This way it'll be easy to inject your model across various
+        object instances in your application. The injection bit we will come
+        to later on. First let's create a very simple model interface:</para>
+
+        <programlisting>public interface IApplicationModel extends IEventDispatcher {
+        
+    function get productItems():ArrayCollection;
+
+    [Bindable(event="productItemsChanged")]
+    function set productItems(value:ArrayCollection):void;
+
+}</programlisting>
+
+        <para>And have your actual ModelLocator implement this, like
+        so:</para>
+
+        <programlisting>public class ApplicationModel extends EventDispatcher implements IModelLocator, <emphasis
+            role="bold">IApplicationModel</emphasis> {
+            
+    private static var _modelInstance : IApplicationModel;
+
+    public static function getInstance():IApplicationModel {
+        if (!_modelInstance) {
+            _modelInstance = new ApplicationModel();
+        }
+
+        return _modelInstance;
+    }
+
+    public function ApplicationModel():void {
+        super();
+        if (_modelInstance) {
+            throw new Error('Only one ApplicationModel instance should be instantiated');
+        }
+    }
+
+    private var _productItems:ArrayCollection;
+    
+    <emphasis role="bold">public function get productItems():ArrayCollection</emphasis> {
+        return _productItems;
+    }
+
+    <emphasis role="bold">[Bindable(event="productItemsChanged")]
+    public function set productItems(value:ArrayCollection):void</emphasis> {
+        if (value !== _productItems) {
+            _productItems = value;
+            dispatchEvent(new Event("productItemsChanged"));
+        }
+    }
+}</programlisting>
+
+        <para>That was easy enough right? Now let's add a bit of
+        <abbrev>XML</abbrev> to our application configuration that will make
+        sure a model instance is created:</para>
+
+        <programlisting>&lt;object id="appModelInstance" class="com.myclasses.cairngorm.ApplicationModel" factory-method="getInstance" scope="singleton"/&gt;</programlisting>
+
+        <para>When transferring responsibility for creating our model to the
+        <abbrev>IoC</abbrev> container, it is not even necessary anymore to
+        use the getInstance() factory method. Spring Actionscript will make
+        sure only one instance of the model is created. (Notice the
+        singleton="true" attribute). So in all fairness, we can just change
+        our model class into this:</para>
+
+        <programlisting>public class ApplicationModel extends EventDispatcher implements IModelLocator, IApplicationModel {
+
+    public function ApplicationModel():void {
+        super();
+    }
+
+    private var _productItems:ArrayCollection;
+    
+    public function get productItems():ArrayCollection {
+        return _productItems;
+    }
+    
+    [Bindable(event="productItemsChanged")]
+    public function set productItems(value:ArrayCollection):void {
+        if (value !== _productItems) {
+            _productItems = value;
+            dispatchEvent(new Event("productItemsChanged"));
+        }
+    }
+}</programlisting>
+
+        <para>And change our configuration by getting rid of the factory
+        method call:</para>
+
+        <programlisting>&lt;object id="applicationModel" class="com.myclasses.cairngorm.ApplicationModel" scope="singleton"/&gt;</programlisting>
+
+        <para>That's it! Next up we are going to configure our FrontController
+        and ServiceLocator.</para>
+      </section>
+
+      <section xml:id="the_frontcontroller">
+        <title>The FrontController</title>
+
+        <para>When using Cairngorm without Spring Actionscript you are used to
+        adding <abbrev>MXML</abbrev> instances of the FrontController and
+        ServiceLocator to your application like this:</para>
+
+        <programlisting>&lt;mx:Application
+    xmlns:control="com.cairngormclasses.control.*"
+    xmlns:business="com.cairngormclasses.business.*"
+    xmlns:mx="http://www.adobe.com/2006/mxml"
+    layout="absolute"&gt;
+    <emphasis role="bold">&lt;control:Controller id="frontController"/&gt;
+    &lt;business:Services id="serviceLocator"/&gt;</emphasis>
+&lt;/mx:Application&gt;</programlisting>
+
+        <para>After that you hook up your events and commands in your
+        FrontController in more or less this fashion:</para>
+
+        <programlisting>public class Controller extends FrontController {
+        
+    public static const SOME_ACTION:String = "SomeActionEventID";
+    
+<lineannotation> //-----------------------------------------------------------</lineannotation>
+ 
+    public function Controller() {
+        super();
+        initializeCommands();
+    }
+
+<lineannotation> //-----------------------------------------------------------</lineannotation>
+
+    public function initializeCommands():void {
+        addCommand( Controller.SOME_ACTION, SomeActionCommand );
+    }
+}</programlisting>
+
+        <para>And your service locator implementation will probably look
+        something like this (depending on which server technology is being
+        used):</para>
+
+        <programlisting>&lt;cairngorm:ServiceLocator
+ xmlns:cairngorm="com.adobe.cairngorm.business.*"
+ xmlns:mx="http://www.adobe.com/2006/mxml"&gt;
+
+ &lt;mx:RemoteObject id="SomethingRemote"
+  endpoint="/flex2gateway/"
+  destination="ColdFusion"
+  source="com.myremoteobjects.someservice"
+  concurrency="multiple"
+  makeObjectsBindable="true"
+  showBusyCursor="true"/&gt;
+
+&lt;/cairngorm:ServiceLocator&gt;</programlisting>
+
+        <para>Now this is all fine and dandy, but of course we would really
+        like to keep configuration outside of our compiled code. Otherwise
+        every time we'd like to change an event/command combination we'd have
+        to re-compile the application. So, this is where the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+        comes in. This class allows you to pass an object as a parameter to
+        its <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController#CairngormFrontController()">constructor</literal>
+        which holds a mapping of event id's and commands.</para>
+
+        <para>To configure the instantiation of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+        in Spring Actionscript add this snippet of <abbrev>XML</abbrev> to
+        your configuration:</para>
+
+        <programlisting>&lt;object id="frontController" class="org.springextensions.actionscript.cairngorm.control.CairngormFrontController" scope="singleton"&gt;
+&lt;constructor-arg&gt;
+  &lt;object&gt;
+<lineannotation>    &lt;!-- Add a new property for each event/command mapping: --&gt;</lineannotation>
+    &lt;property name="SomeActionEventID" value="SomeActionCommand"/&gt;
+  &lt;/object&gt;
+&lt;/constructor-arg&gt;
+<lineannotation>&lt;!-- The following argument is optional --&gt;</lineannotation>
+&lt;constructor-arg value="com.mycommands.command"/&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>The first argument is the object that contains the mapping
+        between the event names and the command classes. The second argument
+        is optional and defines the package where the command classes reside.
+        By specifying this argument, you don't need to define the fully
+        qualified class names of the commands.</para>
+
+        <para>We can now leave out the FrontController class, but beware: we
+        need to make sure that the command classes get compiled in the swf of
+        our application. We can do this by referencing them in our
+        application. We'll also reference the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+        class:</para>
+
+        <programlisting>private var _cairngormFrontController:CairngormFrontController;
+private var _commands:Array = [SomeActionCommand];</programlisting>
+
+        <para>The <abbrev>MXML</abbrev> declarations of the FrontController
+        and ServiceLocator have become obsolete by now, so let's get rid of
+        them:</para>
+
+        <programlisting>&lt;mx:Application
+ xmlns:control="com.cairngormclasses.control.*"
+ xmlns:business="com.cairngormclasses.business.*"
+ xmlns:mx="http://www.adobe.com/2006/mxml"
+ layout="absolute"&gt;
+<lineannotation>  &lt;!-- control:Controller id="frontController"/ --&gt;
+  &lt;!-- business:Services id="serviceLocator"/ --&gt;
+</lineannotation>&lt;/mx:Application&gt;</programlisting>
+
+        <section xml:id="batch_command_support">
+          <title>Batch command support</title>
+
+          <para>In some cases its not necessarily convenient to have a
+          separate event for every command that you want to execute.
+          Especially in bootstrap scenario's it can come in handy if a single
+          event can trigger several commands. For instance, an event called
+          ExecuteBootstrapEvent triggers a command that retrieves the locale
+          data, one for default user settings, etc, etc.</para>
+
+          <para>The <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+          supports this behaviour by default. It is determined by the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController#allowCommandBatches">allowCommandBatches</literal>
+          property which is set to <emphasis>true</emphasis> by
+          default.</para>
+
+          <para>What this does is allow you to associate more than one command
+          with a single event, in the configuration markup this is done simply
+          like this:</para>
+
+          <programlisting>&lt;object id="frontController" class="org.springextensions.actionscript.cairngorm.control.CairngormFrontController" scope="singleton"&gt;
+&lt;constructor-arg&gt;
+  &lt;object&gt;
+<lineannotation>    &lt;!-- Add a new property for each event/command mapping: --&gt;</lineannotation>
+    &lt;property name="SomeActionEventID" value="SomeActionCommand"/&gt;
+    &lt;property name="SomeActionEventID" value="AnotherActionCommand"/&gt;
+  &lt;/object&gt;
+&lt;/constructor-arg&gt;
+&lt;/object&gt;</programlisting>
+
+          <para>Now, when a CairngormEvent is dispatched with the id <emphasis
+          role="bold">SomeActionEventID</emphasis>, both the
+          <emphasis>SomeActionCommand</emphasis> and
+          <emphasis>AnotherActionCommand</emphasis> classes will be created
+          and executed.</para>
+
+          <note>
+            <para>Another way of treating this scenario is to use an <literal
+            xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence">EventSequence</literal>,
+            as described in the section '<link linkend="Event_sequences">Event
+            Sequences</link>'.</para>
+          </note>
+        </section>
+      </section>
+
+      <section xml:id="module_support_in_the_cairngormfrontcontroller">
+        <title>Module support in the CairngormFrontController</title>
+
+        <para>One big drawback and limiting factor of the regular
+        FrontController is that it doesn't play nice in a multiple module
+        scenario. Meaning, in the case where two FrontController instances are
+        created for two different modules, yet both instances have associated
+        a command with the <emphasis>same</emphasis> event id, this will
+        actually trigger both commands when this specified event is
+        dispatched. The reason for this is the dependency that the
+        FrontController has on the CairngormEventDispatcher, which is a
+        singleton. So both controllers will listen for the same event from one
+        instance of the CairngormEventDispatcher.</para>
+
+        <para>An example of this behavior could be an event that retrieves
+        module settings. (Not too uncommon). Imagine that this event has an id
+        called "GetSettingEventId". Now the first module loads, its
+        FrontController gets instantiated and then some time after this the
+        GetSettings event is dispatched. So far so good, the FrontController
+        detects the event being dispatched and executes its associated
+        GetSettings command which in turn calls a delegate, etc. However, when
+        a second module gets loaded which <emphasis>also</emphasis> needs to
+        retrieve its settings <emphasis>both</emphasis> controllers will
+        detect the GetSettings event and <emphasis>both</emphasis> of them
+        will execute their command. Which will lead to all kinds of
+        interesting results you might imagine.</para>
+
+        <para>Naturally it would be desirable to somehow associate a
+        FrontController with a specific module and when events are dispatched
+        within this module only the associated controller will be
+        triggered.</para>
+
+        <para>Spring Actionscript's <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+        offers support for multiple module scenario's. This functionality
+        doesn't rely on a singleton event dispatcher but uses event bubbling
+        instead. This <emphasis>does</emphasis> demand a certain way of
+        setting things up though and this section will show you exactly
+        how.</para>
+
+        <section xml:id="registering_your_module_with_the_cairngormfrontcontroller">
+          <title>Registering your module with the
+          CairngormFrontController</title>
+
+          <para>After the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+          has been created it needs to know in which module's context its
+          running. You can do this by invoking the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>'s
+          <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController#register()">register()</literal>
+          method and passing the current module instance to it. As an example,
+          imagine a module's CREATION_COMPLETE event handler to be looking
+          something like this:</para>
+
+          <programlisting>public function creationComplete_handler(event:FlexEvent):void {
+ var frontController:CairngormFrontController = _applicationContext.getObject("moduleController") as CairngormFrontController;
+ frontController.register(this);
+}
+</programlisting>
+
+          <para>After this the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>'s
+          instance will only be triggered by events that are dispatched within
+          this module's context.</para>
+        </section>
+
+        <section xml:id="bubbling_your_cairngorm_events_up_to_the_cairngormfrontcontroller">
+          <title>Bubbling your Cairngorm events up to the
+          CairngormFrontController</title>
+
+          <para>One thing you will have to make sure of is that your
+          CairngormEvents are created with event bubbling set to
+          <emphasis>true</emphasis> and dispatched through one of the UI
+          components dispatchEvent() invocations.</para>
+
+          <para>For example, if a button click needs to trigger a
+          CairngormEvent, you used to dispatch it like this:</para>
+
+          <programlisting>public function click_handler(event:MouseEvent):void {
+ CairngormEventDispatcher.getInstance().dispatchEvent(new MyCairngormEvent());
+}</programlisting>
+
+          <para>Or, you'd use the shorthand version:</para>
+
+          <programlisting>public function click_handler(event:MouseEvent):void {
+ new MyCairngormEvent().dispatch();
+}</programlisting>
+
+          <para>The difference now is that you will dispatch the event through
+          a UIComponent that is part of the display hierarchy of the module,
+          so instead you can dispatch the event like this:</para>
+
+          <programlisting>public function click_handler(event:MouseEvent):void {
+ <emphasis role="bold">this.dispatchEvent(new MyCairngormEvent());</emphasis>
+}</programlisting>
+
+          <para>By default though, a CairngormEvent is created with its
+          <emphasis>bubbling</emphasis> property set to false. So make sure
+          that CairngormEvents that are used in combination with the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+          that uses a registered module are <emphasis>always</emphasis>
+          created with their <emphasis>bubbling</emphasis> property set to
+          <emphasis>true</emphasis>.</para>
+
+          <programlisting>var newEvent:MyCairngormEvent = new MyCairngormEvent("MyCairngormEventID",<emphasis
+              role="bold">true</emphasis>);</programlisting>
+
+          <para>For your convenience Spring Actionscript has a base class for
+          this particular type of CairngormEvent called <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.module.SASCairngormModuleEvent">SASCairngormModuleEvent</literal>.
+          This CairngormEvent subclass has its <emphasis>bubbling</emphasis>
+          property forced to true and will throw an Error when the built-in
+          dispatch() method is accidentally invoked.</para>
+
+          <para>If you are dispatching your Cairngorm events from a non-visual
+          class, say a mediator or some subcontroller you will have to make
+          sure that this class has a reference to an IEventDispatcher instance
+          that is part of the UI hierarchy. Here's an example of a very simple
+          mediator class:</para>
+
+          <programlisting>public class ExampleMediator extends EventDispatcher implements IExampleMediator {
+
+ public function ExampleMediator(target:IEventDispatcher=null) {
+  super(target);
+ }
+
+ public function remoteOperation():void {
+  dispatchEvent(new MyCairngormEvent());
+ } 
+
+}
+</programlisting>
+
+          <para>Now to make an instance of this class to bubble its events up
+          the UI hierarchy create it with the module as a constructor
+          argument, so the module's CREATION_COMPLETE event handler could now
+          look something like this:</para>
+
+          <programlisting>public function creationComplete_handler(event:FlexEvent):void {
+ var frontController:CairngormFrontController = _applicationContext.getObject("moduleController") as CairngormFrontController;
+ frontController.register(this);
+
+ var exampleMediator:ExampleMediator = _applicationContext.getObject("exampleMediator",this) as ExampleMediator;}
+}
+</programlisting>
+        </section>
+
+        <section xml:id="injecting_the_module_instance_into_the_cairngormfrontcontroller">
+          <title>Injecting the module instance into the
+          CairngormFrontController</title>
+
+          <para>Naturally the ideal situation would be where we can determine
+          which module gets registered with which <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+          using our beloved Spring Actionscript configuration markup. In this
+          section we show you one possible way of wiring up your objects using
+          functionality that is already a part of Spring Actionscript.</para>
+
+          <para>First of all we create a simple class that will be responsible
+          for receiving a module instance and somehow associate this with a
+          particular <literal
+          xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.module.ModuleFrontController">CairngormFrontController</literal>.
+          Let's say this class looks like this:</para>
+
+          <programlisting>public class CairngormFrontControllerWireAgent implements IObjectFactoryAware {
+
+ private var _moduleMap:Dictionary;
+ private var _objectFactory:IObjectFactory;
+
+ public function ModuleFrontControllerWireAgent(moduleMap:Dictionary){
+  Assert.notNull(moduleMap,"moduleMap argument must not be null");
+  _moduleMap = moduleMap;
+ }
+
+ public function evaluate(component:Object):void {
+  Assert.notNull(_objectFactory,"_objectFactory must not be null");
+  var module:Module = (component as Module);
+  if (module != null) {
+   <emphasis role="bold">var name:String = module.name;</emphasis>
+   <emphasis role="bold">var frontControllerName:String = _moduleMap[name];</emphasis>
+   if (frontControllerName != null) {
+    var frontController:CairngormFrontController = _objectFactory.getObject(frontControllerName) as CairngormFrontController;
+    if (frontController != null){
+     frontController.register(module);
+    }
+   }
+  }
+ }
+
+ public function set objectFactory(value:IObjectFactory):void {
+  _objectFactory = value;
+ }
+
+}
+</programlisting>
+
+          <note>
+            <para>Notice the use of the Assert.notNull() method, this is part
+            of the as3commons-lang library, for more information about this
+            Spring Actionscript spin off visit <literal
+            xlink:href="http://www.as3commons.org">http://www.as3commons.org</literal></para>
+          </note>
+
+          <para>As you see this class receives a dictionary as a constructor
+          argument, this dictionary is a collection of module name /
+          FrontController name key-value pairs. To configure this class using
+          Spring Actionscript markup your configuration might look something
+          like this:</para>
+
+          <programlisting>&lt;object id="frontcontrollerWireAgent" class="com.classes.CairngormFrontControllerWireAgent" scope="singleton"&gt;
+ &lt;constructor-arg&gt;
+  &lt;dictionary&gt;
+   &lt;entry key="mymodulename" value="frontcontrollerA"/&gt;
+  &lt;/dictionary&gt;
+ &lt;/constructor-arg&gt;
+&lt;/object&gt;
+
+&lt;object id="frontcontrollerA" class="org.springextensions.actionscript.cairngorm.control.CairngormFrontController" scope="singleton" lazy-init="true"&gt;
+ <lineannotation>&lt;!-- configuration omitted for brevity --&gt;</lineannotation>
+&lt;/object&gt;</programlisting>
+
+          <para>Now only remains the question when and how to let the
+          CairngormFrontControllerWireAgent work its magic, for this last task
+          Spring Actionscript already offers the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.StageComponentInterceptionPostProcessor">StageComponentInterceptionPostProcessor</literal>
+          class. (See the section '<link
+          linkend="injecting_stage_components_into_other_object">Injecting
+          stage components into other objects</link>' and '<link
+          linkend="the_stage_interception_schema">The stage interception
+          schema</link>' for the complete lowdown on this class).</para>
+
+          <para>Let's dive right in and show how to configure this class to
+          leverage a CairngormFrontControllerWireAgent instance:</para>
+
+          <programlisting>&lt;objects
+  xmlns="http://www.springactionscript.org/schema/objects"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <emphasis role="bold">xmlns:si="http://www.springactionscript.org/schema/stageinterception"</emphasis>
+  xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+  http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+  <emphasis role="bold">http://www.springactionscript.org/schema/objects/spring-actionscript-stageinterception-1.0.xsd"</emphasis>&gt;
+
+ &lt;object id="frontcontrollerWireAgent" class="com.classes.CairngormFrontControllerWireAgent" scope="singleton"&gt;
+  &lt;constructor-arg&gt;
+   &lt;dictionary&gt;
+    &lt;entry key="mymodulename" value="frontcontrollerA"/&gt;
+   &lt;/dictionary&gt;
+  &lt;/constructor-arg&gt;
+ &lt;/object&gt;
+
+ &lt;object id="frontcontrollerA" class="org.springextensions.actionscript.cairngorm.control.CairngormFrontController" scope="singleton" lazy-init="true"&gt;
+  &lt;!-- configuration omitted for brevity --&gt;
+ &lt;/object&gt;
+ 
+<emphasis role="bold"> &lt;si:stageinterceptor target-object="frontcontrollerWireAgent" target-method="evaluate"
+        object-selector="moduleSelector" id="stageInterceptor"/&gt;
+     
+ &lt;object id="moduleSelector" class="org.springextensions.actionscript.ioc.wire.TypeBasedObjectSelector"&gt;
+  &lt;constructor-arg&gt;
+   &lt;array&gt;
+    &lt;value type="class"&gt;mx.modules.Module&lt;/value&gt;
+   &lt;/array&gt;
+  &lt;/constructor-arg&gt;
+ &lt;/object&gt;
+</emphasis>
+&lt;/objects&gt;</programlisting>
+
+          <para>And that's the gist of it, right after your module has been
+          loaded and added to the stage the stage interceptor kicks into gear
+          and makes sure the CairngormFrontControllerWireAgent performs the
+          necessary injections and you're good to go.</para>
+        </section>
+      </section>
+
+      <section xml:id="the_servicelocator">
+        <title>The ServiceLocator</title>
+
+        <para>Now what about that ServiceLocator? Having all that remoting
+        configuration right inside your source code is also not very
+        convenient. What if the paths are different between staging and
+        production servers? What if you'd like to change the remote path later
+        on while already being in production? Right now all of those changes
+        would require a re-compile of the application. A re-compile that is
+        unnecessary when you use Spring Actionscript to configure your
+        ServiceLocator.</para>
+
+        <para>To be able to configure the services at runtime Spring
+        Actionscript offers a subclass of the normal ServiceLocator that
+        allows just this. The class we're talking about is the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.CairngormServiceLocator">CairngormServiceLocator</literal>.
+        To have the container create an instance of this class, add this bit
+        of markup to your application configuration.</para>
+
+        <programlisting>&lt;object id="serviceLocator" class="org.springextensions.actionscript.cairngorm.business.CairngormServiceLocator" factory-method="getInstance"&gt;
+  <lineannotation>&lt;!-- The CairngormServiceLocator is marked with the dynamic keyword, so new properties can be added at runtime: --&gt;</lineannotation>
+  &lt;property name="testService"&gt;
+    &lt;ref&gt;<emphasis role="bold">testService</emphasis>&lt;/ref&gt;
+  &lt;/property&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>As you'll notice by the <emphasis
+        role="bold">&lt;ref/&gt;</emphasis> element used in the testService
+        property, this ServiceLocator already has one service
+        configured.</para>
+
+        <para>The testService (RemoteObject) instance is defined like
+        this:</para>
+
+        <programlisting>&lt;object id="<emphasis role="bold">testService</emphasis>" class="mx.rpc.remoting.mxml.RemoteObject" scope="singleton"&gt;
+  &lt;property name="id" value="testService"/&gt;
+  &lt;property name="endpoint" value="/flex2gateway/"/&gt;
+  &lt;property name="destination="ColdFusion"/&gt;
+  &lt;property name="source" value="com.myremoteobjects.someservice"/&gt;
+  &lt;property name="showBusyCursor" value="true"/&gt;
+  &lt;property name="makeObjectsBindable" value="true"/&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>Of course, afterwards make sure the appropriate classes are
+        referenced in your source code, otherwise you will experience run-time
+        errors because the classes will not have been compiled into your
+        swf:</para>
+
+        <programlisting>private var _cairngormFrontController:CairngormFrontController;
+private var _cairngormServiceLocator:CairngormServiceLocator;
+private var _remoteObject:mx.rpc.remoting.mxml.RemoteObject;
+private var _commands:Array = [SomeActionCommand];</programlisting>
+
+        <section xml:id="channel_configuration">
+          <title>Channel configuration</title>
+
+          <para>But wait a minute, that RemoteObject right now makes use of
+          the default configured channel set in Flex, how about we pull that
+          into our configuration as well?</para>
+
+          <para>Doing this is quite easy, just add this bit of
+          <abbrev>XML</abbrev>:</para>
+
+          <programlisting>&lt;object id="amfChannel" class="mx.messaging.channels.AMFChannel" scope="singleton"&gt;
+  &lt;constructor-arg value="my-amf"/&gt;
+  &lt;constructor-arg value="http://{server.name}:{server.port}/flex2gateway/"/&gt;
+  &lt;property name="id" value="amfChannel"/&gt;
+  &lt;property name="pollingEnabled" value="false"/&gt;
+&lt;/object&gt;
+
+&lt;object id="channelset" class="mx.messaging.ChannelSet" scope="singleton"&gt;
+  &lt;method-invocation name="addChannel"&gt;
+    &lt;arg&gt;
+      &lt;ref&gt;amfChannel&lt;/ref&gt;
+    &lt;/arg&gt;
+  &lt;/method-invocation&gt;
+&lt;/object&gt;</programlisting>
+
+          <para>And add an extra property to your RemoteObject configuration,
+          like this:</para>
+
+          <programlisting>&lt;object id="testService" class="mx.rpc.remoting.mxml.RemoteObject"&gt;
+  &lt;property name="id" value="testService"/&gt;
+  &lt;property name="destination="ColdFusion"/&gt;
+  &lt;property name="source" value="com.myremoteobjects.someservice"/&gt;
+  &lt;property name="showBusyCursor" value="true"/&gt;
+  &lt;property name="makeObjectsBindable" value="true"/&gt;
+  <emphasis role="bold">&lt;property name="channelSet"&gt;
+    &lt;ref&gt;channelset&lt;/ref&gt;
+  &lt;/property&gt;</emphasis>
+&lt;/object&gt;</programlisting>
+
+          <para>Spring Actionscript also offers some convenience markup to
+          make configuring channels a little easier. See the section <link
+          linkend="the_messaging_schema">'The messaging schema'</link> for
+          more information.</para>
+        </section>
+
+        <section xml:id="remoteobject_template">
+          <title>RemoteObject template</title>
+
+          <para>Now there's a fair chance that this will not be the only
+          RemoteObject that you'll be using in your application, usually
+          there's a multiple of them. Let's add a template to the
+          configuration that will save a bit of typing when adding new
+          ones:</para>
+
+          <programlisting>&lt;template id="remoteObject"&gt;
+  &lt;object class="mx.rpc.remoting.mxml.RemoteObject" scope="singleton"&gt;
+    &lt;property name="destination" value="ColdFusion"/&gt;
+    &lt;property name="source" value="com.myremoteobjects.${<emphasis
+              role="bold">serviceClass</emphasis>}"/&gt;
+    &lt;property name="channelSet"&gt;
+      &lt;ref&gt;channelset&lt;/ref&gt;
+    &lt;/property&gt;
+  &lt;/object&gt;
+&lt;/template&gt;</programlisting>
+
+          <para>Now you can change the configuration for the testService into
+          markup that looks like this:</para>
+
+          <programlisting>&lt;object id="testService" template="remoteObject"&gt;
+  &lt;param name="<emphasis role="bold">serviceClass</emphasis>" value="<emphasis>someservice</emphasis>"/&gt;
+&lt;/object&gt;</programlisting>
+
+          <para>Spring Actionscript also offers some convenience markup to
+          make configuring remote objects a little easier. See the section
+          <link linkend="the_rpc_schema">'The RPC schema'</link> for more
+          information.</para>
+        </section>
+      </section>
+
+      <section xml:id="the_command_factory">
+        <title>The Command Factory</title>
+
+        <para>The FrontController usually takes care of instantiating the
+        command classes that are mapped to your events. This starts to become
+        inconvenient when a Command instance needs a reference to, for
+        example, the model instance. (A situation which will occur quite
+        regularly.) Normally you would just add a direct reference into your
+        command class through a call to the
+        <emphasis>applicationModel.getInstance()</emphasis> method. This is
+        what we call 'tight coupling' and is undesirable since it leaves the
+        command directly dependent on a specific implementation of the model
+        class. For example, this will make unit testing the class a lot harder
+        since your unit test will be dependent on that same model
+        instance.</para>
+
+        <para>So what we'd like to be able to do is inject this model instance
+        into the command after it has been created. Spring Actionscript offers
+        the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ICommandFactory">ICommandFactory</literal>
+        interface to solve this problem.</para>
+
+        <para>The interface is very simple and requires only to implement two
+        methods:</para>
+
+        <programlisting>public function canCreate(clazz:Class):Boolean;
+public function createCommand(clazz:Class):ICommand;</programlisting>
+
+        <para>The result of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ICommandFactory#canCreate()">canCreate()</literal>
+        method determines whether the specific command factory is able to
+        create the requested command class. In this method you could check if
+        a command implements a certain interface or look it up in a list of
+        command classes that was injected at runtime.</para>
+
+        <para>If the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ICommandFactory#canCreate()">canCreate()</literal>
+        method returns true it will be save to call the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ICommandFactory#createCommand()">createCommand()</literal>
+        method which returns the actual instance of the requested
+        class.</para>
+
+        <para>The <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontcontroller</literal>
+        actually creates an implementation of this interface internally. This
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ICommandFactory">ICommandFactory</literal>
+        implementation checks whether the specified class implements the
+        <literal>ICommand</literal> interface and creates the command or not
+        accordingly.</para>
+
+        <note>
+          <para>When you import both Cairngorm and Spring Actionscript you
+          will notice there are two definitions for the ICommand interface,
+          namely <emphasis
+          role="bold">org.springextensions.actionscript.core.command.ICommand</emphasis>
+          and <emphasis
+          role="bold">com.adobe.cairngorm.commands.ICommand</emphasis>. In
+          this case you need to import the latter.</para>
+        </note>
+
+        <para>Now, to solve your little model injection problem, let's say you
+        define a small interface called IApplicationModelAware. The definition
+        of which could simply be like this:</para>
+
+        <programlisting>public interface IApplicationModelAware {
+        
+    function set applicationModel(value:IApplicationModel):void;
+  
+}</programlisting>
+
+        <para>Where the IApplicationModel is the interface you have created to
+        describe your model.</para>
+
+        <para>Now you can go ahead and create a base class for all your
+        commands that require a reference to the model:</para>
+
+        <programlisting>public class CommandBase extends AbstractResponderCommand <emphasis
+            role="bold">implements IApplicationModelAware {</emphasis>
+            
+    public function CommandBase() {
+        super();
+    }
+
+    private var _applicationModel:IApplicationModel;
+    
+    function get applicationModel():IApplicationModel {
+        return _applicationModel;
+    }
+ 
+    <emphasis role="bold">function set applicationModel(value:IApplicationModel):void {
+        _applicationModel = value;
+    }</emphasis>
+
+    override public function execute(event:CairngormEvent):void {
+        super.execute(event);
+    }
+
+    override public function result(data:Object):void {
+        throw new Error("Not implemented in base class");
+    }
+
+    override public function fault(info:Object):void {
+        throw new Error("Not implemented in base class");
+    }
+    
+}</programlisting>
+
+        <para>To be able to create subclasses of this command and inject them
+        with a model reference we can now construct an implementation of the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ICommandFactory">ICommandFactory</literal>
+        interface:</para>
+
+        <programlisting>public class ApplicationModelAwareCommandFactory implements ICommandFactory, IApplicationModelAware {
+
+    public function CommandFactory() {
+        super();
+    }
+
+    private var _applicationModel:IApplicationModel;
+    
+    function set applicationModel(value:IApplicationModel):void {
+        _applicationModel = value;
+    }
+
+    public function canCreate(clazz:Class):Boolean {
+        <emphasis role="bold">return (ClassUtils.isSubclassOf(clazz, CommandBase));</emphasis>
+    }
+
+    public function createCommand(clazz:Class):ICommand {
+        <emphasis role="bold">var result:CommandBase = new clazz();
+        result.applicationModel = _applicationModel;
+        return result;</emphasis>
+    }
+}</programlisting>
+
+        <note>
+          <para>You will notice the use of the <emphasis
+          role="bold">ClassUtils</emphasis> class in this code example. This
+          is part of the as3commons-lang library, part of the as3commons
+          library, which can be found here: <literal
+          xlink:href="http://www.as3commons.org/"
+          xlink:title="The AS3Commons project is dedicated to one principal goal: creating and maintaining reusable ActionScript? 3.0 components.">http://www.as3commons.org</literal></para>
+        </note>
+
+        <para>As you see the ApplicationModelAwareCommandFactory implements
+        the same IApplicationModelAware interface as well. Now, to be able to
+        inject the model into our new factory and after that inject it into
+        our controller we need to add some <abbrev>XML</abbrev> to our
+        application configuration. First let's create the command
+        factory:</para>
+
+        <programlisting>&lt;object id="appAwareCmdFactory" class="com.myclasses.cairngorm.factories.ApplicationModelAwareCommandFactory" scope="singleton"&gt;
+ &lt;property name="applicationModel" ref="appModelInstance"/&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>Remember how we already added markup to instantiate our model?
+        We now use the context id of that object to inject it into our command
+        factory.</para>
+
+        <para>Now we can change the <abbrev>XML</abbrev> markup that
+        configures our controller:</para>
+
+        <programlisting>&lt;object id="frontController" class="org.springextensions.actionscript.cairngorm.control.CairngormFrontController" scope="singleton"&gt;
+ &lt;constructor-arg&gt;
+  &lt;object&gt;
+   &lt;property name="SomeActionEventID" value="SomeActionCommand"/&gt;
+  &lt;/object&gt;
+ &lt;/constructor-arg&gt;
+ <lineannotation>&lt;!-- The followoing argument is optional --&gt;</lineannotation>
+ &lt;constructor-arg value="com.mycommands.command"/&gt;
+ <lineannotation>&lt;!-- Add a custom command factory instance --&gt;</lineannotation>
+ &lt;method-invocation name="addCommandFactory"&gt;
+  &lt;arg&gt;&lt;ref&gt;appAwareCmdFactory&lt;/ref&gt;&lt;/arg&gt;
+ &lt;/method-invocation&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>And there we are! From now on every command that is added to our
+        FrontController (and subclasses the CommandBase class) will be
+        automatically injected with the ApplicationModel instance after
+        creation.</para>
+
+        <section xml:id="using_the_application_context_as_a_command_factory">
+          <title>Using the application context as a command factory</title>
+
+          <para>Its unnecessary to create an
+          <literal>ICommandFactory</literal> if the injections can be
+          expressed in the <abbrev>XML</abbrev> configuration. In this case,
+          just define the definitions for the commands in the application
+          context and add them to the front controller like this:</para>
+
+          <programlisting>&lt;object id="someActionCommandID" class="com.class.commands.MyCommand"&gt;
+&lt;!-- omitted configuration --&gt;
+&lt;/object&gt;
+
+&lt;object id="frontController" class="org.springextensions.actionscript.cairngorm.control.CairngormFrontController" scope="singleton"&gt;
+ &lt;constructor-arg&gt;
+  &lt;object&gt;
+   &lt;property name="SomeActionEventID" value="someActionCommandID"/&gt;
+  &lt;/object&gt;
+ &lt;/constructor-arg&gt;
+&lt;/object&gt;</programlisting>
+        </section>
+      </section>
+
+      <section xml:id="the_delegate_factory">
+        <title>The Delegate Factory</title>
+
+        <para>Cairngorm commands need delegates, these delegates are
+        responsible for retrieving and sending the data in the application.
+        One way to do this is to create an instance of a specific delegate
+        inside the command class. Let's create an example command class that
+        handles the retrieval of products:</para>
+
+        <programlisting>public class GetProductItemsCommand extends CommandBase<emphasis
+            role="bold"></emphasis> {
+    private var _delegate:GetProductItemsDelegate;
+    
+    public function GetProductItemsCommand() {
+        super();
+        <lineannotation>//create the specific delegate class and pass ourselves as its responder</lineannotation>
+        _delegate = new GetProductItemsDelegate(this as IResponder);
+    }
+
+    override public function execute(event:CairngormEvent):void {
+       super.execute(event);
+       <lineannotation>//execute the delegate logic</lineannotation>
+       _delegate.getProductItems();
+    }
+
+    override public function result(data:Object):void {
+        // Business logic to handle the data retrieval
+    }
+
+    override public function fault(info:Object):void {
+        // Logic to handle errors
+    }
+    
+}</programlisting>
+
+        <para>Again this tightly couples the command to a specific delegate.
+        For example, what if we want to replace this delegate with a mock
+        version that simply returns test data? What is needed, again, is an
+        interface, one that describes the functionality of our delegate.
+        Spring Actionscript already offers an interface that we can use as a
+        base for this. Its called <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IBusinessDelegate">IBusinessDelegate</literal>.</para>
+
+        <para>The GetProductItemsDelegate declaration could look a little like
+        this:</para>
+
+        <programlisting>public interface IGetProductItemsDelegate extends IBusinessDelegate {
+ 
+    function getProductItems():void;
+    
+}</programlisting>
+
+        <para>An implementation of the interface can conveniently inherit from
+        the already available <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.AbstractBusinessDelegate">AbstractBusinessDelegate
+        class:</literal></para>
+
+        <programlisting>public class GetProductItemsDelegate extends AbstractBusinessDelegate {
+    
+    public function GetProductItemsDelegate(service:* = null, responder:IResponder = null) {
+        super(service, responder);
+    }
+ 
+    public function getProductItems():void {
+        var token:AsyncToken = service.getProductItems();
+        token.addResponder(this.responder);
+    }
+}</programlisting>
+
+        <para>Now its time to change the base command class. You can see we
+        were already inheriting from the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.AbstractResponderCommand">AbstractResponderCommand</literal>
+        class provided by Spring Actionscript. This class already exposes a
+        property called <emphasis>businessDelegate</emphasis> which expects an
+        instance of <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IBusinessDelegate">IBusinessDelegate</literal>.
+        Since we made our IGetProductItemsDelegate inherit from this interface
+        we can use this property in our command class. We can delete the
+        creation of the delegate altogether and simply cast the value of the
+        businessDelegate property to our own delegate interface.</para>
+
+        <para>We'll make sure an appropriate instance will be injected later
+        on, first let's change our command into this:</para>
+
+        <programlisting>public class GetProductItemsCommand extends CommandBase {
+    public function GetProductItemsCommand() {
+        super();
+    }
+
+    override public function execute(event:CairngormEvent):void {
+        super.execute(event);
+        <lineannotation>//execute the delegate logic</lineannotation>
+        <emphasis role="bold">IGetProductItemsDelegate(this.businessDelegate).getProductItems();</emphasis>
+    }
+
+    override public function result(data:Object):void {
+        // Business logic to handle the data retrieval
+    }
+
+    override public function fault(info:Object):void {
+        // Logic to handle errors
+    }
+}</programlisting>
+
+        <para>Nothing fancy there either, actually we just made our class
+        smaller which always good, right?</para>
+
+        <para>Now we want to be able to create an instance of the
+        GetProductItemsDelegate and inject it into our GetProductItemsCommand
+        once its created by the command factory. Luckily Spring Actionscript
+        already offers a class that performs exactly this task for you. The
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ResponderCommandFactory">ResponderCommandFactory</literal>
+        class to be precise. This class (an implementation of <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.IResponderCommandFactory">IResponderCommandFactory</literal>)
+        has a method called <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.IResponderCommandFactory#addBusinessDelegateFactory()">addBusinessDelegateFactory()</literal>
+        which expects an instance of <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IBusinessDelegateFactory">IBusinessDelegateFactory</literal>
+        and an array of command classes.</para>
+
+        <para>Before we forget, first let's change the implementation of our
+        command class so that it inherits from <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.ResponderCommandFactory">ResponderCommandFactory</literal>:</para>
+
+        <programlisting>public class ApplicationModelAwareCommandFactory extends <emphasis
+            role="bold">ResponderCommandFactory</emphasis> implements IApplicationModelAware {
+
+    public function CommandFactory() {
+        super();
+    }
+
+    private var _applicationModel:IApplicationModel;
+
+    function set applicationModel(value:IApplicationModel):void {
+        _modelInstance = value;
+    }
+
+    override public function canCreate(clazz:Class):Boolean {
+        <lineannotation>//First check if we can create the specified class, then ask our super class if he agrees with us:</lineannotation>
+        if (ClassUtils.isSubclassOf(clazz, CommandBase)) {
+            return super.canCreate(clazz);
+        }
+        return false;
+    }
+
+    override public function createCommand(clazz:Class):ICommand {
+        <lineannotation>//First have our super class create and inject an instance, after that we perform our own injection and finaly return the result:</lineannotation>
+        var result:CommandBase = super.createCommand(clazz) as CommandBase;
+        result.applicationModel = _applicationModel;
+        return result;
+    }
+}</programlisting>
+
+        <para>Well, then it is finally time to tie everything together and the
+        place to do this of course is the Spring Actionscript
+        configuration.</para>
+
+        <para>First of all, let's define our BusinessDelegate factory:</para>
+
+        <programlisting>&lt;object id="businessDelegateFactory"
+   class="org.springextensions.actionscript.cairngorm.business.BusinessDelegateFactory" scope="singleton"&gt;
+  &lt;property name="service" ref="testService"/&gt;
+  &lt;property name="delegateClass" type="class" value="com.myclasses.delegates.GetProductItemsDelegate"&gt;&lt;/property&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>After that we can create the new command factory and add our
+        business delegate factory to it, along with the name of our command
+        classes. (well, in our case just one command class). To do this we
+        change our existing definition we created earlier:</para>
+
+        <programlisting>&lt;object id="appAwareCmdFactory" class="com.myclasses.cairngorm.factories.ApplicationModelAwareCommandFactory" scope="singleton"&gt;
+  &lt;property name="applicationModel" ref="appModelInstance"/&gt;
+  &lt;method-invocation name="addBusinessDelegateFactory"&gt;
+    &lt;arg&gt;
+      &lt;ref&gt;businessDelegateFactory&lt;/ref&gt;
+    &lt;/arg&gt;
+    &lt;arg&gt;
+      &lt;array&gt;
+        &lt;value type="Class"&gt;com.myclasses.commands.GetProductItemsCommand&lt;/value&gt;
+      &lt;/array&gt;
+    &lt;arg&gt;
+  &lt;/method-invocation&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>By passing a reference to our businessDelegateFactory to the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.commands.IResponderCommandFactory#addBusinessDelegateFactory()">addBusinessDelegateFactory()</literal>
+        method along with the classname of our command, we tell the command
+        factory that each time he creates an instance of our command he can
+        use the business delegate factory to create a delegate for it. If more
+        command classes use the same delegate, just add their class to the
+        array of class names. If a different delegate is needed than add
+        another definition to your application configuration. And if more
+        complex injection needs to be performed, go right ahead and subclass
+        the existing Spring Actionscript extensions for your
+        convenience.</para>
+
+        <para>And there we are, our complete Cairngorm configuration is now
+        loosely coupled and fully managed by the Spring Actionscript
+        container!</para>
+
+        <para>Now go ahead and start coding!</para>
+      </section>
+
+      <section xml:id="the_idatatranslator_interface">
+        <title>The IDataTranslator interface</title>
+
+        <para>When dealing with web services you will typically receive a
+        response that consists of an <abbrev>XML</abbrev> string (but other
+        formats such as <abbrev>JSON</abbrev>, <abbrev>CSV</abbrev> or
+        anything else are possible too of course). This <abbrev>XML</abbrev>
+        is not particularly useful within an application so naturally this
+        <abbrev>XML</abbrev> will need to be converted into business or value
+        objects. You can choose to perform this conversion either in your
+        delegate or your command class after a response has been received.
+        However, these classes aren't really meant to perform this task, and
+        that's why Spring Actionscript offers the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslator">IDataTranslator</literal>
+        interface.</para>
+
+        <para>The interface, as usual, is a very simple one:</para>
+
+        <programlisting>public interface IDataTranslator {
+  function translate(data:*):*;
+}</programlisting>
+
+        <para>This enables an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslator">IDataTranslator</literal>
+        implementation to take a generic input and return a generic
+        output.</para>
+
+        <para>Now what we'd like to be able to do is inject an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslator">IDataTranslator</literal>
+        into a delegate instance when appropriate, since not all delegates
+        will need one naturally. So, what we need is a delegate instance that
+        implements the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslatorAware">IDataTranslatorAware</literal>
+        interface.</para>
+
+        <para>This particular interface will not make you scream in terror of
+        its complexity either:</para>
+
+        <programlisting>public interface IDataTranslatorAware {
+  function set dataTranslator(value:IDataTranslator):void;
+}</programlisting>
+
+        <para>Spring Actionscript offers a base class for such a delegate
+        called <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.AbstractDataTranslatorAwareBusinessDelegate">AbstractDataTranslatorAwareBusinessDelegate</literal>.
+        If you want to create a delegate that makes use of an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslator">IDataTranslator</literal>
+        implementation then simply derive from this class. Here's a simple
+        example of an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.AbstractDataTranslatorAwareBusinessDelegate">AbstractDataTranslatorAwareBusinessDelegate</literal>
+        subclass:</para>
+
+        <programlisting>public class GetProductsDelegate extends AbstractDataTranslatorAwareBusinessDelegate {
+
+  public function GetProductsDelegate(service:*=null, responder:IResponder=null, dataTranslator:IDataTranslator=null) {
+   super(service, responder, dataTranslator);
+  }
+
+  public function getProducts():void {
+   var token:AsyncToken = service.getProducts();
+   <emphasis role="bold">addResponderToToken(token);</emphasis>
+  }
+}</programlisting>
+
+        <para>Notice the one line in bold, this is where we call a method in
+        the base class that takes care of intercepting the service call,
+        sending the input to the assigned <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslator">IDataTranslator</literal>
+        and afterwards sending its result back to the delegate's
+        responder.</para>
+
+        <para>Now, a simplified implementation of an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslator">IDataTranslator</literal>
+        that takes an <abbrev>XML</abbrev> response and turns it into an array
+        of objects is shown below:</para>
+
+        <programlisting>public class XMLToProductsDataTranslator implements IDataTranslator {
+
+  public function XMLToProductsDataTranslator() {
+  }
+
+  public function translate(data:*):* {
+   var productsArray:Array = [];
+   var productsXML:XML = new XML(data);
+
+   <lineannotation>//Conversion logic omitted for clarity...</lineannotation>
+
+   return productsArray;
+  }
+}</programlisting>
+
+        <para>To configure the delegate to use this particular <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.business.IDataTranslator">IDataTranslator</literal>
+        you can add this bit of markup to your configuration file:</para>
+
+        <programlisting>&lt;object id="productTranslator" class="com.mytranslators.XMLToProductsDataTranslator"/&gt;
+
+&lt;object id="productsDelegate" class="com.mydelegates.GetProductsDelegate"&gt;
+  &lt;property name="dataTranslator" ref="productTranslator"/&gt;
+&lt;/object&gt;</programlisting>
+
+        <para>Or you can create your own version of the delegate factory that
+        handles this kind of injection.</para>
+
+        <note>
+          <para>Credit where credit is due: This addition to the Spring
+          Actionscript Cairngorm extensions was inspired by this blog post by
+          Adam Flater: <literal
+          xlink:href="http://adamflater.blogspot.com/2009/02/cairngorm-top-5-tips-number-3-data.html">Adam
+          Flater's blog</literal></para>
+        </note>
+      </section>
+
+      <section xml:id="event_sequences">
+        <title>Event Sequences</title>
+
+        <para><emphasis role="bold">Problem</emphasis></para>
+
+        <para>We want to be able to execute commands in a sequence, where each
+        command needs to be executed after the previous command has finished.
+        This can be right after a call to execute() in case the command only
+        implements ICommand, or after the invocation of the result() or
+        fault() method, in case the command implements the IResponder
+        interface and fetches some remote data.</para>
+
+        <para>The way to do this in Cairngorm is to let your command extend
+        SequenceCommand - which acts as an abstract base class for commands
+        that are executed in a sequence. Then you assign a value to the
+        nextEvent property and call the executeNextCommand() method. This is
+        done in the execute() method, the result() or fault() handler of the
+        command. Each sequence command contains logic that says which command
+        to execute next.</para>
+
+        <para>This has a major drawback though: since the sequence logic is
+        coded in the commands themselves, it is very hard - not to say
+        impossible without extra conditional logic - to reuse the command
+        outside a sequence or in another sequence.</para>
+
+        <para><emphasis role="bold">Solution</emphasis></para>
+
+        <para>Instead of extending SequenceCommand and coding the sequence
+        logic in the commands themselves, let's define a sequence of events
+        outside of the commands. The commands themselves should not extend
+        SequenceCommand. This will allow to create "standalone" commands that
+        have their specific task and then chain them into a variety of
+        sequences.</para>
+
+        <para><emphasis role="bold">Explanation</emphasis></para>
+
+        <para>The solution Spring Actionscript offers comes in the form of the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence">EventSequence</literal>
+        class. As said earlier, we want to have a non-intrusive way of
+        defining sequences of events/commands without the need to code
+        sequence logic in the commands. As an example, let's take an event
+        that causes the user to log in, after which another event is
+        dispatched to fetch the latest private messages for that user. In
+        Cairngorm we would have the following:</para>
+
+        <programlisting>public function LoginCommand extends SequenceCommand implements IResponder {
+
+    <lineannotation>// code left out...</lineannotation>
+
+    public function result(data:Object):void {
+        var user:UserVO = data.result as UserVO;
+        ModelLocator.getInstance().user = user;
+        <lineannotation>// here is the problem, the command knows what command to execute next
+        // we can't reuse this command in another chain</lineannotation>
+        nextEvent = new LoadPrivateMessagesEvent(user.id);
+        executeNextCommand();
+    }
+
+}</programlisting>
+
+        <para>In the above code, the sequence logic in the result() handler
+        prevents us from reusing the command outside of the sequence or in
+        another sequence. This will most often result in duplicate code which
+        makes the code base hard to maintain.</para>
+
+        <para>Looking at the flow of events and commands, we see that in most
+        cases (but not all) a command will update some property in the
+        ModelLocator. This is a good practice, because it keeps your commands
+        consistent across your application: a command executes, proxies a
+        remote call through a business delegate, adds itself as a responder to
+        the remote call, updates the ModelLocator in the result() or fault()
+        handler.</para>
+
+        <para><emphasis role="bold">Example</emphasis></para>
+
+        <para>Let's dive into an example of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence">EventSequence</literal>.
+        The different parts will be explained individually:</para>
+
+        <programlisting>var sequence:EventSequence = new EventSequence();
+
+<lineannotation>//add a first event to the sequence which let's the user log in</lineannotation>
+
+sequence.addSequenceEvent(
+    LoginUserEvent,
+    [username, password]
+);
+
+<lineannotation>//add a second event which fetches the latest private messages</lineannotation>
+
+sequence.addSequenceEvent(
+    LoadPrivateMessagesEvent,
+    [new Property(ModelLocator.getInstance, "user", "id")],
+    [new Property(ModelLocator.getInstance, "user")]
+);
+
+<lineannotation>// start the sequence</lineannotation>
+
+sequence.dispatch();</programlisting>
+
+        <para><emphasis role="bold">Explanation</emphasis></para>
+
+        <para>First thing we need to do of course is create a sequence. We can
+        do this by creating an instance of <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence">EventSequence</literal>.</para>
+
+        <para>Next, the sequence expects us to define different events in it
+        so that it knows when to fire which event. We do this by calling
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence#addSequenceEvent()">addSequenceEvent()</literal>
+        on the sequence and passing in the properties of the event we want the
+        sequence to dispatch.</para>
+
+        <programlisting>sequence.addSequenceEvent(
+    LoginUserEvent,
+    [username, password]
+);</programlisting>
+
+        <para>The first argument is the class of the event. In our case this
+        is LoginUserEvent with has 2 constructor parameters: username and
+        password. These parameters are defined in the second argument of the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence#addSequenceEvent()">addSequenceEvent()</literal>
+        method as an array.</para>
+
+        <para>There are 2 options:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>we pass in concrete values</para>
+          </listitem>
+
+          <listitem>
+            <para>we pass in an instance of Property which let's us define a
+            lookup of a property (if you are familiar with BindingUtils, you
+            will already know how this works)</para>
+          </listitem>
+        </orderedlist>
+
+        <para>The first option, passing in a concrete value, is quite straight
+        forward. In case of the LoginUserEvent we pass in the credentials of
+        the user, which will normally be fetched from the text inputs of the
+        login form. So the definition of this could look as follows:</para>
+
+        <programlisting>sequence.addSequenceEvent(
+    LoginUserEvent,
+    [username, password]
+);</programlisting>
+
+        <para>The second option is a property that will be evaluated or looked
+        up at runtime and is defined by a host and a chain. In case of the
+        second event, we want to pass in the user's id, but we can only do
+        this if the user is defined in the ModelLocator and has a valid id
+        (this will be after executing the LoginUserCommand). Doing the
+        following wouldn't work (don't worry about the 3rd argument for
+        now):</para>
+
+        <programlisting>sequence.addSequenceEvent(
+    LoadPrivateMessagesEvent,
+    [ModelLocator.getInstance.user.id],
+    [new Property(ModelLocator.getInstance, "user")]
+);</programlisting>
+
+        <para>This will result in a runtime error (null pointer exception)
+        because we want to pass in the concrete value of the user's id when we
+        define the sequence. Since the ModelLocator does not contain a valid
+        user instance at that point, this won't work. Therefor we need to
+        define the value as a property of which the value will be "looked up"
+        when we really need it (that is when firing the next event in our
+        case).</para>
+
+        <para>The property defines a host: that is the variable that contains
+        - or better will contain - the needed parameters for the event. In our
+        case this is the model locator, so ModelLocator.getInstance(). The
+        remaining arguments of the property instance are a chain of properties
+        of the host defined as strings. So to get the user's id from the model
+        locator we would define the following:</para>
+
+        <programlisting>var p:Property = new Property(ModelLocator.getInstance(), "user", "id");</programlisting>
+
+        <para>The third argument of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence#addSequenceEvent()">addSequenceEvent()</literal>
+        defines a trigger that will instruct the next event to be fired. In
+        the example above, the next event will get fired when the user
+        property of the model locator has changed.</para>
+
+        <para>After we have defined the sequence, all we need to do is call
+        it's dispatch method. Also, the event/command mapping is still defined
+        in the front controller, just like you would do without sequences.
+        There is no need to specify any custom mapping.</para>
+
+        <para><emphasis role="bold">Where to create
+        sequences?</emphasis></para>
+
+        <para>Normally one would create a subclass of <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.EventSequence">EventSequence</literal>
+        and define the sequence in the constructor. One would then instantiate
+        the sequence in the appropriate view and dispatch it from
+        there.</para>
+
+        <para>An alternative approach could be that the front controller has
+        support for defining sequences. We would then have a centralized place
+        for specifying these sequences instead of having them scattered in
+        different classes. In this case there should also be a way of
+        launching a sequence from the view. There's no such feature yet in the
+        Spring Actionscript extensions but if enough requests are made by the
+        community they can be implemented in due time.</para>
+
+        <para><emphasis role="bold">What if the command does not update the
+        model locator.</emphasis></para>
+
+        <para>There will be times when a command does not update a property in
+        the model locator. So we don't really have a point in time when we
+        know we should trigger the next event. To solve this, the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.control.CairngormFrontController">CairngormFrontController</literal>
+        registers every executing command in a central registry called the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.cairngorm.PendingCommandRegistry">PendingCommandRegistry</literal>.
+        The command then has do decide when its action is finished and
+        unregister itself:</para>
+
+        <programlisting>public function result(data:Object):void {
+    <lineannotation>// do some stuff
+    // ... now let the sequence know this command is done
+    // we do this indirectly by unregistering</lineannotation>
+    PendingCommandRegistry.getInstance().unregister(this);
+}</programlisting>
+
+        <para>When calling unregister, the event sequence will get notified of
+        this and trigger the next event if any.</para>
+      </section>
+    </section>
+
+    <section xml:id="puremvc">
+      <title>PureMVC</title>
+
+      <para>The following section documents the functionality and ideas behind
+      the Spring Actionscript PureMVC extensions as written by their main
+      author Damir Murat.</para>
+
+      <note>
+        <para>The sample projects for the PuremVC extensions can be found in
+        this <literal
+        xlink:href="https://src.springframework.org/svn/se-springactionscript-as/trunk/spring-actionscript-puremvc-standard/samples/">SVN
+        directory</literal>.</para>
+      </note>
+
+      <section xml:id="general_notes_intentions_plans_and_vision">
+        <title>General notes, intentions, plans and vision</title>
+
+        <para>After some learning, investigation and playing with Flex and
+        ActionScript 3, I've headed toward finding ways which can simplify
+        implementation of large-scale enterprise applications in Flex. Why is
+        this needed? Well, I see Flex as a so called "application framework"
+        which can significantly simplify attractive <abbrev>GUI</abbrev>
+        creation, but it doesn't really help in application structuring. That
+        application structure and architecture are important in big projects
+        for various reasons. Most notably, it provides maintainability and
+        scalability of an application code, but it also defines rules and
+        patterns which can serve as a common denominator for a development
+        team.</para>
+
+        <para>In that area I've found only two prominent candidates at the
+        time: Adobe's Cairngorm and PureMVC. I first tried Cairngorm, but I
+        didn't really like it, so I tried PureMvc next. In my opinion, PureMvc
+        represents a very solid foundation for building Flex applications. It
+        is well structured and designed, created around core interfaces which
+        define main framework rules, and it certainly can provide the
+        structure needed for many non trivial applications. It is also very
+        well documented.</para>
+
+        <para>While I was going through the PureMvc documentation and samples,
+        I was a little bit surprised to see that the PureMvc applications are
+        usually coded to concrete classes instead to interfaces. For example,
+        the typical PureMVC idiom for using a registered proxy instance is to
+        write something like this in a command:</para>
+
+        <programlisting>public class DeleteUserCommand extends SimpleCommand implements ICommand {
+  
+  override public function execute(notification:INotification):void {
+    var user:UserVO = notification.getBody() as UserVO;
+    var userProxy:UserProxy = facade.retrieveProxy(UserProxy.NAME) as UserProxy;
+    var roleProxy:RoleProxy = facade.retrieveProxy(RoleProxy.NAME) as RoleProxy;
+    userProxy.deleteItem(user);
+    roleProxy.deleteItem(user);
+    sendNotification(ApplicationFacade.USER_DELETED);
+  }
+}</programlisting>
+
+        <note>
+          <para>The code is taken from the PureMVC Arch101Demo sample</para>
+        </note>
+
+        <para>Here you can find the dependencies to the concrete classes
+        UserProxy and RoleProxy. Of course, this particular case can be
+        refactored to the interfaces, but I'm just trying to illustrate the
+        common usage. Further, it will be ideal if you have an ability just to
+        express the dependencies through setters and getters and that some
+        external entity fulfills them by injecting them automatically at
+        runtime. In such scenario, your command will not be dependent on
+        concrete classes, and at the same time it will not be dependent on
+        framework infrastructure like facade. Then, you will be able to code
+        this command to look something like following:</para>
+
+        <programlisting>public class DeleteUserCommand extends SimpleCommand implements ICommand {
+
+  private var m_userProxy:IUserProxy;
+  private var m_roleProxy:IRoleProxy;
+
+  public function set userProxy(p_userProxy:IUserProxy):void {
+    m_userProxy = p_userProxy;
+  }
+
+  public function set roleProxy(p_roleProxy:IRoleProxy):void {
+    m_rolePrxy = p_roleProxy;
+  }
+
+  override public function execute(notification:INotification):void {
+    var user:UserVO = notification.getBody() as UserVO;
+    userProxy.deleteItem(user);
+    roleProxy.deleteItem(user);
+    sendNotification(ApplicationFacade.USER_DELETED);
+  }
+}</programlisting>
+
+        <para>Now, the dependencies on concrete classes and framework
+        infrastructure (i.e. facade) are gone from your code, and
+        automatically it is much more maintainable, scalable and
+        testable.</para>
+
+        <para>To my knowledge, to achieve something like this with PureMVC is
+        not easy and will require very careful refactoring and recoding of the
+        internal concrete PureMVC classes like Model, View and Controller (I
+        believe that the core PureMVC interfaces can be left intact).
+        Probably, it is not bad to put high goals as long they do not scare
+        you, but to be on a safe route, we can try to achieve something much
+        easier. Let me try to explain with an example.</para>
+
+        <para>In my first PureMVC experiment (which was really not so simple I
+        must say), I have to code a proxy class which can load some remote
+        data encoded in <abbrev>XML</abbrev> and convert it in an internal
+        domain model which is usually termed as value objects in PureMVC.
+        Actually domain model and value objects are not the same at all, but
+        they do not differ in the context of this discussion. So, I didn't
+        want to complicate my project with a server side, and I ended up with
+        local <abbrev>XML</abbrev> files. I've also used the loading delegate
+        pattern known from Cairngorm. A loading delegate handles all
+        communications and conversion of encoded data in the domain model. At
+        the end, I've implemented a method in a proxy class which looks
+        something like following:</para>
+
+        <programlisting>public function loadCandlestickCollection(p_stockSymbol:StockSymbol):void {
+
+  LOGGER.debug("Loading candlestick collection for stock symbol " + p_stockSymbol.symbol);
+
+  LOGGER.debug("Notifying observers with " + LoadDataNotification.NAME + "." + LoadDataNotification.TYPE_START);
+  facade.notifyObservers(new LoadDataNotification(null, LoadDataNotification.TYPE_START));
+
+  var delegate:CandlestickLoadDelegate = new CandlestickLoadDelegate(this);
+  delegate.load(p_stockSymbol);
+}</programlisting>
+
+        <para>Here, CandlestickLoadDelegate is the concrete class which I
+        don't like very much. I mean, I was just prototyping, and this local
+        data loading delegate will be changed in the final version with its
+        remoting equivalent. This will require either refactoring of the proxy
+        method (and implementation of another loading delegate) or refactoring
+        of the current concrete loading delegate. It will be much better to
+        introduce an appropriate loading delegate interface. This can be done
+        with any variation of the factory pattern, but this typically only
+        moves the concrete class dependency in the factory. It will be much
+        better if I have some general purpose factory (which can be
+        configured, not coded) from which I can fetch the dependencies as
+        needed. Something like Spring, but in Flex/AS3 world. For the further
+        reference I will name this type of usage of an <abbrev>IoC</abbrev>
+        container (which has the role of the general purpose configurable
+        factory in this context) as the "ad hoc <abbrev>IoC</abbrev> container
+        usage". It will be helpful if such ad hoc usage can be enabled in a
+        consistent manner, for example as a built-in feature of the extended
+        PureMvc framework. I believe that this can be done fairly easily if I
+        have a good <abbrev>IoC</abbrev> container at disposal.</para>
+
+        <para>As it turns out, there is a good <abbrev>IoC</abbrev> container
+        available in Flex world, it is called Spring Actionscript. There are
+        also some others, but Spring Actionscript has several releases, decent
+        documentation, and a very competent, friendly and collaborative lead
+        developer. All in all I decided to try it in a general manner, and
+        specifically, to try to integrate it with PureMVC.</para>
+
+        <para>So, I decided to organize my PureMVC/Spring Actionscript
+        integration endeavour in three steps in which I will try to achieve
+        different levels of integration, from easier to harder, of course. It
+        is important to emphasize that I will try not to change the basic
+        PureMVC programming model. I don't want to create a new
+        <abbrev>MVC</abbrev> framework, I just want to integrate Spring
+        Actionscript with PureMVC. That said, it is still expected that some
+        minor changes in the common PureMVC usage patterns will be
+        required.</para>
+
+        <para>In the first level of integration I will just try to bring
+        Spring Actionscript in PureMVC as an additional property of the
+        PureMVC facade. That way a developer can use Spring Actionscript in
+        the consistent ad hoc meaner when he needs it. Typically, the
+        container will not contain any configurations of a PureMVC triad
+        (proxy, mediator, command), but only their external dependencies (this
+        should be easy enough, but you never know). Additionally, I expect
+        that this level of integration will require minor changes in the
+        typical PureMVC application's startup procedure. This is caused with
+        asynchronous nature of the container's startup while it reads
+        configuration files.</para>
+
+        <para>If only that first integration level will be all that I can
+        achieve, I will be satisfied enough because I believe that by them
+        self it can significantly help in my future Flex projects.</para>
+
+        <para>In the second level of integration I plan to bring Spring
+        Actionscript and PureMVC closer, with some functionality which will
+        help to configure the PureMVC elements in Spring Actionscript. Since
+        PureMVC maintains its own object container (at least for proxies and
+        mediators), at this moment I am planning to take into account only
+        objects configured as prototypes (not singletons). While doing this,
+        I'm hoping to learn much more about repercussions that singletons will
+        bring to table, since at least, I expect that some synchronization
+        between Spring Actionscript and PureMVC container will be needed.
+        Hopefully, at the time you will read this, both prototypes and
+        singletons will be equally supported.</para>
+
+        <para>With only prototypes supported, Spring Actionscript will not
+        have to manage the PureMVC elements, but rather it will only create
+        them and hand them over to PureMVC. Naturally, this still will be the
+        ad hoc usage of the container and it can be programmed with only
+        "Level 1 integration" available. However, I plan to add some methods
+        in the PureMVC facade which should be helpful in the process. Support
+        for singletons is left for the third level of integration, but it can
+        happen sooner, you never know.</para>
+
+        <para>During second phase of integration I expect to learn a great
+        deal about Spring Actionscript's and PureMVC's internal workings. I
+        also expect that the "Level 2 integration" will be much harder to
+        implement than the level one. The typical PureMVC usage patterns will
+        probably stay intact, they just can be implemented through facade's
+        methods with new names. The original PureMVC <abbrev>API</abbrev> will
+        not change, so if you can't find any benefits in the "Level 2
+        integration", simply just don't use it.</para>
+
+        <para>So we came to the third level of integration. In this phase I
+        plan to fully integrate PureMVC and Spring Actionscript in a way that
+        should be hard to define borders between the Spring Actionscript's and
+        PureMVC's containers. All PureMVC elements should be freely
+        configurable through Spring Actionscript either as prototypes or
+        singletons, depending on application's needs. Framework dependencies
+        in application should be minimal in a way that you no longer need to
+        retrieve the PureMVC elements from the PureMVC facade. The
+        dependencies will be injected automatically. Of course, there still
+        will be need to interact with the facade during registration and
+        notification processes. This kind of <abbrev>IoC</abbrev> usage is no
+        longer the ad hoc usage. This is usage of the <abbrev>IoC</abbrev>
+        container at its full potential. We will see if I'm able to implement
+        something like this. :-)</para>
+
+        <para>This whole endeavour is highly experimental, so I decided not to
+        develop it in the typical framework style. This is left for later if
+        and when this experiment can be considered as a success. Instead I
+        will take the referential PureMVC Arch101Demo sample, and start to
+        modifying it.</para>
+      </section>
+
+      <section xml:id="implementation_notes_and_steps">
+        <title>Implementation notes and steps</title>
+
+        <section xml:id="level_1_integration">
+          <title>Level 1 integration</title>
+
+          <itemizedlist>
+            <listitem>
+              <para>Creation of Spring Actionscript/PureMVC integration
+              packages (org.springextensions.actionscript.puremvc) with
+              subpackage structure corresponding to the internal PureMVC
+              package structure.</para>
+            </listitem>
+
+            <listitem>
+              <para>Creation of the <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              class which, at the moment, have the same <abbrev>API</abbrev>
+              as the original PureMVC facade. <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              implements the <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade"
+              xml:base="">IIocFacade</literal> interface which is extended
+              from the original PureMVC IFacade interface. The <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade
+              </literal>implementation mainly consists of a copied and
+              refactored code from the PureMVC Facade class. At this point I
+              didn't extend it because I expect that implementation of
+              <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              can be significantly changed in the future, possibly in a way
+              where inheriting from original Facade class could prevent adding
+              some functionalities. Of course at this point I can't be sure at
+              this, so it could be changed. Actually, if possible, inheriting
+              original Facade call will be beneficial for many reasons (less
+              lines of code, improved maintainability, fewer bugs, easier
+              update route etc.), so I will definitely look at it, but
+              currently, I guess I will like as much freedom as possible. When
+              reading this, one should check the source to see actual
+              situation. However, no matter which implementation options is
+              chosen, client API should stay the same, which means, actual
+              implementation will not have influence on applications which
+              will try to use Spring Actionscript/PureMVC integration.</para>
+
+              <para>Currently, the most notable difference between
+              <abbrev>API</abbrev>s of original Facade and <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              is in constructor because <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              requires a string parameter for <abbrev>URL</abbrev> of an
+              <abbrev>XML</abbrev> file with the Spring Actionscript
+              (<abbrev>IoC</abbrev>) configuration.</para>
+            </listitem>
+
+            <listitem>
+              <para>Consequently, the common startup PureMVC idiom is now
+              changed a little. Instead of writing something like
+              this:<programlisting>&lt;mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete(event);"&gt;
+  &lt;mx:Script&gt;
+    &lt;![CDATA[
+      ...
+      private var m_facade:ApplicationFacade = ApplicationFacade.getInstance();
+      ...
+      private function onCreationComplete(p_event:Event):void {
+        m_facade.startup(this);
+      }
+    ]]&gt;
+  &lt;/mx:Script&gt;
+    ...
+&lt;/mx:Application&gt;</programlisting></para>
+
+              <para>You are now required (because of an asynchronous
+              configuration reading) to write something like following:</para>
+
+              <programlisting>&lt;mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete()" &gt;
+  &lt;mx:Script&gt;
+    &lt;![CDATA[
+      ...
+      private var m_facade:ApplicationFacade;
+      ...
+      private function onCreationComplete():void {
+        m_facade = ApplicationFacade.getInstance("applicationContext.xml");
+        m_facade.addEventListener(ObjectDefinitionsLoaderEvent.COMPLETE, startupApp);
+      }
+
+      private function startupApp(p_event:ObjectDefinitionsLoaderEvent):void {
+        m_facade.removeEventListener(ObjectDefinitionsLoaderEvent.COMPLETE, startupApp);
+        m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
+      }
+    ]]&gt;
+  &lt;/mx:Script&gt;
+  ...
+&lt;/mx:Application&gt;</programlisting>
+            </listitem>
+
+            <listitem>
+              <para>In <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              additional getter is added for accessing "container"
+              property.</para>
+            </listitem>
+
+            <listitem>
+              <para>Also, additional property "iocFacade" is added in <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy">IocProxy</literal>,
+              <literal>IocMediator</literal>,
+              <literal>IocSimpleCommand</literal> and
+              <literal>IocMacroCommand</literal>. It enables easy access to
+              the <abbrev>IoC</abbrev> facade (and to the <abbrev>IoC</abbrev>
+              container through it) from concrete implementation classes.
+              Hopefully, all that will bring some consistency in the ad hoc
+              usage of the <abbrev>IoC</abbrev> container in PureMVC
+              applications.</para>
+            </listitem>
+
+            <listitem>
+              <para>Few IIoC* interfaces are added. In this phase they are
+              merely a placeholders for the extended <abbrev>API</abbrev>
+              methods that should appear in the following integration
+              phases.</para>
+            </listitem>
+
+            <listitem>
+              <para>Concrete implementation classes
+              <literal>IocProxy</literal>, <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator">IocMediator</literal>
+              and Ioc*Command deliberately are not extended from the original
+              PureMVC counterparts at this point, mainly for the same reasons
+              as for <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>.
+              Additional problem is in the PureMVC implementation of Notifier
+              class which defines the protected "facade" member and causes
+              currently unnecessary instantiation of the original IFacade
+              instance. Still, authentic contracts defined through PureMVC
+              interfaces are left intact. If possible, at one point <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy">IocProxy</literal>,
+              <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator">IocMediator</literal>
+              and Ioc*Command will be extended from their original PureMVC
+              counterparts. If so, protected "facade" member will no longer be
+              the problem.</para>
+            </listitem>
+
+            <listitem>
+              <para>In Arch101Demo.mxml I added "linkageEnforcer" property to
+              simplyfy linking of classes which are mentioned only in
+              <abbrev>IoC</abbrev> configuration. This linkage method should
+              not be used for production purposes. It will be much preferable
+              to add these classes to the compiled swf automatically, solely
+              based on <abbrev>IoC</abbrev> configuration, without requiring
+              any programming. Creating such a system is one of the pending
+              tasks which should make Spring Actionscript usage much more
+              comfortable in general.</para>
+            </listitem>
+
+            <listitem>
+              <para>To illustrate the "consistent ad hoc usage" of the Spring
+              Actionscript container I've added UserLoadDelegate class in
+              "puremvcarch101Demo" application. UserLoadDelegate is used by
+              UserProxy to load user data from local <abbrev>XML</abbrev>
+              file. UserLoadDelegate is configured in <abbrev>IoC</abbrev>
+              configuration and is used by proxy through IUserLoadDelegate
+              interface.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+
+        <section xml:id="level_2_integration">
+          <title>Level 2 integration</title>
+
+          <itemizedlist>
+            <listitem>
+              <para>Before looking further at the integration, I will try to
+              minimize dependencies on concrete classes in the Arch101Demo
+              sample.</para>
+            </listitem>
+
+            <listitem>
+              <para>First on a list is the UserLoadDelegate class. Currently
+              it has the "callback" dependency on the UserProxy concrete
+              class. To avoid that, I've refactored UserLoadDelegate to use
+              events. That change alone allows removal of the "userProxy"
+              setter from the IUserLoadDelegate interface. Of course, now is
+              required that the UserProxy implements some event handling code
+              but that is nothing new to Flex developers. Further, I've also
+              removed "serviceUrl" setter from the IUserLoadDelegate
+              interface. It is not required in application code and only
+              Spring Actionscript needs it to inject dependency at runtime.
+              But for Spring Actionscript's needs, that setter doesn't have to
+              be declared in the interface. It is enough just to be
+              implemented by concrete class which is configured through Spring
+              Actionscript. In summary, above changes left us only with
+              loadUsers() method in the IUserLoadDelegate interface. I've also
+              added a simulation of the slow data loading in the
+              UserLoadDelegate class to make it somewhat more
+              realistic.</para>
+            </listitem>
+
+            <listitem>
+              <para>Next I've created IUserProxy and IRoleProxy interfaces
+              which will be used through the rest of an application code
+              instead of corresponding concrete classes. That also required
+              refactoring of proxy name constants in the separate ProxyNames
+              class (constants can not be defined in ActionScript 3
+              interfaces). Now constants from this class will be used for
+              proxy retrievals. The ProxyNames class, and its encapsulated
+              name constants, should be now viewed as a part of public
+              <abbrev>API</abbrev> in the same way as proxy interfaces are.
+              <emphasis role="bold">NAME</emphasis> constants are removed from
+              concrete proxy classes because they are not really needed as we
+              will see.</para>
+            </listitem>
+
+            <listitem>
+              <para>To support above refactorings, I've added the <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade#registerProxyByConfigName()">registerProxyByConfigName()</literal>
+              method in the <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade">IIocFacade</literal>
+              interface and the implementation in the <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              class. When you use this method, you must supply proxy name as
+              the parameter. <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              will try to find configuration whose id is equal to that
+              parameter. If it can't be found, an error will be thrown. On the
+              other hand, if it can be found, <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              will retrieve it from container and will set its name to the
+              value of supplied parameter (which in this case must be the same
+              as the value of id attribute in configuration). Of course, you
+              will not use literals for that parameter, rather you will
+              probably use constant defined in the public <abbrev>API</abbrev>
+              as discussed before.</para>
+            </listitem>
+
+            <listitem>
+              <para>Described usage of name constants is still a little bit
+              too restrictive. Specifically, if you change the configuration
+              id, you must also change the name constant value. This is not so
+              good, I think. It will be better if there is no so tight
+              coupling.</para>
+
+              <para>Now, what we can do? Well, we can try the old IT trick -
+              introduction of another level of indirection. For example, we
+              can introduce a names map whose keys will be equal to values of
+              constants defined in code, and map values will be equal to ids.
+              Then, you will be able to independently change configuration
+              names (which can be pretty often) and constant values (which is
+              not so often, or almost never). To support this idiom, I've
+              changed implementation of <literal xlink:arcrole=""
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade#registerProxyByConfigName()">registerProxyByConfigName()</literal>
+              method in following way:</para>
+
+              <itemizedlist>
+                <listitem>
+                  <para>If object with id "proxyNamesMap" can be found in the
+                  <abbrev>IoC</abbrev> configuration ("proxyNamesMap" is magic
+                  name as you can observe), <literal
+                  xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+                  will try to map supplied parameter (configured as a map key)
+                  with mapped name (configured as a map value). If mapped name
+                  is found, then <abbrev>IoC</abbrev> facade will try to
+                  retrieve configured proxy object whose configuration id
+                  attribute is equal to mapped value. If configured proxy can
+                  be retrieved it will be returned. Otherwise, error will be
+                  thrown.</para>
+                </listitem>
+
+                <listitem>
+                  <para>If there is no "proxyNamesMap" object in the
+                  configuration, or if supplied parameter value is not used as
+                  a map key, <literal
+                  xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+                  will try to find proxy object whose configuration id
+                  attribute value is equal to supplied parameter. If proxy can
+                  be found, it will be returned. Otherwise, error will be
+                  thrown.</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+
+            <listitem>
+              <para>Corresponding <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade#retrieveProxyByConfigName()">retrieveProxyByConfigName()</literal>
+              method is added in <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade">IIocFacade</literal>
+              interface and in <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              class. For retrieval it uses equivalent algorithm to the one
+              described above.</para>
+
+              <para>Please note that <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade#retrieveProxyByConfigName()"
+              xlink:role="">retrieveProxyByConfigName()</literal> and <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade#removeProxyByConfigName()">removeProxyByConfigName()</literal>
+              methods can be removed from <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade">IIocFacade</literal>
+              later if <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              will be extended from original PureMVC Facade, and if their
+              workflows can be combined with workflows of the original
+              <literal>retrieveProxy()</literal> and
+              <literal>removeProxy()</literal> methods. Please take a look at
+              source code to see what is actual situation at the time when you
+              are reading this. Described algorithm probably will not change,
+              but it can be combined with original PureMVC implementations. If
+              this happens, only requirement will be removal of "ByConfigName"
+              suffix from these two methods. Name of method <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade#registerProxyByConfigName()">registerProxyByConfigName()</literal>
+              probably will not change, since its signature is different from
+              the signature of original PureMVC's
+              <literal>registerProxy()</literal> method.</para>
+            </listitem>
+
+            <listitem>
+              <para>Let see now what can be done with mediators. There are few
+              roadblocks, but maybe we can do something about them. In typical
+              PureMVC applications mediators are not usually used as
+              dependencies of other PureMVC components. After registration,
+              mediators only take notifications from other PureMVC parts.
+              Also, in a constructor they usually take a parameter which
+              references a visual component (in flex this is usually some
+              ancestor of the UIComponent class) which can't be configured
+              through an <abbrev>IoC</abbrev> container (at least I don't know
+              how that can be easily done). Nevertheless, we can still benefit
+              from <abbrev>IoC</abbrev>, since mediators usually have proxies
+              as dependencies. To support that, there are at least three
+              things required: support for singletons in PureMVC/Spring
+              Actionscript integration, <abbrev>IoC</abbrev> support for
+              supplying constructor parameters at runtime (which requires
+              additional <abbrev>IoC</abbrev> feature - the lazy
+              initialization), and <abbrev>IoC</abbrev> support for custom
+              initialization methods.</para>
+
+              <para>Speaking about singletons, they are required if you start
+              to mix PureMVC element configurations. For example, imagine that
+              we have something like this in a configuration:</para>
+
+              <programlisting>&lt;object id="userProxyObject" class="... .UserProxy" scope="prototype"/&gt;
+
+&lt;object id="userListMediatorObject" class="...UserListMediator" scope="prototype"&gt;
+  &lt;property name="userProxy" ref="userProxyObject"/&gt;
+&lt;/object&gt;</programlisting>
+
+              <para>Now, if you use the <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              to retrieve "userProxyObject" and "userListMediatorObject", then
+              "userProxyObject" instance and "userListMediatorObject"'s
+              dependency "userProxy" will be two different instances! This is
+              because every time the <abbrev>IoC</abbrev> container fetches a
+              prototype it always creates a new instance which usually is not
+              what you want. At this point in PureMVC/Spring Actionscript
+              development, you can actually use singletons.</para>
+
+              <para>Why are dynamic constructor parameters important? Well, as
+              I already said, mediators usually have visual components as
+              constructor parameters. As visual dependencies can't be
+              configured through Spring Actionscript, you have to have a way
+              for supplying them at runtime. Since mediators, as they are
+              usually implemented in typical PureMVC applications, can't be
+              instantiated until the moment when you fetch them through the
+              <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>,
+              the <abbrev>IoC</abbrev> container must support lazy
+              initialization of objects. This means that objects marked as
+              lazy will not be instantiated at the container startup, their
+              instantiation will be postponed until you fetch them from the
+              <abbrev>IoC</abbrev> container for the first time. At that
+              moment you could have an opportunity (if one exists) to supply
+              constructor parameters.</para>
+
+              <para>And finally, what about that custom initialization method?
+              Typical PureMVC usage pattern is to instantiate and use proxy
+              dependencies in the mediator's constructor. If you decide to
+              configure those proxy dependencies via <abbrev>IoC</abbrev>
+              (like in above configuration code snippet) you will end up with
+              null references since the <abbrev>IoC</abbrev> container can not
+              inject dependencies before mediator is constructed. So you will
+              need to refactor dependencies usage in the separate custom
+              initialization method which should be invoked by
+              <abbrev>IoC</abbrev> container after the mediator was
+              constructed and all its dependencies were injected. Actually,
+              Spring Actionscript already supports such method by <literal
+              xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.IInitializingObject">IInitializingObject</literal>
+              interface, but implementing it will unnecessarily add dependency
+              on the Spring Actionscript framework in your code. It will be
+              much better if you can express in configuration which one of
+              your methods is the initializing one.</para>
+            </listitem>
+
+            <listitem>
+              <para>Lazy initialization is supported with "lazy-init"
+              configuration attribute like in following example:</para>
+
+              <programlisting>&lt;object id="userListMediatorObject" class="... .UserListMediator" lazy-init="true"/&gt;</programlisting>
+
+              <para>Custom initialization method is supported with
+              "init-method" configuration attribute like in:</para>
+
+              <programlisting>&lt;object id="userListMediatorObject" class="... .UserListMediator" lazy-init="true" init-method="initMethod"&gt;</programlisting>
+
+              <para>Dynamic constructor parameters are supported with
+              "p_viewComponent" parameter in <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade#registerMediatorByConfigName()">registerMediatorByConfigName()</literal>
+              method which has following signature:</para>
+
+              <programlisting>function registerMediatorByConfigName(p_mediatorName:String, p_viewComponent:Object = null):void;</programlisting>
+
+              <para>Other <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>'s
+              features related to mediators mainly have same characteristics
+              as those for proxies. There only should be noted that magic name
+              for configurable mediator names map is "mediatorNameMap".</para>
+            </listitem>
+
+            <listitem>
+              <para>It should be noted that you don't have to use "lazy-init"
+              and "init-method" features for configuring Mediators. This is
+              because in PureMVC v2.x, setViewComponent() is added, and now is
+              not required that you have to supply a view component at
+              construction time. It can be added later. On the other hand,
+              taking this approach will require some minor changes in
+              implementation of mediators, and its usage in the context of
+              <abbrev>IoC</abbrev> configured applications.</para>
+
+              <para>First, if you want some mediator to be constructed at
+              <abbrev>IoC</abbrev> container startup, its constructor must not
+              be dependent on a view component. You should factor out that
+              initialization code in some other method, like in following
+              example:</para>
+
+              <programlisting>public class MyMediator extends IocMediator {
+  
+  public function UserFormMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
+    super(p_mediatorName, p_viewComponent);
+
+<lineannotation>    // This code must be factored out in self standing method.
+    // myViewComponent.addEventListener(MyViewComponent.EVENT_ONE, onEventOne);
+    // myViewComponent.addEventListener(MyViewComponent.EVENT_TWO, onEventTwo);
+    // myViewComponent.addEventListener(MyViewComponent.EVENT_THREE, onEventThree);</lineannotation>
+  }
+
+  public function init():void {
+    myViewComponent.addEventListener(MyViewComponent.EVENT_ONE, onEventOne);
+    myViewComponent.addEventListener(MyViewComponent.EVENT_TWO, onEventTwo);
+    myViewComponent.addEventListener(MyViewComponent.EVENT_THREE, onEventThree);
+  }
+
+  ...
+}</programlisting>
+
+              <para>Now we have init() method which, when invoked, executes
+              initialization code, previously belonging to the constructor.
+              Only one question remains, when this init() method will be
+              invoked? Well, you have at least two options. First one is to
+              execute it manually when appropriate, and second one is to
+              execute it from overridden setViewComponent() method.</para>
+
+              <para>If you chose first option you will end up with one more
+              statement during mediator's registration:</para>
+
+              <programlisting>public class MyStartupCommand extends IocSimpleCommand {
+<lineannotation>  // ...
+  // setters and getters omitted.
+  // ...</lineannotation>
+
+  override public function execute(p_note:INotification):void {
+    var app:MyApp = p_note.getBody() as MyApp;
+   <lineannotation> // ...</lineannotation>
+
+    myMediator.setViewComponent(app.myViewComponent);
+    myMediator.init();
+    iocFacade.registerMediatorByConfigName("myMediatorName");
+
+    <lineannotation>// ...</lineannotation>
+  }
+}</programlisting>
+
+              <para>If you opt for second option, you will end up adding
+              something like the following in your mediator class:</para>
+
+              <programlisting>override public function setViewComponent(p_viewComponent:Object):void {
+  
+  if (getViewComponent() != null) {
+    myViewComponent.removeEventListener(MyViewComponent.EVENT_ONE, onEventOne);
+    myViewComponent.removeEventListener(MyViewComponent.EVENT_TWO, onEventTwo);
+    myViewComponent.removeEventListener(MyViewComponent.EVENT_THREE, onEventThree);
+  }
+
+  super.setViewComponent(p_viewComponent);
+
+  init();
+}</programlisting>
+
+              <para>This actually makes sense, since you will typically have
+              to do some preparations every time you change a view component
+              that mediator mediates.</para>
+
+              <para>It should also be noted that whatever approach you choose,
+              it is still compatible with "pure" PureMVC applications. This
+              means that you can use without problems described usage patterns
+              in all PureMVC applications. As a side effect, your mediators
+              should be now easier to test because constructor doesn't use
+              view component any more. In your tests you can add this
+              dependency (probably mocked) through setViewComponent() only
+              when needed.</para>
+            </listitem>
+
+            <listitem>
+              <para>All mentioned things you can see in action in modified
+              Arch101Demo sample.</para>
+            </listitem>
+
+            <listitem>
+              <para>Although I said before that support for singletons will be
+              added in third level of integration, I've decided to add it
+              right now, so that mediator's story can be completed. So, I've
+              added two additional methods in
+              <literal>IocFacade</literal>:</para>
+
+              <programlisting>function removeProxyByConfigName(p_proxyName:String):void;
+function removeMediatorByConfigName(p_mediatorName:String):void;</programlisting>
+
+              <para>These allow you to remove cached singleton instances from
+              <abbrev>IoC</abbrev> container. That also required changes in
+              Spring Actionscript implementation, but not very visible one. If
+              you are interested, I've added <literal
+              xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.support.AbstractObjectFactory#clearObjectFromInternalCache()">clearObjectFromInternalCache()</literal>
+              method in <literal
+              xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.support.AbstractObjectFactory">AbstractObjectFactory</literal>
+              class.</para>
+
+              <para>Here same notes about "ByConfigName" suffix in method
+              names apply as before. If they do not exist in <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.interfaces.IIocFacade">IIocFacade</literal>
+              at the time you are reading this, this only means that you
+              should use standard PureMVC method names: removeProxy() and
+              removeMediator(). They will function as described here, but you
+              will not have to worry about that.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+
+        <section xml:id="level_3_integration">
+          <title>Level 3 integration</title>
+
+          <itemizedlist>
+            <listitem>
+              <para>As mentioned before, the theme of Level 3 PureMVC/Spring
+              Actionscript integration is support for PureMVC commands. As it
+              turns out this was very straightforward to implement. But first,
+              let explore a little how commands are used in typical PureMVC
+              applications.</para>
+            </listitem>
+
+            <listitem>
+              <para>Contrary to mediators and proxies, commands are not
+              instantiated by the developer, but rather by the framework. You
+              just have to pass a class reference to PureMVC and it will
+              create a command instance when appropriate. PureMVC
+              documentation suggests that commands are created, executed and
+              then destroyed, meaning that the framework doesn't preserve any
+              references to them after its execution. I believe that such
+              usage is good practice when you don't have the
+              <abbrev>IoC</abbrev> container at hand. Further, commands are
+              not used as dependencies of other PureMVC elements, but they
+              usually reference proxies and sometimes (usually only in a
+              startup command) mediators.</para>
+            </listitem>
+
+            <listitem>
+              <para>Now, what can you do with the <abbrev>IoC</abbrev>
+              container? First, if you configure a command as a singleton, the
+              framework will not have to instantiate them on every execution.
+              Instead, commands can be easily fetched from the container when
+              needed which can save some time and memory (not really a big
+              issue but still...). Further, with <abbrev>IoC</abbrev> you can
+              configure dependencies of your commands which will be injected
+              when the <abbrev>IoC</abbrev> container instantiates them and
+              this is the main point. Additionally, your application's facade
+              will not have to reference a concrete command classes during
+              command registration. Instead it can use command's configuration
+              name which is a plain string (usually coded as constant). That
+              way your commands don't need to be dependent on your concrete
+              proxy or mediator classes and your application doesn't need
+              anymore be dependant on the concrete command classes. This is
+              all wired together by the <abbrev>IoC</abbrev> container.</para>
+            </listitem>
+
+            <listitem>
+              <para>To support described usage I had to replace original
+              PureMVC implementation of IController interface. This part is
+              not visible to the end programmer. More importantly, the
+              <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade</literal>
+              got the new <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade#registerCommandByConfigName()">registerCommandByConfigName()</literal>
+              method with which you can associate a configuration name used in
+              the <abbrev>IoC</abbrev> container with a PureMVC
+              notification.</para>
+
+              <para>I've also implemented a "magic" command names map with
+              which you can introduce additional indirection between command
+              configuration names used in code and in <abbrev>IoC</abbrev>
+              configuration. If you decide to configure it, command names map
+              must have id attribute with value "commandNamesMap". If you
+              decide at some point that some command is not needed any more
+              you can unregister it as usual by using the <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade">IocFacade's</literal>
+              <literal
+              xlink:href="asdoc://org.springextensions.actionscript.puremvc.patterns.facade.IocFacade#removeCommand()">removeCommand()</literal>
+              method.</para>
+            </listitem>
+
+            <listitem>
+              <para>For working examples of a command usage in combination
+              with the <abbrev>IoC</abbrev> container you should look at
+              <abbrev>IoC</abbrev> configuration for "commandNamesMap",
+              "startupCommandObject" and "deleteUserCommand" objects. You
+              should also look at a command registration in the
+              ApplicationFacade class and finally how the userProxy dependency
+              is now implemented in the DeleteUserCommand class. I hope this
+              will be enough for you to understand how to use PureMVC/Spring
+              Actionscript integration with PureMVC commands.</para>
+            </listitem>
+
+            <listitem>
+              <para>At the end I want to emphasize the fact that you don't
+              have to use full "Level 2 &amp; 3" integration. If you find more
+              appropriate, you can just use "consistent ad hoc
+              <abbrev>IoC</abbrev> usage" from "Level 1" integration. I
+              believe only that part can bring significant benefits to typical
+              PureMVC applications. Despite, you should give a chance to Level
+              2 and 3 parts. Try it and decide if this brings any benefit to
+              you.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+      </section>
+    </section>
+  </section>
+</chapter>

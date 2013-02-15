@@ -1,0 +1,945 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.springextensions.actionscript</groupId>
+    <artifactId>spring-actionscript-superpom</artifactId>
+    <packaging>pom</packaging>
+    <version>1.2-SNAPSHOT</version>
+    <name>Spring ActionScript Base</name>
+    <url>http://www.springactionscript.org</url>
+    <description>
+        Spring ActionScript is an offshoot of the Java-based Spring Framework written in ActionScript 3.
+        It is targeted for the Flash, Flex and AIR platforms. The framework contains an Inversion of Control
+        Container, an Operation and Task API, an EventBus, a metadata handling system, a testing framework, extensions
+        for the Cairngorm and PureMVC frameworks
+        and several other utilities.
+    </description>
+    <inceptionYear>2007</inceptionYear>
+
+    <modules>
+        <module>spring-actionscript-core</module>
+        <module>spring-actionscript-test</module>
+        <module>spring-actionscript-cairngorm</module>
+        <module>spring-actionscript-puremvc-standard</module>
+    </modules>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:svn:https://src.springframework.org/svn/se-springactionscript-as</connection>
+        <url>https://fisheye.springframework.org/browse/se-springactionscript-as</url>
+    </scm>
+
+    <issueManagement>
+        <system>jira</system>
+        <url>http://jira.springframework.org/browse/SESPRINGACTIONSCRIPTAS</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>Spring Actionscript DeveloperList</name>
+            <subscribe>springactionscript-dev+subscribe@googlegroups.com</subscribe>
+            <unsubscribe>springactionscript-dev+unsubscribe@googlegroups.com</unsubscribe>
+            <post>springactionscript-dev@googlegroups.com</post>
+            <archive>http://groups.google.com/group/springactionscript-dev</archive>
+        </mailingList>
+    </mailingLists>
+
+    <developers>
+        <developer>
+            <id>cherreman</id>
+            <name>Christophe Herreman</name>
+            <email>christophe.herreman [at] stackandheap.com</email>
+            <url>http://www.herrodius.com</url>
+            <organization>Stack &amp; Heap</organization>
+            <organizationUrl>http://www.stackandheap.com</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>dmurat</id>
+            <name>Damir Murat</name>
+            <email>damir.murat [at] gmail.com</email>
+            <organization>Croz</organization>
+            <organizationUrl>http://www.croz.net</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>vandammeb</id>
+            <name>Bert Vandamme</name>
+            <organization>Televic Education</organization>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>martino.piccinato</id>
+            <name>Martino Piccinato</name>
+            <email>mp [at] yoolab.com</email>
+            <url>http://martino.yoolab.org/</url>
+            <organization>Yoolab Team s.l.</organization>
+            <organizationUrl>http://www.yoolab.com/</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>rzwaga</id>
+            <name>Roland Zwaga</name>
+            <email>roland.zwaga [at] stackandheap.com</email>
+            <url>http://zwaga.blogspot.com/</url>
+            <organization>Stack &amp; Heap</organization>
+            <organizationUrl>http://www.stackandheap.com</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>alewisohn</id>
+            <name>Andrew Lewisohn</name>
+            <email>alewisohn [at] gmail.com</email>
+            <organization>Arc90, Inc.</organization>
+            <organizationUrl>http://www.arc90.com</organizationUrl>
+            <timezone>-5</timezone>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Lieven Cardoen</name>
+            <url>http://www.johlero.eu</url>
+            <organization>Televic Education</organization>
+            <timezone>+1</timezone>
+        </contributor>
+    </contributors>
+
+    <!--
+         <ciManagement> <system>bamboo</system>
+         <url>http://build.springframework.org/browse/EXT</url> </ciManagement>
+     -->
+
+    <properties>
+        <!-- Replaces default system encoding. -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <flexmojos.version>3.9</flexmojos.version>
+        <!--<flex-sdk.version>3.5.0.12683</flex-sdk.version>-->
+        <flex-sdk.version>4.1.0.16076</flex-sdk.version>
+
+        <!-- Flash Player -->
+        <flashplayer.version>${flashplayer.version.major}.${flashplayer.version.minor}.${flashplayer.version.revision}
+        </flashplayer.version>
+        <flashplayer.version.major>10</flashplayer.version.major>
+        <flashplayer.version.minor>0</flashplayer.version.minor>
+        <flashplayer.version.revision>0</flashplayer.version.revision>
+
+        <!-- AS3Commons -->
+        <as3commons-reflect.version>1.3.4</as3commons-reflect.version>
+        <as3commons-lang.version>0.3.2</as3commons-lang.version>
+        <as3commons-logging.version>2.5.1</as3commons-logging.version>
+        <as3commons-eventbus.version>1.1.1</as3commons-eventbus.version>
+        <as3commons-collections.version>1.1</as3commons-collections.version>
+        <as3commons-bytecode.version>1.0-RC3</as3commons-bytecode.version>
+
+        <!-- Other -->
+        <flexunit.version>0.90</flexunit.version>
+        <cairngorm.version>2.2.1</cairngorm.version>
+        <puremvc-standard.version>2.0.4</puremvc-standard.version>
+        <flex-pmd.version>1.2</flex-pmd.version>
+
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>flex-mojos-repository</id>
+            <url>http://repository.sonatype.org/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>flex-mojos-repository-flexgroup</id>
+            <url>http://repository.sonatype.org/content/groups/flexgroup/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>yoolab.org-releases</id>
+            <url>http://projects.yoolab.org/maven/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>yoolab.org-snapshots</id>
+            <url>http://projects.yoolab.org/maven/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>flexmojos-repository</id>
+            <url>http://repository.sonatype.org/content/groups/flexgroup/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>flexpmd.opensource.adobe</id>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <name>FlexPMD repository on opensource.adobe.com</name>
+            <url>http://opensource.adobe.com/svn/opensource/flexpmd/maven-repository/release</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <!--
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>flex</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>swc</type>
+           <scope>external</scope>
+       </dependency>
+
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>framework</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>swc</type>
+           <scope>external</scope>
+       </dependency>
+
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>framework</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>zip</type>
+           <classifier>configs</classifier>
+       </dependency>
+
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>rpc</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>swc</type>
+           <scope>external</scope>
+       </dependency>
+
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>utilities</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>swc</type>
+           <scope>external</scope>
+       </dependency>
+
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>playerglobal</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>swc</type>
+           <scope>external</scope>
+           <classifier>${flashplayer.version.major}</classifier>
+       </dependency>
+
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>framework</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>rb.swc</type>
+           <scope>external</scope>
+       </dependency>
+
+       <dependency>
+           <groupId>com.adobe.flex.framework</groupId>
+           <artifactId>rpc</artifactId>
+           <version>${flex-sdk.version}</version>
+           <type>rb.swc</type>
+           <scope>external</scope>
+       </dependency> -->
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <classifier>en_US</classifier>
+            <version>${flex-sdk.version}</version>
+            <type>rb.swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <classifier>de_DE</classifier>
+            <version>${flex-sdk.version}</version>
+            <type>rb.swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>textLayout</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>framework</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>spark</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>sparkskins</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>rpc</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+        </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>flex-framework</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flexunit</groupId>
+            <artifactId>flexunit</artifactId>
+            <version>${flexunit.version}</version>
+            <type>swc</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-lang</artifactId>
+            <version>${as3commons-lang.version}</version>
+            <type>swc</type>
+            <scope>external</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-reflect</artifactId>
+            <version>${as3commons-reflect.version}</version>
+            <type>swc</type>
+            <scope>external</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>playerglobal</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-collections</artifactId>
+            <version>${as3commons-collections.version}</version>
+            <type>swc</type>
+            <scope>external</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>playerglobal</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-eventbus</artifactId>
+            <version>${as3commons-eventbus.version}</version>
+            <type>swc</type>
+            <scope>external</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>playerglobal</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-logging</artifactId>
+            <version>${as3commons-logging.version}</version>
+            <type>swc</type>
+            <scope>external</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.as3commons</groupId>
+                    <artifactId>as3commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-bytecode</artifactId>
+            <version>${as3commons-bytecode.version}</version>
+            <type>swc</type>
+            <scope>external</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.as3commons</groupId>
+                    <artifactId>as3commons-bytecode</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <sourceDirectory>src/main/actionscript</sourceDirectory>
+        <testSourceDirectory>src/test/actionscript</testSourceDirectory>
+        <defaultGoal>install</defaultGoal>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <targetPath>test-classes</targetPath>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/actionscript</directory>
+                            <includes>
+                                <include>FlexUnitApplication.mxml</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>${flexmojos.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.adobe.flex</groupId>
+                        <artifactId>compiler</artifactId>
+                        <version>${flex-sdk.version}</version>
+                        <type>pom</type>
+                    </dependency>
+                </dependencies>
+                <extensions>true</extensions>
+                <configuration>
+                    <locales>
+                        <param>en_US</param>
+                    </locales>
+                    <keepAs3Metadatas>
+                        <param>Autowired</param>
+                        <param>Inject</param>
+                        <param>Command</param>
+                        <param>Component</param>
+                        <param>Constructor</param>
+                        <param>Event</param>
+                        <param>EventHandler</param>
+                        <param>Property</param>
+                        <param>Invoke</param>
+                        <param>PostConstruct</param>
+                        <param>PreDestroy</param>
+                        <param>Required</param>
+                        <param>RouteEvents</param>
+                        <param>RouteMVCEvents</param>
+                    </keepAs3Metadatas>
+                    <updateSecuritySandbox>true</updateSecuritySandbox>
+                    <configurationReport>true</configurationReport>
+                    <includeAsClasses>
+                        <source>
+                            <directory>src/main/actionscript</directory>
+                        </source>
+                    </includeAsClasses>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <inherited>false</inherited>
+                <version>2.1</version>
+                <configuration>
+                    <templateDirectory>src/site</templateDirectory>
+                    <template>site.vm</template>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>com.agilejava.docbkx</groupId>
+                <artifactId>docbkx-maven-plugin</artifactId>
+                <version>2.0.10</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-html</goal>
+                            <goal>generate-eclipse</goal>
+                            <goal>generate-pdf</goal>
+                        </goals>
+                        <phase>post-site</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.docbook</groupId>
+                        <artifactId>docbook-xml</artifactId>
+                        <version>4.4</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.media</groupId>
+                        <artifactId>jai_core</artifactId>
+                        <version>1.1.3</version>
+                        <type>jar</type>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-optional</artifactId>
+                        <version>1.5.2</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <includes>springactionscript.xml</includes>
+                    <chunkedOutput>true</chunkedOutput>
+                    <htmlStylesheet>css/html.css</htmlStylesheet>
+                    <xincludeSupported>true</xincludeSupported>
+                    <htmlCustomization>src/docbkx/resources/xsl/html_chunk.xsl</htmlCustomization>
+                    <foCustomization>src/docbkx/resources/xsl/fopdf.xsl</foCustomization>
+                    <foCustomization>src/docbkx/resources/xsl/fopdf-asdoclinkresolver.xsl</foCustomization>
+                    <entities>
+                        <entity>
+                            <name>version</name>
+                            <value>${version}</value>
+                        </entity>
+                    </entities>
+                    <preProcess>
+                        <xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel.xml"
+                              style="${basedir}/src/docbkx/resources/xsl/combine_toplevels.xslt"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="baseDir" expression="${basedir}"/>
+                        </xslt>
+                        <xslt in="${basedir}/toplevel_files.xml" out="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              style="${basedir}/src/docbkx/resources/xsl/combine_toplevel_classes.xslt"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="baseDir" expression="${basedir}"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"
+                              out="${basedir}/src/docbkx/configuration-reference.xml"
+                              style="${basedir}/src/docbkx/resources/xsl/configuration-reference.xsl"
+                              reloadstylesheet="false" processor="trax"/>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/all-classes.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/all-classes.xsl"
+                              reloadstylesheet="false" processor="trax"/>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/delete-me.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/all-index.xsl"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="overviewsFile"
+                                   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+                            <param name="basedir" expression="${basedir}/src/docbkx/resources/asdoctemplate/"/>
+                            <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/appendixes.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/appendixes.xsl"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="overviewsFile"
+                                   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/class-summary.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/class-summary.xsl"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="overviewsFile"
+                                   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/delete-me2.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/class-files.xsl"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/class-list.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/class-list.xsl"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/delete-me3.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/package.xsl" reloadstylesheet="false"
+                              processor="trax">
+                            <param name="overviewsFile"
+                                   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+                            <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/delete-me4.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/package-detail.xsl"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="overviewsFile"
+                                   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+                            <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/package-list.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/package-list.xsl"
+                              reloadstylesheet="false" processor="trax">
+                        </xslt>
+
+                        <xslt in="${basedir}/target/site/asdoc/toplevel_classes.xml"
+                              out="${basedir}/target/site/asdoc/package-summary.html"
+                              style="${basedir}/src/docbkx/resources/asdoctemplate/package-summary.xsl"
+                              reloadstylesheet="false" processor="trax">
+                            <param name="overviewsFile"
+                                   expression="${basedir}/src/docbkx/resources/asdoctemplate/overviews.xml"/>
+                            <param name="outputPath" expression="${basedir}/target/site/asdoc/"/>
+                        </xslt>
+
+                        <delete file="${basedir}/target/site/asdoc/index.html"/>
+
+                        <copy todir="${basedir}/target/site/asdoc/images">
+                            <fileset dir="${basedir}/src/docbkx/resources/asdoctemplate/images">
+                                <include name="**/*.png"/>
+                                <include name="**/*.gif"/>
+                                <include name="**/*.jpg"/>
+                            </fileset>
+                        </copy>
+
+                        <copy todir="${basedir}/target/site/asdoc">
+                            <fileset dir="${basedir}/src/docbkx/resources/asdoctemplate">
+                                <include name="**/*.js"/>
+                                <include name="**/*.html"/>
+                                <include name="**/*.css"/>
+                            </fileset>
+                        </copy>
+
+                        <delete file="${basedir}/target/site/asdoc/delete-me.html"/>
+                        <delete file="${basedir}/target/site/asdoc/delete-me2.html"/>
+                        <delete file="${basedir}/target/site/asdoc/delete-me3.html"/>
+                        <delete file="${basedir}/target/site/asdoc/delete-me4.html"/>
+
+                    </preProcess>
+                    <postProcess>
+                        <copy todir="target/site/docs/reference">
+                            <fileset dir="target/docbkx">
+                                <include name="**/*.html"/>
+                                <include name="**/*.pdf"/>
+                            </fileset>
+                        </copy>
+                        <copy todir="target/site/docs/reference/html">
+                            <fileset dir="src/docbkx/resources">
+                                <include name="**/*.air"/>
+                                <include name="**/*.css"/>
+                                <include name="**/*.js"/>
+                                <include name="**/*.png"/>
+                                <include name="**/*.gif"/>
+                                <include name="**/*.jpg"/>
+                            </fileset>
+                        </copy>
+                        <copy todir="target/docbkx/html">
+                            <fileset dir="src/docbkx/resources">
+                                <include name="**/*.air"/>
+                                <include name="**/*.css"/>
+                                <include name="**/*.js"/>
+                                <include name="**/*.png"/>
+                                <include name="**/*.gif"/>
+                                <include name="**/*.jpg"/>
+                            </fileset>
+                        </copy>
+                        <copy todir="target/site/schema/messaging"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-messaging-1.0.xsd"/>
+                        <copy todir="target/site/schema/objects"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-objects-1.0.xsd"/>
+                        <copy todir="target/site/schema/rpc"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-rpc-1.0.xsd"/>
+                        <copy todir="target/site/schema/util"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-util-1.0.xsd"/>
+                        <copy todir="target/site/schema/stageprocessing"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-stageprocessing-1.0.xsd"/>
+                        <copy todir="target/site/schema/task"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/core/task/xml/spring-actionscript-task-1.0.xsd"/>
+                        <copy todir="target/site/schema/task"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/core/task/xml/spring-actionscript-task-1.1.xsd"/>
+                        <copy todir="target/site/schema/context"
+                              file="${basedir}/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/context/config/spring-actionscript-context-2.0.xsd"/>
+                    </postProcess>
+                </configuration>
+
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <!--
+                        Must not be 2.2-beta-1 which is distributed with Maven 2.2.0 because of
+                        http://jira.codehaus.org/browse/MASSEMBLY-285
+                    -->
+                <version>2.2-beta-4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>distribution-assembly-execution</id>
+                        <phase>post-site</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>spring-actionscript-${version}</finalName>
+                            <outputDirectory>${project.reporting.outputDirectory}/downloads</outputDirectory>
+                            <descriptors>
+                                <descriptor>src/main/assembly/distribution.xml</descriptor>
+                                <descriptor>src/main/assembly/distribution-with-dependencies.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+    <reporting>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+            </plugin>
+            <!--
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>${flexmojos.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <id>flex-reports</id>
+                        <reports>
+                            <report>asdoc-report</report>
+                        </reports>
+                        <configuration>
+                            <reportOutputDirectory>target/site/docs/asdoc</reportOutputDirectory>
+                            <configFile>asdoc-config.xml</configFile>
+                            <footer>Copyright 2007-2010 Spring Actionscript.</footer>
+                            <description>API documentation for the Spring Actionscript library</description>
+                            <mainTitle>Spring Actionscript API documentation</mainTitle>
+                            <windowTitle>Spring Actionscript API documentation</windowTitle>
+                            <name>SpringASDocs</name>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            -->
+
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>${flexmojos.version}</version>
+                <inherited>true</inherited>
+                <reportSets>
+                    <reportSet>
+                        <id>flex-reports</id>
+                        <reports>
+                            <report>asdoc-report</report>
+                        </reports>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                            <reportOutputDirectory>target/site/docs/asdoc</reportOutputDirectory>
+                            <configFile>asdoc-config.xml</configFile>
+                            <footer>Copyright 2007-2010 Spring Actionscript.</footer>
+                            <description>API documentation for the Spring Actionscript library</description>
+                            <mainTitle>Spring Actionscript API documentation</mainTitle>
+                            <windowTitle>Spring Actionscript API documentation</windowTitle>
+                            <name>SpringASDocs</name>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changes-plugin</artifactId>
+                <configuration>
+                    <onlyCurrentVersion>true</onlyCurrentVersion>
+                    <addActionDate>true</addActionDate>
+                    <issueLinkTemplatePerSystem>
+                        <jira>%URL%/SESPRINGACTIONSCRIPTAS-%ISSUE%</jira>
+                    </issueLinkTemplatePerSystem>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>changes-report</report>
+                            <report>jira-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
+            <plugin>
+                <groupId>com.adobe.ac</groupId>
+                <artifactId>flex-pmd-maven-plugin</artifactId>
+                <version>${flex-pmd.version}</version>
+            </plugin>
+
+        </plugins>
+
+    </reporting>
+
+
+    <distributionManagement>
+        <repository>
+            <id>yoolab.org-releases</id>
+            <name>Yoolab.org releases repository</name>
+            <url>dav:https://dev.yoolab.org/maven/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>yoolab.org-snapshots</id>
+            <name>Yoolab.org snapshots repository</name>
+            <url>dav:https://dev.yoolab.org/maven/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <site>
+            <id>yoolab.org-springactionscript</id>
+            <url>scp://www.springactionscript.org/srv/www/yoolab/www.springactionscript.org/public_html</url>
+        </site>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>stable</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <site>
+                    <id>yoolab.org-springactionscript</id>
+                    <url>scp://www.springactionscript.org/srv/www/yoolab/www.springactionscript.org/public_html</url>
+                </site>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>beta</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <configuration>
+                            <template>site-beta.vm</template>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <distributionManagement>
+                <site>
+                    <id>yoolab.org-springactionscript</id>
+                    <url>scp://www.springactionscript.org/srv/www/yoolab/www.springactionscript.org/public_html/beta
+                    </url>
+                </site>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
+</project>

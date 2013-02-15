@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter annotations="" version="5.0" xml:id="the_component_scanner"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1998/Math/MathML"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook">
+  <title>The Component scanner and class scanning system</title>
+
+  <section xml:id="the_component_scanner_introduction">
+    <title>Introduction</title>
+
+    <para>Besides <link linkend="configuration_metadata">XML</link> and <link
+    linkend="composing_mxml_based_configuration_metadata">MXML</link>, it is
+    possible to define object definitions through metadata annotations. This
+    is done using a system called <emphasis>component
+    scanning</emphasis>.</para>
+
+    <para>What this does is, at application context startup, the system will
+    scan all the classes that are defined in the currently loaded
+    <abbrev>SWF</abbrev>, examine them to determine whether they have been
+    annotated with <emphasis role="bold">[Component]</emphasis> metadata, and
+    if so, create an <literal
+    xlink:href="asdoc://org.springextensions.actionscript.ioc.ObjectDefinition">ObjectDefinition</literal>
+    based on the metadata arguments and register it with the application
+    context.</para>
+
+    <para>To use the below explained functionality, add these elements to the
+    <abbrev>XML</abbrev> configuration:</para>
+
+    <programlisting>&lt;objects xmlns="http://www.springactionscript.org/schema/objects"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springactionscript.org/schema/context"
+  xsi:schemaLocation="
+ http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+ <emphasis role="bold">http://www.springactionscript.org/schema/context http://www.springactionscript.org/schema/context/spring-actionscript-context-2.0.xsd</emphasis>"&gt;
+
+  <emphasis role="bold">&lt;context:metadata-config/&gt;
+  &lt;context:component-scan/&gt;</emphasis>
+
+&lt;/objects&gt;</programlisting>
+
+    <para>or add it programmatically like this:</para>
+
+    <programlisting>flexXMLApplicationContext.addObjectFactoryPostProcessor(new ClassScannerObjectFactoryPostProcessor());</programlisting>
+
+    <note>
+      <para>For now this functionality will only work with the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.context.support.FlexXMLApplicationContext">FlexXMLApplicationContext</literal>
+      since it makes use of the SystemManager, at a later date we will try and
+      implement this as well for pure actionscript projects.</para>
+    </note>
+
+    <note>
+      <para>Don't forget to add these compiler arguments to your project to be
+      able to make use of the annotations as described in this chapter:
+      <emphasis
+      role="bold">-keep-as3-metadata+=Component,Property,Invoke,Constructor</emphasis></para>
+    </note>
+  </section>
+
+  <section xml:id="component_metadata_explained">
+    <title>[Component] metadata explained</title>
+
+    <informalexample>
+      <para>Here is a simple example of a class that is annotated with
+      [Component] metadata:</para>
+
+      <programlisting><emphasis role="bold">[Component]</emphasis>
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+    super();
+ }
+}
+</programlisting>
+
+      <para>This will register an object definition with a generated id for
+      the <emphasis>AnnotatedComponent</emphasis> class. The
+      <abbrev>XML</abbrev> equivalent of this would be:</para>
+
+      <programlisting>&lt;object class="com.class.AnnotatedComponent" id="scannedComponent#1"/&gt;</programlisting>
+
+      <para>This in itself is not very useful yet, but here is how you can set
+      different <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.ObjectDefinition">ObjectDefinition</literal>
+      properties using metadata arguments:</para>
+
+      <programlisting><emphasis role="bold">[Component(id="myComponent",scope="prototype",factoryMethod="getInstance")]</emphasis>
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+  super();
+ }
+ 
+ public static function getInstance():AnnotatedComponent {
+  <lineannotation>//...implementation omitted</lineannotation>
+ }
+}
+</programlisting>
+
+      <para>The XML equivalent for the above would be:</para>
+
+      <programlisting>&lt;object class="com.class.AnnotatedComponent" id="myComponent" scope="singleton"/&gt;</programlisting>
+
+      <para>Here is a list of all the metadata arguments that are
+      available:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(id="componentId")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(scope="singleton/prototype")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(lazyInit="true/false")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(factoryMethod="methodName")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(factoryObjectName="objectName")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(initMethod="methodName")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(destroyMethod="methodName")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(primary="true/false")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(autowireCandidate="true/false")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(dependencyCheck="none/simple/objects/all")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(dependsOn="comma,delimited,list,of,object,names")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(autowire="no,byName,byType,constructor,autodetect")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(skipMetaData="true/false")</emphasis>]</para>
+        </listitem>
+
+        <listitem>
+          <para>[Component<emphasis
+          role="bold">(skipPostProcessors="true/false")</emphasis>]</para>
+        </listitem>
+      </itemizedlist>
+    </informalexample>
+
+    <section>
+      <title>Injecting constructor arguments</title>
+
+      <para>Since it is not possible to annotate actionscript constructors
+      with metadata its constructor arguments will need to be defined at class
+      level, like so:</para>
+
+      <programlisting><emphasis role="bold"><emphasis role="bold">[Constructor(args="ref=objectName1")]</emphasis>
+[Component(id="myComponent",scope="prototype")]</emphasis>
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent(obj:Object) {
+  super();
+ }
+
+}</programlisting>
+
+      <para>Its <abbrev>XML</abbrev> equivalent would be written like
+      this:</para>
+
+      <programlisting>&lt;object id="myComponent" scope="prototype"&gt;
+  &lt;constructor-arg ref="objectName1"/&gt;
+&lt;/object&gt;
+</programlisting>
+
+      <para>If the <emphasis role="bold">[Constructor]</emphasis> annotation
+      is ommitted Spring Actionscript will try to resolve any available
+      constructor arguments through reflection in the same way that the
+      'constructor' autowiring logic is performed. See the section '<link
+      linkend="autowiring_objects">Autowiring collaborators</link>' for more
+      info.</para>
+    </section>
+
+    <section xml:id="inject_properties">
+      <title>Injecting properties</title>
+
+      <para>Next up is how to inject property values, annotate property
+      declarations as follows to achieve this:</para>
+
+      <programlisting><emphasis role="bold">[Component(id="myComponent",scope="prototype")]</emphasis>
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+  super();
+ }
+ 
+ <emphasis role="bold">[Property(ref="someObjectNameOfMyType")]</emphasis>
+ public var someProperty():MyType;
+
+ <emphasis role="bold">[Property(value="${propertyName}")]</emphasis>
+ public var someOtherProperty():String;
+
+}
+</programlisting>
+
+      <para>The '<emphasis role="bold">${propertyName}</emphasis>' value means
+      that this placeholder will be replaced by a 'real' property value once
+      the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.ObjectDefinition">ObjectDefinition</literal>
+      is registered in the application context. The above annotations would
+      look as follows when configured in <abbrev>XML</abbrev>.</para>
+
+      <programlisting>&lt;object id="myComponent" scope="prototype"&gt;
+  &lt;property name="someProperty" ref="someObjectNameOfMyType"/&gt;
+  &lt;property name="someOtherProperty" value="${propertyName}"/&gt;
+&lt;/object&gt;</programlisting>
+
+      <para>The same results can also be achieved by using these
+      annotations:</para>
+
+      <programlisting><emphasis role="bold">[Component(id="myComponent",scope="prototype")]</emphasis>
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+  super();
+ }
+ 
+ <emphasis role="bold">[Autowired(name="someObjectNameOfMyType")]</emphasis>
+ public var someProperty():MyType;
+
+ <emphasis role="bold">[Autowired(externalProperty="propertyName")]</emphasis>
+ public var someOtherProperty():String;
+
+}</programlisting>
+
+      <para>There is however a subtle difference between these two techniques.
+      In the first case, the <emphasis role="bold">[Property]</emphasis> case,
+      the property injection will be defined as a property on the object
+      definition. Therefore it is possible that this definition will be
+      processed by other <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.IObjectFactoryPostProcessor">IObjectFactoryPostProcessor</literal>
+      implementations (and thus the property might be processed too) later in
+      the application context bootstrap. In the second case, the <emphasis
+      role="bold">[Autowired]</emphasis> case, the injections will be resolved
+      at runtime, at the moment that the context instantiates the
+      object.</para>
+
+      <para>Both cases lead to the same result, but keep these small
+      differences in mind when choosing which annotation to use.</para>
+    </section>
+
+    <section>
+      <title>Method invocations</title>
+
+      <para>Lastly there are, of course, the method invocations. Annotating a
+      method declaration as follows will add a <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.MethodInvocation">MethodInvocation</literal>
+      to the generated <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.ObjectDefinition">ObjectDefinition</literal>:</para>
+
+      <programlisting><emphasis role="bold">[Component(id="myComponent",scope="prototype")]</emphasis>
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+  super();
+ }
+ 
+ <emphasis role="bold">[Invoke]</emphasis>
+ public var someFunction():void;
+
+}</programlisting>
+
+      <para>Of which the <abbrev>XML</abbrev> equivalent would look as
+      below:</para>
+
+      <programlisting>&lt;object id="myComponent" scope="prototype"&gt;
+  &lt;method-invocation name="someFunction"/&gt;
+&lt;/object&gt;</programlisting>
+
+      <para>If the method expects arguments they can be defined like
+      this:</para>
+
+      <programlisting><emphasis role="bold">[Component(id="myComponent",scope="prototype")]</emphasis>
+public class AnnotatedComponent {
+
+ public function AnnotatedComponent() {
+  super();
+ }
+ 
+ <emphasis role="bold">[Invoke(args="ref=someObjectNameOfMyType, value=10")]</emphasis>
+ public var someFunction(arg1:SomeType, arg2:uint):void;
+
+}</programlisting>
+
+      <para>And of course, its <abbrev>XML</abbrev> mirror:</para>
+
+      <programlisting>&lt;object id="myComponent" scope="prototype"&gt;
+  &lt;method-invocation name="someFunction"&gt;
+    &lt;arg ref="someObjectNameOfMyType"/&gt;
+    &lt;arg value="10"/&gt;
+  &lt;/method-invocation&gt;
+&lt;/object&gt;</programlisting>
+    </section>
+  </section>
+
+  <section>
+    <title>Extending the class scanning system</title>
+
+    <para>The component scanner is part of the more generic class scanning
+    system. It is quite easy to extend this with custom scanners, in this
+    section it will be explained how.</para>
+
+    <section>
+      <title>The IClassScanner interface</title>
+
+      <para>The <literal
+      xlink:href="asdoc://org.springextensions.actionscript.context.metadata.ClassScannerObjectFactoryPostProcessor">ClassScannerObjectFactoryPostProcessor</literal>
+      factory postprocessor mentioned in the introduction of this chapter will
+      query its associated application context for the existence of any
+      <literal
+      xlink:href="org.springextensions.actionscript.context.metadata.IClassScanner">IClassScanner</literal>
+      implementations.</para>
+
+      <para>This <literal
+      xlink:href="org.springextensions.actionscript.context.metadata.IClassScanner">IClassScanner</literal>
+      interface looks like this:</para>
+
+      <programlisting>public interface IClassScanner {
+
+ function scan(className:String):void;
+
+ function get metaDataNames():Array;
+}
+</programlisting>
+
+      <para>The metadataNames property determines which class level metadata
+      annotations will trigger the <literal
+      xlink:href="org.springextensions.actionscript.context.metadata.IClassScanner">IClassScanner</literal>
+      implementation. Once the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.context.metadata.ClassScannerObjectFactoryPostProcessor">ClassScannerObjectFactoryPostProcessor</literal>
+      encounters a class that is annotated with any of this metadata, its
+      fully qualified class name will be passed to the <literal
+      xlink:href="org.springextensions.actionscript.context.metadata.IClassScanner#scan()">IClassScanner.scan()</literal>
+      method.</para>
+
+      <para>Let's imagine an <literal
+      xlink:href="org.springextensions.actionscript.context.metadata.IClassScanner">IClassScanner</literal>
+      that is interested in classes that are annotated with <emphasis
+      role="bold">[Service]</emphasis> metadata, an implementation could
+      inherit from the provided <literal
+      xlink:href="org.springextensions.actionscript.context.metadata.AbstractClassScanner">AbstractClassScanner</literal>
+      base class like this:</para>
+
+      <programlisting>public class ServiceClassScanner extends AbstractClassScanner {
+
+ public static const SERVICE_METADATA:String = "Service";
+
+ public function ServiceClassScanner() {
+  super([SERVICE_METADATA]);
+ }
+
+ function scan(className:String):void {
+  var type:Type = Type.forName(className);
+  <lineannotation>//... further implementation ommitted</lineannotation>
+ }
+
+}
+</programlisting>
+
+      <para>To register this implementation with the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.context.metadata.ClassScannerObjectFactoryPostProcessor">ClassScannerObjectFactoryPostProcessor</literal>
+      add this bit of <abbrev>XML</abbrev> configuration:</para>
+
+      <programlisting>&lt;object id="serviceScanner" class="com.classes.ServiceClassScanner"/&gt;
+
+&lt;object id="classScanObjectFactoryPostProcessor"
+    class="org.springextensions.actionscript.context.metadata.ClassScannerObjectFactoryPostProcessor"&gt;
+  &lt;method-invocation name="addScanner"&gt;
+    &lt;arg ref="serviceScanner"/&gt;
+  &lt;/method-invocation&gt;
+&lt;/object&gt;</programlisting>
+
+      <para>Or add it programmatically like this:</para>
+
+      <programlisting>var factory:ClassScannerObjectFactoryPostProcessor = new ClassScannerObjectFactoryPostProcessor();
+factory.addScanner(new ServiceClassScanner());
+flexXMLApplicationContext.addObjectFactoryPostProcessor(factory);</programlisting>
+
+      <note>
+        <para>Be careful, when defining class scanners in
+        <abbrev>XML</abbrev>, not to let them be injected with any other
+        instances defined in the configuration. The <literal
+        xlink:href="asdoc://org.springextensions.actionscript.context.metadata.ClassScannerObjectFactoryPostProcessor">ClassScannerObjectFactoryPostProcessor</literal>
+        runs <emphasis>before</emphasis> the application context has finished
+        its bootstrap, so therefore cannot be used for <abbrev>IoC</abbrev> at
+        this stage.</para>
+      </note>
+    </section>
+
+    <section>
+      <title>Controlling the order in which class scanners are
+      executed</title>
+
+      <para>The order in which a collection of <literal
+      xlink:href="asdoc://org.springextensions.actionscript.context.metadata.IClassScanner">IClassScanner</literal>
+      implementations is executed can be controlled by having them implement
+      the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.core.IOrdered">IOrdered</literal>
+      interface. See the '<link
+      linkend="controlling_collection_order">Controlling collection
+      order</link>' section for more information on this interface.</para>
+    </section>
+  </section>
+</chapter>

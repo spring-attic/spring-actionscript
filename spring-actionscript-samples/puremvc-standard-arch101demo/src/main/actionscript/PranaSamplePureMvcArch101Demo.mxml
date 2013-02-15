@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  PureMVC Architecture 101 Course
+  Copyright(c) 2007 FutureScale, Inc.  All rights reserved.
+  Version: $Revision: 859 $, $Date: 2008-09-16 12:14:22 +0200 (di, 16 sep 2008) $, $Author: dmurat1 $
+ -->
+<mx:Application
+  xmlns:mx="http://www.adobe.com/2006/mxml"
+  xmlns:view="org.puremvc.arch_101.unit_03.lab_02.view.component.*"
+  layout="horizontal" creationComplete="onCreationComplete()" viewSourceURL="srcview/index.html" >
+
+  <mx:Script>
+    <![CDATA[
+      import org.puremvc.as3.patterns.observer.Notification;
+      import org.puremvc.arch_101.unit_03.lab_02.ApplicationFacade;
+
+      private var m_facade:ApplicationFacade;
+
+//      private var linkageEnforcer:LinkageEnforcer;
+
+      private function onCreationComplete():void {
+        m_facade = ApplicationFacade.getInstance(["applicationContext-1.xml", "applicationContext-2.xml"]);
+        m_facade.addEventListener(Event.COMPLETE, startupApp);
+        m_facade.initializeIocContainer(null);
+      }
+
+      private function startupApp(p_event:Event):void {
+        m_facade.removeEventListener(Event.COMPLETE, startupApp);
+        m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
+      }
+    ]]>
+  </mx:Script>
+
+  <!-- User Management Interface -->
+  <mx:VBox>
+    <view:UserList id="userList" width="100%" />
+    <mx:HBox>
+      <view:UserForm id="userForm"/>
+      <view:RolePanel id="rolePanel" height="100%"/>
+    </mx:HBox>
+  </mx:VBox>
+</mx:Application>

@@ -1,0 +1,229 @@
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.springextensions.actionscript</groupId>
+        <artifactId>spring-actionscript-samples</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.springextensions.actionscript.sample</groupId>
+    <artifactId>organizer</artifactId>
+    <packaging>swc</packaging>
+    <version>1.1-SNAPSHOT</version>
+    <name>Spring ActionScript Organizer</name>
+    <url>http://www.springactionscript.org</url>
+    <description>Core IOC container</description>
+    <inceptionYear>2007</inceptionYear>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>air-framework</artifactId>
+            <version>4.1.0.16248</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex</groupId>
+            <artifactId>adt</artifactId>
+            <version>4.0.0.13555</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>flex</artifactId>
+            <version>4.1.0.16248</version>
+            <type>swc</type>
+            <scope>external</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>spark</artifactId>
+            <version>4.1.0.16248</version>
+            <type>swc</type>
+            <scope>external</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>framework</artifactId>
+            <version>4.1.0.16248</version>
+            <type>swc</type>
+            <scope>external</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>framework</artifactId>
+            <version>4.1.0.16248</version>
+            <type>zip</type>
+            <classifier>configs</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>rpc</artifactId>
+            <version>4.1.0.16248</version>
+            <type>swc</type>
+            <scope>external</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>utilities</artifactId>
+            <version>4.1.0.16248</version>
+            <type>swc</type>
+            <scope>external</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>playerglobal</artifactId>
+            <version>4.1.0.16248</version>
+            <type>swc</type>
+            <scope>external</scope>
+            <classifier>10.1</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>framework</artifactId>
+            <version>4.1.0.16248</version>
+            <type>rb.swc</type>
+            <scope>external</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>rpc</artifactId>
+            <version>4.1.0.16248</version>
+            <type>rb.swc</type>
+            <scope>external</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>descriptor.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.adobe.flex</groupId>
+                        <artifactId>compiler</artifactId>
+                        <version>4.1.0.16248</version>
+                        <type>pom</type>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <storepass>flexmojos</storepass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>source-view</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- AIR packaging -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <workingDirectory>${basedir}/target</workingDirectory>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>com.adobe.air.ADT</argument>
+                        <argument>-package</argument>
+                        <argument>-storetype</argument>
+                        <argument>pkcs12</argument>
+                        <argument>-keypass</argument>
+                        <argument>springas</argument>
+                        <argument>-storepass</argument>
+                        <argument>springas</argument>
+                        <argument>-keystore</argument>
+                        <argument>springas.p12</argument>
+                        <argument>${project.artifactId}-${project.version}.air</argument>
+                        <argument>descriptor.xml</argument>
+                        <argument>${project.artifactId}-${project.version}.swf</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>move-site-test-apps-files</id>
+                        <phase>site</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="${project.build.directory}/${project.build.finalName}.swf"
+                                      todir="../../target/site/${test.apps.dir}/${project.artifactId}" overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy file="${project.build.directory}/application-context.xml"
+                                      todir="../../target/site/${test.apps.dir}/${project.artifactId}" overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy file="${project.build.directory}/application-context.properties"
+                                      todir="../../target/site/${test.apps.dir}/${project.artifactId}" overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy todir="../../target/site/${test.apps.dir}/${project.artifactId}/srcview"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true">
+                                    <fileset dir="${project.build.directory}/srcview"/>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>

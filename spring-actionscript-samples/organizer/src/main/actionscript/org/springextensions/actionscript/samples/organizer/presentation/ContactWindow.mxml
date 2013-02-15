@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:presentation="org.springextensions.actionscript.samples.organizer.presentation.*"
+		  width="480"
+		  height="480"
+		  backgroundColor="0xefebe7"
+		  title="{presentationModel.title}"
+		  showStatusBar="false"
+		  layout="{getLayout()}"
+		  closing="closingHandler(event)"
+		  close="titlewindow1_closeHandler(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import org.springextensions.actionscript.core.operation.IOperation;
+			import org.springextensions.actionscript.core.operation.OperationEvent;
+			import org.springextensions.actionscript.samples.organizer.application.service.IContactImageService;
+
+			import spark.layouts.VerticalLayout;
+
+			private var _layout:VerticalLayout;
+
+			// --------------------------------------------------------------------
+			//
+			// Properties
+			//
+			// --------------------------------------------------------------------
+
+			// ----------------------------
+			// contactImageService
+			// ----------------------------
+
+			public var _contactImageService:IContactImageService;
+
+			[Autowired]
+			[Required]
+			public function get contactImageService():IContactImageService {
+				return _contactImageService;
+			}
+
+			public function set contactImageService(value:IContactImageService):void {
+				_contactImageService = value;
+				loadPicture();
+			}
+
+			// ----------------------------
+			// presentationModel
+			// ----------------------------
+
+			public var _presentationModel:ContactFormPM = new ContactFormPM();
+
+			[Bindable]
+			public function get presentationModel():ContactFormPM {
+				return _presentationModel;
+			}
+
+			public function set presentationModel(value:ContactFormPM):void {
+				if (value !== presentationModel) {
+					_presentationModel = value;
+					loadPicture();
+				}
+			}
+
+			// --------------------------------------------------------------------
+			//
+			// Private Methods
+			//
+			// --------------------------------------------------------------------
+
+			private function getLayout():VerticalLayout {
+				if (!_layout) {
+					_layout = new VerticalLayout();
+					_layout.paddingLeft = 10;
+					_layout.paddingTop = 10;
+					_layout.paddingRight = 10;
+				}
+				return _layout;
+			}
+
+			private function loadPicture():void {
+				if (presentationModel && presentationModel.contact && contactImageService) {
+					var operation:IOperation = contactImageService.getImageData(presentationModel.contact);
+					operation.addCompleteListener(function(event:OperationEvent):void {
+							picture.source = event.result;
+						});
+				}
+			}
+
+			private function updateContact():void {
+				presentationModel.updateContact(firstName.text, lastName.text, email.text, phone.text, address.text, city.text, state.text, zip.text);
+			}
+
+			// --------------------------------------------------------------------
+			//
+			// Event Handlers
+			//
+			// --------------------------------------------------------------------
+
+			private function closingHandler(event:Event):void {
+				if (!presentationModel.closing && !presentationModel.cancelled) {
+					event.preventDefault();
+					presentationModel.close();
+				}
+			}
+
+			protected function titlewindow1_closeHandler(event:Event):void {
+				//event.preventDefault();
+				//presentationModel.close();
+			}
+
+			protected function okButton_clickHandler(event:MouseEvent):void {
+				presentationModel.commitChanges();
+			}
+
+			protected function cancelButton_clickHandler(event:MouseEvent):void {
+				presentationModel.cancelChanges();
+			}
+		]]>
+	</fx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%">
+
+		<mx:HBox width="100%"
+				 verticalAlign="middle">
+			<mx:Label text="General"
+					  fontSize="13"
+					  fontWeight="bold"/>
+			<mx:HRule width="100%"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 height="100%">
+
+			<mx:Form width="100%"
+					 height="100%"
+					 paddingLeft="0">
+				<mx:FormItem label="Id"
+							 width="100%">
+					<mx:TextInput width="100%"
+								  text="{presentationModel.contact.id}"
+								  enabled="false"/>
+				</mx:FormItem>
+				<mx:FormItem label="First Name"
+							 width="100%">
+					<mx:TextInput id="firstName"
+								  width="100%"
+								  text="{presentationModel.contact.firstName}"
+								  change="updateContact()"/>
+				</mx:FormItem>
+				<mx:FormItem label="Last Name"
+							 width="100%">
+					<mx:TextInput id="lastName"
+								  width="100%"
+								  text="{presentationModel.contact.lastName}"
+								  change="updateContact()"/>
+				</mx:FormItem>
+				<mx:FormItem label="Email"
+							 width="100%">
+					<mx:TextInput id="email"
+								  width="100%"
+								  text="{presentationModel.contact.email}"
+								  change="updateContact()"/>
+				</mx:FormItem>
+				<mx:FormItem label="Phone"
+							 width="100%">
+					<mx:TextInput id="phone"
+								  width="100%"
+								  text="{presentationModel.contact.phone}"
+								  change="updateContact()"/>
+				</mx:FormItem>
+			</mx:Form>
+
+			<presentation:PictureInput id="picture"
+									   styleName="pictureFrame"
+									   pictureWidth="160"
+									   pictureHeight="160"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 verticalAlign="middle">
+			<mx:Label text="Address"
+					  fontSize="13"
+					  fontWeight="bold"/>
+			<mx:HRule width="100%"/>
+		</mx:HBox>
+
+		<mx:Form width="100%"
+				 height="100%">
+			<mx:FormItem label="Address"
+						 width="100%">
+				<mx:TextInput id="address"
+							  width="100%"
+							  text="{presentationModel.contact.address}"
+							  change="updateContact()"/>
+			</mx:FormItem>
+			<mx:FormItem label="City"
+						 width="100%">
+				<mx:TextInput id="city"
+							  width="100%"
+							  text="{presentationModel.contact.city}"
+							  change="updateContact()"/>
+			</mx:FormItem>
+			<mx:FormItem label="State"
+						 width="100%">
+				<mx:TextInput id="state"
+							  width="100%"
+							  text="{presentationModel.contact.state}"
+							  change="updateContact()"/>
+			</mx:FormItem>
+			<mx:FormItem label="Zip"
+						 width="100%">
+				<mx:TextInput id="zip"
+							  width="100%"
+							  text="{presentationModel.contact.zip}"
+							  change="updateContact()"/>
+			</mx:FormItem>
+		</mx:Form>
+
+	</mx:VBox>
+
+	<mx:HRule width="100%"/>
+
+	<mx:ControlBar width="100%"
+				   horizontalAlign="right"
+				   paddingRight="0">
+		<s:Button id="okButton"
+				  label="OK"
+				  enabled="{presentationModel.commitAllowed}"
+				  click="okButton_clickHandler(event)"/>
+		<s:Button id="cancelButton"
+				  label="Cancel"
+				  click="cancelButton_clickHandler(event)"/>
+	</mx:ControlBar>
+
+</s:Window>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>org.springextensions.actionscript</groupId>
+		<artifactId>spring-actionscript-superpom</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.springextensions.actionscript</groupId>
+	<artifactId>spring-actionscript-puremvc-standard</artifactId>
+	<version>1.2-SNAPSHOT</version>
+	<packaging>swc</packaging>
+	<name>Spring ActionScript PureMvc Standard Integration</name>
+	<description>Integration between PureMVC AS3 Standard and Spring ActionScript.</description>
+	<url>http://www.springactionscript.org</url>
+	<inceptionYear>2007</inceptionYear>
+
+	<developers>
+		<developer>
+			<id>dmurat</id>
+			<name>Damir Murat</name>
+			<email>damir.murat [at] gmail.com</email>
+			<organization>Croz</organization>
+			<organizationUrl>http://www.croz.net</organizationUrl>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springextensions.actionscript</groupId>
+			<artifactId>spring-actionscript-core</artifactId>
+			<version>${project.version}</version>
+			<type>swc</type>
+		</dependency>
+
+        <dependency>
+            <groupId>org.puremvc</groupId>
+            <artifactId>puremvc-as3-standard</artifactId>
+            <version>${puremvc-standard.version}</version>
+            <type>swc</type>
+            <scope>external</scope>
+        </dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+        <reporting>
+        <plugins>
+                     <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <id>flex-reports</id>
+                        <reports>
+                            <report>asdoc-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+              </plugins>
+    </reporting>
+</project>

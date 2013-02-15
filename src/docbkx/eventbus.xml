@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter annotations="" version="5.0" xml:id="the_eventbus"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1998/Math/MathML"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook">
+  <title>The EventBus</title>
+
+  <section xml:id="the_eventbus_introduction">
+    <title>Introduction</title>
+
+    <para>The EventBus used to be an integral part of Spring Actionscript, but
+    since version 1.2 it has been refactored out of the core and turned into
+    an autonomous <literal
+    xlink:href="http://www.as3commons.org">AS3Commons</literal> project. To
+    find more information on the general use of the EventBus, please refer to
+    the <literal
+    xlink:href="http://www.as3commons.org/as3-commons-eventbus/index.html">online
+    documentation</literal> at as3commons.org.</para>
+
+    <para>The EventBus, IEventBus, EventBusFacade and IEventBusListener
+    classes and interfaces are still available in Spring Actionscript but have
+    been marked as <emphasis>deprecated</emphasis>. So eventually these
+    classes and interfaces will be deleted from the code base.</para>
+
+    <para>In version 1.2 a special EventBusAdapter is in place which will make
+    sure that existing code that makes use of the static EventBus class will
+    remain functional.</para>
+
+    <section xml:id="eventbus_event_handling_using_metadata_annotations">
+      <title>EventBus event handling using metadata annotations</title>
+
+      <para>To prevent a lot of boilerplate code consisting of long lists of
+      addEventListener* calls, Spring Actionscript includes an alternative way
+      to define event handlers for events that are dispatched through the
+      <literal
+      xlink:href="asdoc://org.springextensions.actionscript.core.event.EventBus">EventBus</literal>.</para>
+
+      <para>Instead of adding specific listeners functions through the
+      addEventListener calls simply add a bit of metadata to the particular
+      method:</para>
+
+      <programlisting><emphasis role="bold">[EventHandler]</emphasis>
+protected function saveUserHandler(event:Event):void {
+<lineannotation>//implementation ommitted...</lineannotation>
+}</programlisting>
+
+      <para>This is the most basic way of annotating a method and immediately
+      implies certain assumptions. In this case it is assumed that the
+      saveUser method will handle an event of the type "<emphasis
+      role="bold">saveUser</emphasis>". Another valid method name for this
+      handler could also be:</para>
+
+      <programlisting><emphasis role="bold">[EventHandler]</emphasis>
+protected function saveUser(event:Event):void {
+<lineannotation>//implementation ommitted...</lineannotation>
+}</programlisting>
+
+      <para>If, for some reason, this naming convention is not desired then
+      add the name of the type of the specific event to the metadata:</para>
+
+      <programlisting><emphasis role="bold">[EventHandler(name="saveUser")]</emphasis>
+protected function saveTheUserNow(event:Event):void {
+<lineannotation>//implementation ommitted...</lineannotation>
+}</programlisting>
+
+      <para>By default, an event handler function is expected to have a single
+      argument of type Event (or any subclass). It is however possible to let
+      Spring Actionscript match the properties of the specified event with the
+      arguments of the event handler. For instance, if the event passed to the
+      saveUser event is not an ordinary event, but a subclass called
+      SaveUserEvent with a property that is called "user" of the type "User".
+      In this case an event handler with the following signature will work
+      just a well:</para>
+
+      <programlisting>[EventHandler]
+protected function saveUser(user:User):void {
+<lineannotation>//implementation ommitted...</lineannotation>
+}</programlisting>
+
+      <para>The property/argument matching is done by type, so this will fail
+      in the case where an event has multiple properties of the same kind. If
+      the SaveUserEvent should have two user properties, called userA or userB
+      for example, the matching will fail. In that case it is possible to
+      define the properties by name directly in the metadata:</para>
+
+      <programlisting>[EventHandler(properties="userA,userB")]
+protected function saveUser(userA:User, userB:User):void {
+<lineannotation>//implementation ommitted...</lineannotation>
+}</programlisting>
+
+      <para>To annotate a handler for a certain event Class, define the fully
+      qualified class name like this:</para>
+
+      <programlisting><emphasis role="bold">[EventHandler(clazz="com.classes.events.UserEvent")]</emphasis>
+protected function saveTheUserNow(event:UserEvent):void {
+<lineannotation>//implementation ommitted...</lineannotation>
+}</programlisting>
+
+      <para>To enable the processing of these kinds of annotations it is
+      necessary to add an instance of the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.EventHandlerMetaDataPostProcessor">EventHandlerMetaDataPostProcessor</literal>
+      to the application context. The easiest way to do so is to add this bit
+      of <abbrev>XML</abbrev> to the configuration:</para>
+
+      <programlisting>&lt;object id="eventhandlerProcessor" class="org.springextensions.actionscript.ioc.factory.config.EventHandlerMetadataProcessor"/&gt;</programlisting>
+
+      <para>This will automatically register the processor with the
+      application context.</para>
+
+      <note>
+        <para>Do not forget to add the <emphasis
+        role="bold">EventHandler</emphasis> metadata to the compiler
+        arguments: <emphasis
+        role="bold">-keep-as3-metadata+=EventHandler</emphasis>. Failing to do
+        so will prevent the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.EventHandlerMetaDataProcessor">EventHandlerMetaDataProcessor</literal>
+        to do its work.</para>
+      </note>
+
+      <note>
+        <para>Credit where credit is due: The <emphasis
+        role="bold">[EventHandler]</emphasis> handling is similar to the
+        <emphasis role="bold">[Mediate]</emphasis> metadata as introduced by
+        <literal xlink:href="http://cdscott.blogspot.com">Chris
+        Scott</literal> in the <literal
+        xlink:href="http://www.swizframework.org">Swiz Framework</literal> and
+        the <emphasis role="bold">[MessageHandler]</emphasis> metadata in the
+        <literal xlink:href="http://www.spicefactory.org/parsley/">Parsley
+        Framework</literal> by Jens Halm, the Spring Actionscript team both
+        acknowledges and appreciates this work. Java programmers might
+        recognize this pattern as being similar to the
+        <literal>@EventHandler</literal> annotation in the <literal
+        xlink:href="https://code.google.com/p/simpleeventbus/">Java Simple
+        EventBus</literal> or the <literal
+        xlink:href="http://www.eventbus.org/api/org/bushe/swing/event/annotation/EventSubscriber.html">@EventSubscriber</literal>
+        annotation in the <literal xlink:href="http://www.eventbus.org">Java
+        EventBus</literal>.</para>
+      </note>
+    </section>
+
+    <section xml:id="routing_other_events_through_the_eventbus">
+      <title>Routing other events through the EventBus</title>
+
+      <para>On the other side of the spectrum there is event dispatching and a
+      way to avoid having to call <literal
+      xlink:href="asdoc://org.springextensions.actionscript.core.event.EventBus#dispatch()">EventBus.dispatch(someEvent)</literal>
+      a zillion times. For this particular goal there is the [RouteEvents]
+      metadata which can be handled by the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.RouteEventsMetaDataPostProcessor">RouteEventsMetaDataPostProcessor</literal>.
+      Let's take a look at simple example, imagine a class that is able to
+      dispatch a number of events:</para>
+
+      <programlisting>[Event(name="eventName1",type="...")]
+[Event(name="eventName2",type="...")]
+[Event(name="eventName3",type="...")]
+public class MyClass {
+  //implementation omitted..
+}</programlisting>
+
+      <para>To let Spring Actionscript catch all these events, and redispatch
+      them through the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.core.event.EventBus">EventBus</literal>,
+      all that is necessary is the addition of the <emphasis
+      role="bold">[RouteEvents]</emphasis> metadata:</para>
+
+      <programlisting><emphasis role="bold">[RouteEvents]</emphasis>
+[Event(name="eventName1",type="...")]
+[Event(name="eventName2",type="...")]
+[Event(name="eventName3",type="...")]
+public class MyClass {
+  //implementation omitted...
+}</programlisting>
+
+      <para>If not all events need to be re-routed then use the 'events'
+      argument of the [RouteEvents] metadata:</para>
+
+      <programlisting><emphasis role="bold">[RouteEvents(events="eventName1,eventName2")]</emphasis>
+[Event(name="eventName1",type="...")]
+[Event(name="eventName2",type="...")]
+[Event(name="eventName3",type="...")]
+public class MyClass {
+  //implementation omitted...
+}</programlisting>
+
+      <para>If the events need to be associated with one or more topics, add
+      the names of the topics to the metadata like this:<programlisting><emphasis
+            role="bold">[RouteEvents(events="eventName1,eventName2", topics="topic1,topic2")]</emphasis>
+[Event(name="eventName1",type="...")]
+[Event(name="eventName2",type="...")]
+[Event(name="eventName3",type="...")]
+public class MyClass {
+  //implementation omitted...
+}</programlisting></para>
+
+      <para>And that's all there is to it, now to enable this functionality
+      add this object definition to the <abbrev>XML</abbrev>
+      configuration:</para>
+
+      <programlisting>&lt;object id="routeEventsProcessor" class="org.springextensions.actionscript.ioc.factory.config.RouteEventsMetaDataProcessor"/&gt;</programlisting>
+
+      <para>This will automatically register the processor with the
+      application context.</para>
+
+      <note>
+        <para>Do not forget to add the <emphasis
+        role="bold">RouteEvents</emphasis> metadata to the compiler arguments:
+        <emphasis role="bold">-keep-as3-metadata+=RouteEvents</emphasis>.
+        Failing to do so will prevent the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.RouteEventsMetaDataProcessor">RouteEventsMetaDataProcessor</literal>
+        to do its work.</para>
+      </note>
+
+      <para>The combination of the <emphasis
+      role="bold">[RouteEvents]</emphasis> and <emphasis
+      role="bold">[EventHandler]</emphasis> enables a developer to leverage
+      the <literal
+      xlink:href="asdoc://org.springextensions.actionscript.core.event.EventBus">EventBus</literal>
+      without directly depending on it.</para>
+    </section>
+
+    <section xml:id="intercepting_and_blocking_events">
+      <title>Intercepting and blocking events</title>
+
+      <para>The <literal>EventBus</literal> offers a mechanism to intercept
+      and potentially block events from passing through the
+      <literal>EventBus</literal>. To learn more about this refer to the
+      <literal>as3commons-eventbus documentation</literal>.</para>
+
+      <para>Spring Actionscript offers a metadata driven approach to add
+      <literal>IEventInterceptor</literal> instances to be added to the
+      current <literal>EventBus</literal>. The most simple usage of this
+      metadata would be for an <literal>IEventInterceptor</literal> that needs
+      to be registered as a global interceptor. All that is needed in this
+      case is to annotate the class with the <emphasis
+      role="bold">[EventInterceptor]</emphasis> tag:</para>
+
+      <programlisting><emphasis role="bold">[EventInterceptor]</emphasis>
+public class GlobalInterceptor implements IEventInterceptor {
+  <lineannotation>//implementation omitted...</lineannotation>
+}</programlisting>
+
+      <para>If the <literal>IEventInterceptor </literal>is only meant to
+      intercept events of a certain name, add the name to the <emphasis
+      role="bold">[EventInterceptor]</emphasis> tag like this:<programlisting>[EventInterceptor<emphasis
+            role="bold">(name="myCustomEvent")</emphasis>]
+public class MyEventInterceptor implements IEventInterceptor {
+  <lineannotation>//implementation omitted...</lineannotation>
+}</programlisting></para>
+
+      <para>In the caase where the IEventInterceptor needs to only intercept
+      events of a certain class, add the fully qualified class name like
+      this:<programlisting>[EventInterceptor<emphasis role="bold">(class="com.myclasses.events.MyCustomEvent")</emphasis>]
+public class MyEventClassInterceptor implements IEventInterceptor {
+  <lineannotation>//implementation omitted...</lineannotation>
+}</programlisting></para>
+
+      <para>And finally, if the IEventInterceptor should only listen to events
+      that are associated with a certain topic, add one or more topic names
+      like this:<programlisting>[EventInterceptor<emphasis role="bold">(class="com.myclasses.events.MyCustomEvent", topics="topic1,topic2")</emphasis>]
+public class MyEventClassInterceptor implements IEventInterceptor {
+  <lineannotation>//implementation omitted...</lineannotation>
+}</programlisting></para>
+
+      <para>And that's all there is to it, now to enable this functionality
+      add this object definition to the <abbrev>XML</abbrev>
+      configuration:<programlisting>&lt;object id="routeEventsProcessor" class="org.springextensions.actionscript.ioc.factory.config.EventInterceptorMetaDataProcessor"/&gt;</programlisting></para>
+
+      <para>This will automatically register the processor with the
+      application context.<note>
+          <para>Do not forget to add the <emphasis
+          role="bold">EventInterceptor</emphasis> metadata to the compiler
+          arguments: <emphasis
+          role="bold">-keep-as3-metadata+=EventInterceptor</emphasis>. Failing
+          to do so will prevent the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.EventInterceptorMetaDataProcessor">EventInterceptorMetaDataProcessor</literal>
+          to do its work.</para>
+        </note></para>
+    </section>
+
+    <section>
+      <title>Metadata driven <abbrev>MVC</abbrev> micro-framework</title>
+
+      <para>Leveraging the above described classes and techniques Spring
+      Actionscript offers a small metadata driven <abbrev>MVC</abbrev>
+      micro-framework. These are the key components that this framework
+      provides:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Fully metadata driven</para>
+        </listitem>
+
+        <listitem>
+          <para>Works with regular Flash events (flash.events.Event)</para>
+        </listitem>
+
+        <listitem>
+          <para>No need to implement Spring Actionscript interfaces or inherit
+          from base classes</para>
+        </listitem>
+
+        <listitem>
+          <para>Plays nice in multi-module environments</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The framework uses metadata tags in event and command classes to
+      define mappings between them and the application context as a class
+      factory for the commands.</para>
+
+      <section>
+        <title>Getting started</title>
+
+        <para>First add this object definition to the application context
+        <abbrev>XML</abbrev> configuration:</para>
+
+        <programlisting>&lt;object id="mvcFactory" class="org.springextensions.actionscript.core.mvc.MVCControllerObjectFactoryPostProcessor"/&gt;</programlisting>
+
+        <para>The <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.mvc.MVCControllerObjectFactoryPostProcessor">MVCControllerObjectFactoryPostProcessor</literal>
+        is an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.ioc.factory.config.IObjectFactoryPostProcessor">IObjectFactoryPostProcessor</literal>
+        implementation that takes care of all the metadata processing and
+        event/command mapping.</para>
+
+        <para>This factory postprocessor first checks for the existence of an
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.mvc.IMVCEventObjectPostProcessor">IMVCEventObjectPostProcessor</literal>
+        implementation in the application context, when none is found it
+        creates an instance of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.mvc.MVCRouteEventsMetaDataProcessor">MVCRouteEventsMetaDataProcessor</literal>
+        class and adds it to the application context singleton cache. This
+        allows for the events postprocessor to be overridden by another
+        implementation.</para>
+
+        <para>After that the factory postprocessor checks if an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.mvc.IController">IController</literal>
+        implementation exists in the application context, of not a
+        <literal>Controller</literal> instance is created and added to the
+        context so, if necessary, the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.mvc.IController">IController</literal>
+        instance can be overridden again.</para>
+
+        <para>This takes care of the preparatory work, now all that remains is
+        defining the event/command mappings.</para>
+      </section>
+
+      <section>
+        <title>Annotating classes that dispatch MVC events</title>
+
+        <para>Annotating components and classes that dispatch events that need
+        to be mapped to a command is almost the same as annotating them for
+        dispatch through the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.event.EventBus">EventBus</literal>
+        (the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.event.EventBus">EventBus</literal>
+        is used by this <abbrev>MVC</abbrev> framework as the main
+        communication pipeline). So, let's have a simple example:</para>
+
+        <programlisting><emphasis role="bold">[RouteMVCEvents]</emphasis>
+[Event(name="someEventType","flash.events.Event")]
+public class SomeClassThatDispatchesMVCEvents {
+  <lineannotation>//implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>This means that <emphasis role="bold">[RouteEvents]</emphasis>
+        and <emphasis role="bold">[RouteMVCEvents]</emphasis> metadata can be
+        combined. (A class could even be annotated with both types of
+        metadata.)</para>
+
+        <para>This is all that is necessary for the event side of things of
+        the <abbrev>MVC</abbrev> functionality.</para>
+      </section>
+
+      <section>
+        <title>Annotating classes that act as MVC commands</title>
+
+        <para>To define a command that is to be triggered by the
+        aforementioned event can be annotated in its simplest form like
+        this:</para>
+
+        <programlisting><emphasis role="bold">[Command(eventType="someEventType")]</emphasis>
+public class CommandClass {
+  function execute():void {
+    <lineannotation>//implementation ommitted...</lineannotation>
+  }
+  <lineannotation>//further implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>When the command is triggered by a certain event Class, define
+        the class like this:</para>
+
+        <programlisting><emphasis role="bold">[Command(eventClass="com.events.CustomEvent")]</emphasis>
+public class CommandClass {
+  function execute():void {
+    <lineannotation>//implementation ommitted...</lineannotation>
+  }
+  <lineannotation>//further implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>The command class does not need to implement any kind of
+        interfaces or inherit from any base classes. By default the
+        <abbrev>MVC</abbrev> framework will assume that a method called
+        <emphasis role="bold">execute</emphasis> needs to be invoked. When a
+        different method name is needed this can be defined in the metadata
+        tag:</para>
+
+        <programlisting>[Command(eventType="someEventType",<emphasis
+            role="bold">executeMethod="process"</emphasis>)]
+public class CommandClass {
+  function process():void {
+    <lineannotation>//implementation ommitted...</lineannotation>
+  }
+  <lineannotation>//further implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>When the execution method needs to receive a reference to the
+        event instance it will be automatically mapped:</para>
+
+        <programlisting>[Command(eventType="someEventType",<emphasis
+            role="bold">executeMethod="process"</emphasis>)]
+public class CommandClass {
+  function process(event:Event):void {
+    <lineannotation>//implementation ommitted...</lineannotation>
+  }
+  <lineannotation>//further implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>Properties on the event can be automatically mapped to the
+        method arguments as well. Imagine for instance this event
+        class:</para>
+
+        <programlisting>public class CustomEvent extends flash.events.Event {
+  public static const EVENT_ID:String = "someEventType";
+
+  public var user:User;
+  <lineannotation>//further implementation ommitted...</lineannotation>
+
+}</programlisting>
+
+        <para>If the command class has this definition, the property will be
+        mapped automatically:</para>
+
+        <programlisting>[Command(eventType="someEventType",executeMethod="process")]
+public class CommandClass {
+  function process(<emphasis role="bold">user:User</emphasis>):void {
+    <lineannotation>//implementation ommitted...</lineannotation>
+  }
+  <lineannotation>//further implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>The event properties can also be mapped to properties on the
+        command:</para>
+
+        <programlisting>[Command(eventType="someEventType",executeMethod="process")]
+public class CommandClass {
+
+  public var user:User;
+
+  function process():void {
+    <lineannotation>//implementation ommitted...</lineannotation>
+  }
+  <lineannotation>//further implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>The mapped event properties can also be explicitly named:</para>
+
+        <programlisting>[Command(eventType="someEventType",executeMethod="process",properties="userA,userB")]
+public class CommandClass {
+
+  function process(userA:User, userB:User):void {
+    <lineannotation>//implementation ommitted...</lineannotation>
+  }
+  <lineannotation>//further implementation ommitted...</lineannotation>
+}</programlisting>
+
+        <para>Now all that is left is to add object definitions for each
+        command that is used to the application context <abbrev>XML</abbrev>
+        configuration:</para>
+
+        <programlisting>&lt;object id="myCommand" class="com.classes.commands.CommandClass"/&gt;</programlisting>
+
+        <para>Or, alternatively, every command class can be annotated with the
+        [Component] metadata and thus will be picked up by the class scanning
+        system:</para>
+
+        <programlisting>[Component]
+[Command(eventType="someEventType",executeMethod="process")]
+public class CommandClass {
+}</programlisting>
+
+        <para>For further information on the class scanning system see section
+        '<link linkend="the_component_scanner">The Component scanner and class
+        scanning system</link>'</para>
+
+        <note>
+          <para>The application context can now be used as the main command
+          classfactory, leveraging all of its rich <abbrev>DI</abbrev>
+          functionality. Services, models and other dependencies can be easily
+          defined and injected.</para>
+        </note>
+      </section>
+    </section>
+  </section>
+</chapter>

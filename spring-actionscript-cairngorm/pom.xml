@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>org.springextensions.actionscript</groupId>
+		<artifactId>spring-actionscript-superpom</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.springextensions.actionscript</groupId>
+	<artifactId>spring-actionscript-cairngorm</artifactId>
+	<version>1.2-SNAPSHOT</version>
+	<packaging>swc</packaging>
+	<name>Spring ActionScript Cairngorm Integration</name>
+	<description>Integration between Cairngorm and Spring ActionScript.</description>
+	<url>http://www.springactionscript.org</url>
+	<inceptionYear>2007</inceptionYear>
+
+	<scm>
+		<connection>
+			scm:svn:https://src.springframework.org/svn/se-springactionscript-as/trunk/spring-actionscript-cairngorm
+		</connection>
+		<url>https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-cairngorm</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>cherreman</id>
+			<name>Christophe Herreman</name>
+			<email>christophe.herreman [at] gmail.com</email>
+			<url>http://www.herrodius.com</url>
+			<organization>Boulevart</organization>
+			<organizationUrl>http://www.boulevart.be</organizationUrl>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<dependencies>
+ 
+		<dependency>
+			<groupId>org.springextensions.actionscript</groupId>
+			<artifactId>spring-actionscript-core</artifactId>
+			<version>${project.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+		</dependency>
+        
+		<dependency>
+			<groupId>com.adobe.cairngorm</groupId>
+			<artifactId>cairngorm</artifactId>
+			<version>${cairngorm.version}</version>
+			<type>swc</type>
+			<scope>external</scope>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+
+
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+
+
+    <reporting>
+        <plugins>
+                   <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <id>flex-reports</id>
+                        <reports>
+                            <report>asdoc-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+              </plugins>
+    </reporting>
+</project>

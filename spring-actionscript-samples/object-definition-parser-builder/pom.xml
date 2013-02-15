@@ -1,0 +1,164 @@
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.springextensions.actionscript</groupId>
+        <artifactId>spring-actionscript-samples</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.springextensions.actionscript</groupId>
+    <artifactId>object-definition-parser-builder</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <packaging>swf</packaging>
+    <name>Spring ActionScript Samples ObjectDefinition Parser Builder</name>
+    <url>http://www.springactionscript.org</url>
+    <inceptionYear>2009</inceptionYear>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>air-framework</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>nochump.util</groupId>
+            <artifactId>zip</artifactId>
+            <version>1.0.5</version>
+            <scope>compile</scope>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex</groupId>
+            <artifactId>adt</artifactId>
+            <version>3.2.0.3958</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>descriptor.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <dependencies>
+
+                </dependencies>
+                <configuration>
+                    <storepass>flexmojos</storepass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>source-view</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- AIR packaging -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <workingDirectory>${basedir}/target</workingDirectory>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>com.adobe.air.ADT</argument>
+                        <argument>-package</argument>
+                        <argument>-storetype</argument>
+                        <argument>pkcs12</argument>
+                        <argument>-keypass</argument>
+                        <argument>springas</argument>
+                        <argument>-storepass</argument>
+                        <argument>springas</argument>
+                        <argument>-keystore</argument>
+                        <argument>springas.p12</argument>
+                        <argument>${project.artifactId}-${project.version}.air</argument>
+                        <argument>descriptor.xml</argument>
+                        <argument>${project.artifactId}-${project.version}.swf</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>move-site-test-apps-files</id>
+                        <phase>site</phase>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="../../target/site/${test.apps.dir}/${project.artifactId}"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.swf"
+                                      tofile="../../target/site/${test.apps.dir}/${project.artifactId}/${project.artifactId}.swf"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.air"
+                                      tofile="../../target/site/${test.apps.dir}/${project.artifactId}/${project.artifactId}.air"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy file="${project.build.directory}/descriptor.xml"
+                                      tofile="../../target/site/${test.apps.dir}/${project.artifactId}/descriptor.xml"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy file="${project.build.directory}/application-context.xml"
+                                      todir="../../target/site/${test.apps.dir}/${project.artifactId}" overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy todir="../../target/site/${test.apps.dir}/${project.artifactId}/srcview"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true">
+                                    <fileset dir="${project.build.directory}/srcview"/>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>

@@ -1,0 +1,12 @@
+templatePath=template
+objectDefinitionParserTemplate=objectdefinitionparser_class.template
+namespaceHandlerTemplate=namespacehandler.template
+namespaceClassTemplate=namespace.template
+schemaElementTemplate=schema_element.template
+schemaTemplate=schema.template
+placeholderPrefix=${
+placeholderSuffix=}
+attributeConstantSuffix=_ATTR
+elementConstantSuffix=_ELEMENT
+nodeParserClassNameSuffix=NodeParser
+namespaceHandlerClassNameSuffix=NamespaceHandler

@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<Objects
+		xmlns="http://www.springactionscript.org/mxml/config"
+		xmlns:mx="http://www.adobe.com/2006/mxml"
+		xmlns:context="org.springextensions.actionscript.ioc.factory.config.*">
+
+	<mx:Script>
+		<![CDATA[
+		import mx.collections.ArrayCollection;
+		]]>
+	</mx:Script>
+
+	<Object id="string" clazz="{String}">
+		<ConstructorArg value="a string"/>
+	</Object>
+
+	<Object id="singletonArrayCollection" clazz="{ArrayCollection}"/>
+
+	<Object id="prototypeArrayCollection" clazz="{ArrayCollection}" scope="prototype"/>
+
+	<mx:ArrayCollection id="explicitArrayCollection"/>
+
+	<mx:ArrayCollection/>
+
+	<mx:Array>
+		<mx:String/>
+	</mx:Array>
+
+	<mx:RemoteObject id="remoteObject1" endpoint="http://$(host):$(port)/$(context-root)/messagebroker/amf"/>
+
+	<mx:RemoteObject showBusyCursor="true" endpoint="http://$(host):$(port)/$(context-root)/messagebroker/amf"/>
+
+	<mx:RemoteObject id="remoteObjectWithPropertyPlaceHolders"
+	                 endpoint="http://$(host):$(port)/$(context-root)/messagebroker/amf"/>
+
+	<mx:RemoteObject id="remoteObjectWithPropertyPlaceHoldersAndPropertiesAsElements">
+		<mx:endpoint>http://$(host):$(port)/$(context-root)/messagebroker/amf</mx:endpoint>
+	</mx:RemoteObject>
+
+	<Object id="remoteObjectDefinitionWithPlaceHolders" clazz="{RemoteObject}">
+		<Property name="endpoint" value="http://$(host):$(port)/$(context-root)/messagebroker/amf"/>
+	</Object>
+
+</Objects>

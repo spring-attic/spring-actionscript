@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd"
+	xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<property file="applicationsettings.props" />
+	
+	<object id="applicationModel" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.model.ApplicationModel">
+		<property name="namespaceExportInfo">
+			<value>
+				<object class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.NamespaceExportInfo"/>
+			</value>
+		</property>
+	</object>
+
+	<object id="classExportInfo" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.ClassExportInfo" scope="prototype" lazy-init="true">
+		<property name="elementConstantSuffix" value="${elementConstantSuffix}"/>
+	</object>
+
+	<object id="fieldExportInfo" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.FieldExportInfo" scope="prototype" lazy-init="true">
+		<property name="attributeConstantSuffix" value="${attributeConstantSuffix}"/>
+	</object>
+
+	<object id="templateFileManager" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.TemplateFileManager" init-method="load">
+		<constructor-arg value="${templatePath}"/>
+		<constructor-arg>
+			<value>
+				<dictionary>
+					<entry key="attributeConstantSuffix" value="${attributeConstantSuffix}"/>
+					<entry key="elementConstantSuffix" value="${elementConstantSuffix}"/>
+					<entry key="nodeParserClassNameSuffix" value="${nodeParserClassNameSuffix}"/>
+					<entry key="namespaceHandlerClassNameSuffix" value="${namespaceHandlerClassNameSuffix}"/>
+				</dictionary>
+			</value>
+		</constructor-arg>
+		<property name="placeholderPrefix" value="${placeholderPrefix}"/>
+		<property name="placeholderSuffix" value="${placeholderSuffix}"/>
+	</object>
+	
+	<object id="objectDefinitionParserGenerator" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.ObjectDefinitionParserClassGenerator" depends-on="templateFileManager">
+		<constructor-arg value="${objectDefinitionParserTemplate}"/>
+		<constructor-arg ref="templateFileManager"/>
+		<property name="namespaceExportInfo">
+			<object class="org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject">
+		      <property name="targetObject" ref="applicationModel"/>
+		      <property name="targetField" value="namespaceExportInfo"/>
+		    </object>
+		</property>
+	</object>
+  
+	<object id="namespaceClassGenerator" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.NamespaceClassGenerator">
+		<constructor-arg value="${namespaceClassTemplate}"/>
+		<constructor-arg ref="templateFileManager"/>
+		<property name="namespaceExportInfo">
+			<object class="org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject">
+		      <property name="targetObject" ref="applicationModel"/>
+		      <property name="targetField" value="namespaceExportInfo"/>
+		    </object>
+		</property>
+	</object>
+
+	<object id="namespaceHandlerClassGenerator" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.NamespaceHandlerClassGenerator">
+		<constructor-arg value="${namespaceClassTemplate}"/>
+		<constructor-arg ref="templateFileManager"/>
+		<property name="namespaceExportInfo">
+			<object class="org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject">
+		      <property name="targetObject" ref="applicationModel"/>
+		      <property name="targetField" value="namespaceExportInfo"/>
+		    </object>
+		</property>
+	</object>
+
+	<object id="schemaGenerator" class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.SchemaGenerator" depends-on="templateFileManager">
+		<constructor-arg value="${schemaTemplate}"/>
+		<constructor-arg ref="templateFileManager"/>
+		<constructor-arg>
+			<value>
+				<object class="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.org.springextensions.actionscript.samples.stagewiring.classes.SchemaElementGenerator">
+					<constructor-arg value="${schemaElementTemplate}"/>
+					<constructor-arg ref="templateFileManager"/>
+				</object>
+			</value>
+		</constructor-arg>
+		<property name="namespaceExportInfo">
+			<object class="org.springextensions.actionscript.ioc.factory.config.FieldRetrievingFactoryObject">
+		      <property name="targetObject" ref="applicationModel"/>
+		      <property name="targetField" value="namespaceExportInfo"/>
+		    </object>
+		</property>
+	</object>
+
+</objects>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+
+	<!--
+		===================================================================
+	-->
+	<!--
+		This application context defines two configurations for the business delegates in the Cairngorm Store: 1. Mock
+		Delegates 2. Remote Object Delegates (amfphp) To use a configuration, uncomment it and comment the one you don't want
+		to use. By default, the Mock Delegates configuration is used.
+	-->
+	<!--
+		===================================================================
+	-->
+	
+	<!-- Front Controller -->
+	
+	<object id="frontController" class="com.adobe.cairngorm.samples.store.control.ShopController"/>
+	
+	<!--
+		===================================================================
+	-->
+	<!-- 1. Mock Delegates -->
+	<!--
+		===================================================================
+	-->
+
+	<object id="creditCardDelegate" class="com.adobe.cairngorm.samples.store.business.CreditCardDelegateMock" scope="prototype"/>
+	<object id="productDelegate" class="com.adobe.cairngorm.samples.store.business.ProductDelegateMock" scope="prototype"/>
+
+	<!--
+		===================================================================
+	-->
+	<!-- 2. Remote Object Delegates (amfphp) -->
+	<!--
+		===================================================================
+	-->
+
+	<!--
+	<object id="endPoint" class="String">
+		<constructor-arg value="http://www.herrodius.com/amfphp/gateway.php" />
+	</object>
+
+	<object id="serviceLocator" class="org.springextensions.actionscript.cairngorm.business.CairngormServiceLocator"
+		factory-method="getInstance">
+		<property name="productService" ref="productService" />
+		<property name="creditCardService" ref="creditCardService" />
+	</object>
+	
+	<object id="creditCardService" class="mx.rpc.remoting.mxml.RemoteObject">
+		<property name="destination" value="GenericDestination" />
+		<property name="endpoint" ref="endPoint"/>
+		<property name="source" value="com.adobe.cairngorm.samples.store.business.CreditCardService" />
+	</object>
+	
+	<object id="productService" class="mx.rpc.remoting.mxml.RemoteObject">
+		<property name="destination" value="GenericDestination" />
+		<property name="endpoint" ref="endPoint" />
+		<property name="source" value="com.adobe.cairngorm.samples.store.business.ProductService" />
+	</object>	
+	
+	<object id="creditCardDelegate" class="com.adobe.cairngorm.samples.store.business.CreditCardDelegate" scope="prototype">
+		<constructor-arg ref="creditCardService"/>
+	</object>
+	
+	<object id="productDelegate" class="com.adobe.cairngorm.samples.store.business.ProductDelegate" scope="prototype">
+		<constructor-arg ref="productService"/>
+	</object>
+
+	 -->
+
+</objects>

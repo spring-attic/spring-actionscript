@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="*"
+        xmlns:flexunit="flexunit.flexui.*"
+        creationComplete="onCreationComplete()"
+        width="1024" height="768">
+
+  <mx:Script>
+    <![CDATA[
+      import mx.logging.targets.TraceTarget;
+      import mx.logging.ILoggingTarget;
+      import mx.logging.Log;
+      import flexunit.framework.TestSuite;
+
+      private function onCreationComplete():void {
+        // setup logger
+        var traceTarget:ILoggingTarget = new TraceTarget();
+        //Log.addTarget(traceTarget);
+
+        // setup test runner
+         testRunner.test = createSuite();
+         testRunner.startTest();
+       }
+
+      private function createSuite():TestSuite {
+         var ts:TestSuite = new TestSuite();
+         ts.addTest(AllTests.suite());
+         return ts;
+       }
+    ]]>
+  </mx:Script>
+
+  <flexunit:TestRunnerBase id="testRunner" width="100%" height="100%" />
+</mx:Application>

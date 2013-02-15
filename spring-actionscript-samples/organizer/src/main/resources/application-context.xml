@@ -1,0 +1,102 @@
+<objects
+		xmlns="http://www.springactionscript.org/schema/objects"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:messaging="http://www.springactionscript.org/schema/messaging"
+		xmlns:util="http://www.springactionscript.org/schema/util"
+		xmlns:rpc="http://www.springactionscript.org/schema/rpc"
+		xsi:schemaLocation="
+		http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+		http://www.springactionscript.org/schema/messaging http://www.springactionscript.org/schema/messaging/spring-actionscript-messaging-1.0.xsd
+		http://www.springactionscript.org/schema/rpc http://www.springactionscript.org/schema/rpc/spring-actionscript-rpc-1.0.xsd
+		http://www.springactionscript.org/schema/util http://www.springactionscript.org/schema/util/spring-actionscript-util-1.0.xsd">
+
+	<property file="application-context.properties.txt"/>
+
+	<!-- CONTROLLER -->
+
+	<object id="menuController"
+	        class="org.springextensions.actionscript.samples.organizer.application.controller.MenuController">
+		<constructor-arg ref="applicationModel"/>
+	</object>
+
+	<object id="keyBindingController"
+	        class="org.springextensions.actionscript.samples.organizer.application.controller.KeyBindingController"/>
+
+	<object id="applicationController"
+	        class="org.springextensions.actionscript.samples.organizer.application.controller.ApplicationController">
+		<constructor-arg ref="applicationModel"/>
+		<constructor-arg ref="alertFactory"/>
+	</object>
+
+	<object id="contactController"
+	        class="org.springextensions.actionscript.samples.organizer.application.controller.ContactController">
+		<constructor-arg ref="applicationModel"/>
+		<constructor-arg ref="contactRepository"/>
+		<constructor-arg ref="contactWindowManager"/>
+		<constructor-arg ref="alertFactory"/>
+	</object>
+
+	<!-- MODEL -->
+
+	<object id="applicationModel"
+	        class="org.springextensions.actionscript.samples.organizer.application.model.ApplicationModel"/>
+
+	<!-- APPLICATION SERVICES -->
+
+	<object id="contactImageService"
+	        class="org.springextensions.actionscript.samples.organizer.infrastructure.service.ContactImageFileSystemService"/>
+
+	<!-- PRESENTATION MODELS -->
+
+	<object id="toolbarPresentationModel"
+	        class="org.springextensions.actionscript.samples.organizer.presentation.ToolbarPM">
+		<constructor-arg ref="applicationModel"/>
+	</object>
+
+	<!-- INFRASTRUCTURE -->
+
+	<object id="alertFactory"
+	        class="org.springextensions.actionscript.samples.organizer.infrastructure.ui.AIRAlertFactory"/>
+
+	<object id="contactWindowManager"
+	        class="org.springextensions.actionscript.samples.organizer.infrastructure.ui.ContactWindowManager">
+		<constructor-arg ref="applicationModel"/>
+	</object>
+
+	<!--
+	<object id="contactRepository" class="org.springextensions.actionscript.samples.organizer.infrastructure.repository.ContactInMemoryRepository"/>
+	-->
+
+	<object id="contactRepository"
+	        class="org.springextensions.actionscript.samples.organizer.infrastructure.repository.ContactSqliteRepository">
+		<constructor-arg>
+			<object class="org.springextensions.actionscript.samples.organizer.infrastructure.repository.sqlite.SQLiteDatabase" init-method="open">
+				<constructor-arg>
+					<object class="org.springextensions.actionscript.samples.organizer.infrastructure.repository.sqlite.DataSource">
+						<constructor-arg value="${databasepath}"/>
+					</object>
+				</constructor-arg>
+			</object>
+		</constructor-arg>
+	</object>
+
+	<!--<object id="contactRepository"
+	        class="org.springextensions.actionscript.samples.organizer.infrastructure.repository.ContactRemoteObjectRepository">
+		<constructor-arg>
+			<rpc:remote-object
+					endpoint="http://${host}:${port}/messagebroker/amf"
+					destination="contacts"
+					show-busy-cursor="true"
+					/>
+		</constructor-arg>
+	</object>-->
+
+	<!-- SPRING ACTIONSCRIPT CONFIG -->
+
+	<object id="defaultAutowiringStageProcessor"
+	        class="org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor">
+	</object>
+
+	<object class="org.springextensions.actionscript.ioc.factory.config.EventHandlerMetaDataPostProcessor"/>
+
+</objects>

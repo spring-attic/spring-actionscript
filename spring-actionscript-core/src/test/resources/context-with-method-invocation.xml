@@ -1,0 +1,35 @@
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd ">
+
+  <object id="bert" class="org.springextensions.actionscript.ioc.testclasses.Person">
+    <constructor-arg value="Bert Vandamme"/>
+      <constructor-arg value="27"/>
+      <constructor-arg value="false"/>
+    <method-invocation name="addFriend">
+      <arg>
+        <object id="christophe" class="org.springextensions.actionscript.ioc.testclasses.Person">
+          <constructor-arg value="Christophe Herreman"/>
+          <constructor-arg value="28"/>
+          <constructor-arg value="true"/>
+        </object>
+      </arg>
+    </method-invocation>
+  </object>
+
+  <object id="bertPrototype" class="org.springextensions.actionscript.ioc.testclasses.Person" scope="prototype">
+    <constructor-arg value="Bert Vandamme"/>
+      <constructor-arg value="27"/>
+      <constructor-arg value="false"/>
+    <method-invocation name="addFriend">
+      <arg>
+        <object id="christophe" class="org.springextensions.actionscript.ioc.testclasses.Person">
+          <constructor-arg value="Christophe Herreman"/>
+          <constructor-arg value="28"/>
+          <constructor-arg value="true"/>
+        </object>
+      </arg>
+    </method-invocation>
+  </object>
+
+</objects>

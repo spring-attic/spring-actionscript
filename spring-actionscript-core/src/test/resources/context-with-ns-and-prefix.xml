@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<prana:objects xmlns:prana="http://www.springactionscript.org/schema/objects"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-0.4.xsd">
+
+  <prana:object id="string1" class="String">
+    <prana:constructor-arg value="string 1" />
+  </prana:object>
+
+  <prana:object class="Object"></prana:object>
+
+</prana:objects>

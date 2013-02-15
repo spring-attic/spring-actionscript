@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  PureMVC Architecture 101 Course
+  Copyright(c) 2007 FutureScale, Inc.  All rights reserved.
+  Version: $Revision: 872 $, $Date: 2008-10-12 21:27:26 +0200 (zo, 12 okt 2008) $, $Author: dmurat1 $
+  -->
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" title="User Roles" status="{user.givenName}">
+
+  <!-- Events dispatched by this View Component -->
+  <mx:Metadata>
+    [Event("add")]
+    [Event("remove")]
+  </mx:Metadata>
+
+  <mx:Script>
+    <![CDATA[
+      import mx.collections.ArrayCollection;
+      import org.puremvc.arch_101.unit_03.lab_02.model.vo.UserVO;
+      import org.puremvc.arch_101.unit_03.lab_02.model.enum.RoleEnum;
+
+      public static const ADD:String = "add";
+      public static const REMOVE:String = "remove";
+
+      [Bindable] public var user:UserVO;
+      [Bindable] public var selectedRole:RoleEnum;
+      [Bindable] public var userRoles:ArrayCollection;
+
+      // send the named event
+      private function sendEvent(p_eventName:String):void {
+        dispatchEvent(new Event(p_eventName, true));
+      }
+
+      // select role to remove
+      private function selectRoleToRemove():void {
+        roleCombo.selectedItem = RoleEnum.NONE_SELECTED;
+        selectedRole=roleList.selectedItem as RoleEnum;
+      }
+
+      // select role to add
+      private function selectRoleToAdd():void {
+        roleList.selectedIndex = -1;
+        selectedRole=roleCombo.selectedItem as RoleEnum;
+      }
+    ]]>
+  </mx:Script>
+
+  <!-- User's Roles -->
+  <mx:List
+    id="roleList" width="100%" height="100%" labelField="value" dataProvider="{userRoles}"
+    change="selectRoleToRemove()"/>
+
+  <!-- Role Maintenance Controls -->
+  <mx:ControlBar>
+    <!-- Role to Add -->
+    <mx:ComboBox
+      id="roleCombo" labelField="value" enabled="{user != null}" dataProvider="{RoleEnum.comboList}"
+      change="selectRoleToAdd()"/>
+
+    <!-- Add Role Button -->
+    <mx:Button label="Add" click="sendEvent(ADD)" enabled="{roleCombo.selectedItem != RoleEnum.NONE_SELECTED}"/>
+
+    <!-- Remove Role Button -->
+    <mx:Button label="Remove" click="sendEvent(REMOVE)" enabled="{roleList.selectedIndex != -1}"/>
+  </mx:ControlBar>
+</mx:Panel>

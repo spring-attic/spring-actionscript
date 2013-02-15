@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+Copyright (c) 2006. Adobe Systems Incorporated.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  * Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+  * Neither the name of Adobe Systems Incorporated nor the names of its
+    contributors may be used to endorse or promote products derived from this
+    software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+@ignore
+
+-->
+
+<!--
+  @version $Revision: 1.1 $
+-->
+<mx:Panel
+  xmlns:mx="http://www.adobe.com/2006/mxml"
+  xmlns:details="com.adobe.cairngorm.samples.store.view.productdetails.*"
+  title="Product Details"
+  styleName="productDetails">
+
+  <mx:Script>
+  <![CDATA[
+    import com.adobe.cairngorm.samples.store.vo.ProductVO;
+    import com.adobe.cairngorm.control.CairngormEventDispatcher;
+    import com.adobe.cairngorm.control.CairngormEvent;
+    import com.adobe.cairngorm.samples.store.event.UpdateShoppingCartEvent;
+    import mx.formatters.CurrencyFormatter;
+    import flash.events.MouseEvent;
+
+    import mx.core.DragSource;
+    import mx.managers.DragManager;
+
+    [Bindable]
+    public var selectedItem : ProductVO;
+
+    [Bindable]
+    public var currencyFormatter : CurrencyFormatter;
+
+    public function addProductToShoppingCart () : void
+    {
+      var event : UpdateShoppingCartEvent =
+        new UpdateShoppingCartEvent(
+          UpdateShoppingCartEvent.EVENT_ADD_PRODUCT_TO_SHOPPING_CART );
+
+      event.product = selectedItem;
+      event.quantity = numericStepperComp.value;
+
+      CairngormEventDispatcher.getInstance().dispatchEvent( event );
+    }
+
+    public function beginDrag( event : MouseEvent ) : void
+    {
+      var selectedItem : ProductVO = ProductVO( selectedItem );
+
+      var dragInitiator : Image = image;
+
+      var dragImage : Image = new Image();
+      dragImage.source = selectedItem.image;
+      dragImage.width = dragInitiator.width;
+      dragImage.height = dragInitiator.height;
+
+      var ds : DragSource = new DragSource();
+      ds.addData( selectedItem, "item" );
+
+      DragManager.doDrag(
+        dragInitiator,
+        ds,
+        event,
+        dragImage );
+    }
+  ]]>
+  </mx:Script>
+
+  <!-- Visual Effects -->
+  <mx:Zoom id="zoom" duration="500"  zoomHeightFrom="1.0" zoomHeightTo="1.1" zoomWidthFrom="1.0" zoomWidthTo="1.1"/>
+  <mx:Zoom id="zoomOut" duration="500"  zoomHeightFrom="1.1" zoomHeightTo="1.0" zoomWidthFrom="1.1" zoomWidthTo="1.0"/>
+
+  <!-- UI Layout -->
+  <mx:VBox width="100%" height="100%">
+
+    <mx:HBox>
+
+      <mx:Canvas clipContent="false" width="150" height="140">
+
+        <mx:Image
+          id="image"
+          source="{ selectedItem.image }"
+          mouseDown="beginDrag( event );"
+          rollOverEffect="zoom"
+          rollOutEffect="zoomOut"/>
+
+      </mx:Canvas>
+
+      <mx:VBox
+        width="100%"
+        height="100%"
+        styleName="productDetailsTitle">
+
+        <mx:Label
+          id="itemName"
+          text="{ selectedItem.name }"
+          styleName="title" />
+
+        <mx:Label
+          id="price"
+          text="{ currencyFormatter.format( selectedItem.price ) }"
+          styleName="price" />
+
+      </mx:VBox>
+
+    </mx:HBox>
+
+    <mx:Text
+      id="description"
+      width="100%"
+      height="100%"
+      text="{ selectedItem.description }"/>
+
+  </mx:VBox>
+
+  <mx:ControlBar id="productControlBar">
+
+    <mx:Label text="Quantity"/>
+
+    <mx:NumericStepper
+      id="numericStepperComp"
+      width="40"
+      minimum="1"
+      maximum="100"
+      value="1" />
+
+    <mx:Button
+      label="Add to Cart"
+      click="addProductToShoppingCart();" />
+
+  </mx:ControlBar>
+
+</mx:Panel>

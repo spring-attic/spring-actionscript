@@ -1,0 +1,29 @@
+
+<asDocConfig>
+  
+<options buildNum="asd3_0_b2_1" docversion="3" standalone="false" livedocs="false" includePrivate="false" verbose="false" splitIndex="true" showVersions="false" showMXMLOnly="false" showConventions="false" showReview="true"></options>
+  
+<keywords show="false" num="500"></keywords>
+  
+  
+<warnings langversion="false" playerversion="false"></warnings>
+  
+  
+<languageElements show="false" functions="false" operators="false" statements="false"></languageElements>
+  
+<namespaces hideAll="true">
+   	
+<namespace hide="true">mx_internal</namespace>
+	
+<namespace hide="false" summaryDisplay="protected">flash_proxy</namespace>
+	
+<namespace hide="false" summaryDisplay="protected">object_proxy</namespace>
+	
+<namespace hide="false">mx_inner</namespace>
+  </namespaces>
+  
+  
+
+<footer>Copyright 2007-2010 Spring Actionscript.</footer>
+<title>Spring Actionscript API documentation</title>
+<windowTitle>Spring Actionscript API documentation</windowTitle></asDocConfig>

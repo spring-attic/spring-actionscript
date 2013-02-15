@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<code:WindowedApplicationBase
+	xmlns:code="org.springextensions.actionscript.samples.odb.codebehind.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:field="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.components.*"
+	creationComplete="windowedapplicationbase1_creationCompleteHandler(event)"
+	width="1024" height="768" showTitleBar="true" showStatusBar="true" showGripper="true" layout="vertical" horizontalAlign="left"
+	statusTextStyleName="statusStyle" statusBarBackgroundColor="#000000"
+	title="Object definition parser builder"
+	status="Welcome - first select one or more org.springextensions.actionscript.samples.stagewiring.classes from the imported SWC files to analyze in the top-right listbox, or first load a SWC manually">
+	<mx:Style>
+		.statusStyle{
+			color: #00FF00;
+		}
+	</mx:Style>
+	<mx:Script>
+		<![CDATA[
+			import org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.classes.ClassExportInfo;
+		]]>
+	</mx:Script>
+	<mx:ViewStack id="mainStack" width="100%" height="100%">
+		<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+			<mx:Label text="Initializing..." fontSize="48"/>
+		</mx:HBox>
+		<mx:VBox>
+			<mx:HBox width="100%">
+				<mx:List id="selectedClasses" width="50%" allowDragSelection="false" allowMultipleSelection="true"
+					dataProvider="{this.applicationModel.classImportList}" labelField="name" dataTipField="fullyQualifiedName" showDataTips="true" toolTip="Selected org.springextensions.actionscript.samples.stagewiring.classes to analyze"/>
+				<mx:VBox height="100%" verticalAlign="middle">
+					<mx:Button id="btnAdd" label="&lt;" click="generic_add_remove_clickHandler(event)"/>
+					<mx:Button id="btnRemove" label="&gt;" click="generic_add_remove_clickHandler(event)"/>
+				</mx:VBox>
+				<mx:List id="availableClasses" width="50%" dataProvider="{this.applicationModel.classNameList}" allowMultipleSelection="true"
+					allowDragSelection="false" labelField="name" dataTipField="fullyQualifiedName" showDataTips="true" toolTip="Available org.springextensions.actionscript.samples.stagewiring.classes to analyze" />
+			</mx:HBox>
+				<mx:Button id="btnReflectClass" label="Get class info"
+				click="{btnReflectClass_clickHandler(event)}" enabled="{selectedClasses.dataProvider.length &gt;0}"/>
+			<mx:HBox width="100%">
+				<mx:FormItem label="Schema URL">
+					<mx:TextInput id="tiSchemaURL" text="http://www." valueCommit="generic_commithandler(event)" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Class namespace">
+					<mx:TextInput id="tiClassNameSpace" valueCommit="generic_commithandler(event)" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Namespace title">
+					<mx:TextInput id="tiNamespaceName" text="MyNewNamespace" valueCommit="generic_commithandler(event)" width="200"/>
+				</mx:FormItem>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Button id="btnGenerate" label="Generate code" click="btnGenerate_clickHandler(event)" enabled="{cbClassinfo.selectedItem!=null}"/>	
+				<mx:Button id="btnSaveAllFiles" label="Save all generated code" click="btnSaveAllFiles_clickHandler(event)" enabled="{taNameSpaceHandler.text.length&gt;0}"/>
+				<mx:Spacer width="100%"/>
+				<mx:Button id="btnLoadSWC" click="btnLoadSWC_clickHandler(event)" label="Load .SWC manually"/>
+			</mx:HBox>
+			<mx:TabNavigator width="100%" height="100%" creationPolicy="all">
+				<mx:VBox label="Class info" width="100%" height="100%">
+					<mx:ComboBox id="cbClassinfo" dataProvider="{this.applicationModel.namespaceExportInfo.classExportInfoList}"
+						labelField="className" prompt="Choose an imported class" width="250" change="updateStatus()"/>
+					<field:FieldRepeater id="fieldRepeater" dataProvider="{(cbClassinfo.selectedItem as ClassExportInfo).fieldExportInfoList}"/>
+				</mx:VBox>
+				<mx:VBox label="Namespace handler code" width="100%" height="100%">
+					<mx:TextArea id="taNameSpaceHandler" width="100%" height="100%"/>
+				</mx:VBox>
+				<mx:VBox label="Definition parser code" width="100%" height="100%">
+					<mx:TabNavigator id="parsercode" width="100%" height="100%"/>
+				</mx:VBox>
+				<mx:VBox label="Schema" width="100%" height="100%">
+					<mx:TextArea id="taSchema" width="100%" height="100%"/>
+				</mx:VBox>
+				<mx:VBox label="Namespace" width="100%" height="100%">
+					<mx:TextArea id="taNamespace" width="100%" height="100%"/>
+				</mx:VBox>
+			</mx:TabNavigator>
+		</mx:VBox>
+	</mx:ViewStack>
+</code:WindowedApplicationBase>

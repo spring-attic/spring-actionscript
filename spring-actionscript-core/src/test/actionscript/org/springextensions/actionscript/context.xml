@@ -1,0 +1,7 @@
+<objects>
+
+  <object id="string1" class="String">
+    <constructor-arg value="string 1"/>
+  </object>
+
+</objects>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd ">
+
+	<object class="org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor">
+		<property name="objectDefinitionResolver">
+			<object class="org.springextensions.actionscript.stage.DefaultObjectDefinitionResolver"/>
+		</property>
+	</object>
+
+	<object id="namedDisplayContact"
+			class="org.springextensions.actionscript.objects.testclasses.DisplayContactNoAutowire"
+			scope="prototype">
+		<property name="phoneNumber"
+				  ref="phoneNumber"/>
+		<property name="phoneNumber2"
+				  ref="phoneNumber2"/>
+		<property name="phoneNumber3"
+				  ref="phoneNumber3"/>
+	</object>
+
+	<object class="org.springextensions.actionscript.objects.testclasses.DisplayContactNoAutowire"
+			scope="prototype">
+		<property name="phoneNumber"
+				  ref="phoneNumber2"/>
+		<property name="phoneNumber2"
+				  ref="phoneNumber2"/>
+		<property name="phoneNumber3"
+				  ref="phoneNumber2"/>
+		<property name="note"
+				  ref="note2"/>
+	</object>
+
+	<object id="phoneNumber"
+			class="org.springextensions.actionscript.objects.testclasses.InternationalPhoneNumber">
+		<constructor-arg value="001"/>
+		<constructor-arg value="111"/>
+		<constructor-arg value="555"/>
+		<constructor-arg value="1234"/>
+	</object>
+
+	<object id="phoneNumber2"
+			class="org.springextensions.actionscript.objects.testclasses.PhoneNumber">
+		<constructor-arg value="222"/>
+		<constructor-arg value="666"/>
+		<constructor-arg value="5668"/>
+	</object>
+
+	<object id="phoneNumber3"
+			class="org.springextensions.actionscript.objects.testclasses.PhoneNumber">
+		<constructor-arg value="333"/>
+		<constructor-arg value="777"/>
+		<constructor-arg value="9012"/>
+	</object>
+
+	<object id="note"
+			class="String">
+		<constructor-arg value="string"/>
+	</object>
+
+	<object id="note2"
+			class="String">
+		<constructor-arg value="string2"/>
+	</object>
+
+</objects>

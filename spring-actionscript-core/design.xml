@@ -1,0 +1,19 @@
+<design version="2">
+	<namespaces>
+		<namespace prefix="sas" uri="http://www.springactionscript.org/mxml/config" />
+	</namespaces>
+	<categories>
+		<category id="SpringActionscriptConfig" label="SpringActionscript Configuration" defaultExpand="true" />
+	</categories>
+	<components>
+		<component name="MXMLApplicationContext" namespace="sas" category="SpringActionscriptConfig" displayName="MXMLApplicationContext"/>
+		<component name="ObjectDefinition" namespace="sas" category="SpringActionscriptConfig" displayName="ObjectDefinition"/>
+		<component name="Property" namespace="sas" category="SpringActionscriptConfig" displayName="Property"/>
+		<component name="ConstructorArg" namespace="sas" category="SpringActionscriptConfig" displayName="ConstructorArg"/>
+		<component name="Arg" namespace="sas" category="SpringActionscriptConfig" displayName="Arg"/>
+		<component name="Param" namespace="sas" category="SpringActionscriptConfig" displayName="Param"/>
+		<component name="Template" namespace="sas" category="SpringActionscriptConfig" displayName="Template"/>
+		<component name="MethodInvocation" namespace="sas" category="SpringActionscriptConfig" displayName="MethodInvocation"/>
+		<component name="Interface" namespace="sas" category="SpringActionscriptConfig" displayName="Interface"/>
+	</components>
+</design>

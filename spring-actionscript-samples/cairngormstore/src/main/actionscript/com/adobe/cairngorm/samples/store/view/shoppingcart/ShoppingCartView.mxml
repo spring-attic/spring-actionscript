@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+Copyright (c) 2006. Adobe Systems Incorporated.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  * Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+  * Neither the name of Adobe Systems Incorporated nor the names of its
+    contributors may be used to endorse or promote products derived from this
+    software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+@ignore
+
+-->
+
+<!--
+  @version $Revision: 1.2 $
+-->
+<mx:Panel
+  xmlns:mx="http://www.adobe.com/2006/mxml"
+  xmlns:cart="com.adobe.cairngorm.samples.store.view.shoppingcart.*"
+  title="Shopping Cart">
+
+  <mx:Metadata>
+    [Event("select")]
+  </mx:Metadata>
+
+  <mx:Script>
+  <![CDATA[
+    import com.adobe.cairngorm.samples.store.model.ShoppingCart;
+    import com.adobe.cairngorm.samples.store.model.ShopModelLocator;
+    import com.adobe.cairngorm.samples.store.vo.ProductVO;
+    import com.adobe.cairngorm.samples.store.event.UpdateShoppingCartEvent;
+    import com.adobe.cairngorm.control.CairngormEvent;
+    import com.adobe.cairngorm.control.CairngormEventDispatcher;
+    import mx.formatters.CurrencyFormatter;
+    import mx.managers.DragManager;
+    import mx.events.DragEvent;
+    import mx.core.IUIComponent;
+
+    [Bindable]
+    public var shoppingCart : ShoppingCart;
+
+    [Bindable]
+    public var currencyFormatter : CurrencyFormatter;
+
+    public var selectedItem : ProductVO;
+
+    public var model : ShopModelLocator = ShopModelLocator.getInstance();
+
+    public static var SELECT_EVENT : String = "select";
+
+    public function format( item : Object, dataField : String ) : String
+    {
+      return currencyFormatter.format( item.price );
+    }
+
+    public function addProductToShoppingCart( product : ProductVO ) : void
+    {
+      var event : UpdateShoppingCartEvent = new UpdateShoppingCartEvent( UpdateShoppingCartEvent.EVENT_ADD_PRODUCT_TO_SHOPPING_CART );
+
+      event.product = product;
+      event.quantity = 1;
+
+      CairngormEventDispatcher.getInstance().dispatchEvent( event );
+    }
+
+    /*Drag and drop events*/
+    public function doDragOver( event : DragEvent ) : void
+    {
+      event.currentTarget.showDropFeedback( event );
+    }
+
+    public function doDragEnter( event : DragEvent ) : void
+    {
+      DragManager.acceptDragDrop( IUIComponent( event.currentTarget ) );
+    }
+
+    public function doDragExit( event : DragEvent ) : void
+    {
+      event.currentTarget.hideDropFeedback( event );
+    }
+
+    public function doDragDrop( event : DragEvent ) : void
+    {
+      var item : Object = event.dragSource.dataForFormat( "item" );
+
+      if ( item == null )
+      {
+        /*Item was dragged from the thumbnailViewComp*/
+        var items : Object = event.dragSource.dataForFormat( "items" );
+        item = items[ 0 ];
+      }
+
+      /*
+      FYI: A change event of a DataGrid or a TileList might fire
+      after the dragDrop event of the DataGrid. Therefore we add the
+      item property of the dragging operation and not selectedItem of view.
+      */
+      addProductToShoppingCart( ProductVO( item ) );
+
+      doDragExit( event );
+    }
+
+    public function doDragComplete( event : DragEvent ) : void
+    {
+      doDragExit( event );
+    }
+
+    public function deleteProductFromShoppingCart() : void
+    {
+      var event : UpdateShoppingCartEvent = new UpdateShoppingCartEvent( UpdateShoppingCartEvent.EVENT_DELETE_PRODUCT_FROM_SHOPPING_CART );
+
+      event.product = selectedItem;
+
+      CairngormEventDispatcher.getInstance().dispatchEvent( event );
+    }
+
+    public function updateSelectedProduct( event : Object ) : void
+    {
+      /*
+      A selectedItem of the dataprovider of ShoppingCart's DataGrid is a ShoppingCart instance
+      and not a ProductVO. We access the ProductVO of a specific ShoppingCart instance via its element
+      property. See documentation of com.adobe.cairngorm.samples.store.model.shoppingcart.
+      */
+      selectedItem = event.target.selectedItem.element;
+      CairngormEventDispatcher.getInstance().dispatchEvent( new CairngormEvent( SELECT_EVENT ) );
+    }
+  ]]>
+  </mx:Script>
+
+  <mx:DataGrid
+      id="dataGridComp"
+      dataProvider="{ shoppingCart.elements }"
+      change="updateSelectedProduct( event );"
+      width="100%" height="100%"
+      dragEnter="doDragEnter( event )"
+      dragExit="doDragExit( event )"
+      dragDrop="doDragDrop( event )"
+      dragOver="doDragOver( event )">
+
+    <mx:columns>
+      <mx:Array>
+        <mx:DataGridColumn dataField="name"
+                           headerText="Name"
+                           width="180"/>
+
+        <mx:DataGridColumn dataField="quantity"
+                           headerText="Qty"
+                           width="50"
+                           textAlign="right"
+                           paddingRight="4"/>
+
+        <mx:DataGridColumn dataField="price"
+                           labelFunction="format"
+                           headerText="Price"
+                           width="60"
+                           textAlign="right"
+                           paddingRight="4"/>
+      </mx:Array>
+    </mx:columns>
+  </mx:DataGrid>
+
+  <mx:ControlBar id="cartControlBar" height="50">
+    <mx:Button
+      label="Delete" width="75"
+      click="deleteProductFromShoppingCart();"
+      enabled="{ dataGridComp.selectedItem != null }" />
+
+    <mx:Button
+      label="Checkout" width="75"
+      click="model.workflowState = ShopModelLocator.VIEWING_CHECKOUT;"
+      enabled="{ shoppingCart.totalProductPrice != 0 }" />
+
+    <mx:Label
+      text="Total: { currencyFormatter.format( shoppingCart.totalProductPrice ) }"
+      styleName="price" />
+  </mx:ControlBar>
+
+</mx:Panel>

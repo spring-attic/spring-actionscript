@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" creationComplete="init()" preinitialize="createResourceBundles()" horizontalAlign="left" currentState="ENGLISH" viewSourceURL="srcview/index.html">
+	<mx:states>
+		<mx:State name="ENGLISH">
+			
+		</mx:State>
+		<mx:State name="FRENCH">
+			<mx:AddChild>
+				<mx:Label id="frenchlabelOnly"/>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	<mx:Script>
+		<![CDATA[
+			import org.as3commons.reflect.Type;
+			import org.as3commons.lang.ClassUtils;
+			import mx.collections.Sort;
+			import mx.collections.ArrayCollection;
+			import flash.utils.getDefinitionByName;
+			import mx.resources.ResourceBundle;
+			import mx.resources.IResourceManager;
+			import org.springextensions.actionscript.localization.LocalizationStageProcessor;
+			import mx.resources.ResourceManager;
+			import org.springextensions.actionscript.context.support.FlexXMLApplicationContext;
+			
+			[Bindable]
+			private var locales:Array = ['en_US','fr_FR'];
+			
+			private var _applicationContext:FlexXMLApplicationContext;
+			
+			private function createResourceBundles():void {
+				var resourceBundle:ResourceBundle = new ResourceBundle("en_US", "mySampleResources");
+				resourceBundle.content['lblTest_text'] = 'This is an english label';
+				resourceBundle.content['cbTest_prompt'] = 'This is an english prompt';
+				resourceBundle.content['cbTest_dataProvider'] = ['english 1','english 2','english 3'];
+				var resourceManager:IResourceManager = ResourceManager.getInstance();
+				resourceManager.addResourceBundle(resourceBundle);
+				resourceManager.update();
+
+				resourceBundle = new ResourceBundle("fr_FR", "mySampleResources");
+				resourceBundle.content['lblTest_text'] = "C'est un text francais";
+				resourceBundle.content['cbTest_prompt'] = "C'est un prompt francais";
+				resourceBundle.content['cbTest_dataProvider'] = ['francais 1','francais 2','francais 3'];
+				resourceBundle.content['frenchlabelOnly_text'] = "Seulement francais ici";
+				
+				resourceManager.addResourceBundle(resourceBundle);
+				resourceManager.update();
+			}
+		
+			private function init():void {
+				_applicationContext = new FlexXMLApplicationContext("application-context.xml");
+				_applicationContext.addEventListener(Event.COMPLETE,complete_handler);
+				_applicationContext.load();
+			}
+			
+			private function complete_handler(event:Event):void {
+				_applicationContext.removeEventListener(Event.COMPLETE,complete_handler);
+			}
+			
+			private function handleLocaleChange():void {
+				changeState();
+				var resourceManager:IResourceManager = ResourceManager.getInstance();
+				resourceManager.localeChain = [ localeComboBox.selectedItem ];
+			}
+			
+			private function changeState():void {
+				switch(localeComboBox.selectedIndex){
+					case 0:
+						currentState = "ENGLISH";
+						break;
+					case 1:
+						currentState = "FRENCH";
+						break;
+					default:
+						break;
+				}
+			}
+
+			{
+				LocalizationStageProcessor;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:ComboBox dataProvider="{locales}" change="handleLocaleChange()" id="localeComboBox" />
+	<mx:HRule width="100%"/>
+	<mx:Label id="lblTest" />
+	<mx:ComboBox id="cbTest"/>
+</mx:Application>

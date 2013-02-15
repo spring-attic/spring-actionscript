@@ -1,0 +1,9 @@
+	<xsd:element name="${elementname}" type="${elementname}Type"/>
+
+	<xsd:complexType name="${elementname}Type" mixed="true">
+		<xsd:complexContent>
+			<xsd:extension base="objects:objectType">
+${attributenames}
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>

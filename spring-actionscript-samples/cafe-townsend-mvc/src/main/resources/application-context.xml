@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springactionscript.org/schema/objects
+					http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+
+	<object id="autowiringStageProcessor" class="org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor"/>
+	
+	<object id="mvcFactory" class="org.springextensions.actionscript.core.mvc.MVCControllerObjectFactoryPostProcessor"/>
+
+	<object id="model" class="org.springextensions.actionscript.samples.cafetownsend.model.AppModelLocator" factory-method="getInstance"/>
+	
+	<interface id="modelAware" class="org.springextensions.actionscript.samples.cafetownsend.model.IApplicationModelAware">
+		<property name="model" ref="model"/>
+	</interface>
+	
+	<object id="command1" class="org.springextensions.actionscript.samples.cafetownsend.command.AddNewEmployeeCommand" scope="prototype"/>
+	
+	<object id="command2" class="org.springextensions.actionscript.samples.cafetownsend.command.CancelEmployeeEditsCommand" scope="prototype"/>
+	
+	<object id="command3" class="org.springextensions.actionscript.samples.cafetownsend.command.DeleteEmployeeCommand" scope="prototype"/>
+	
+	<object id="command4" class="org.springextensions.actionscript.samples.cafetownsend.command.LoadEmployeesCommand" scope="prototype"/>
+	
+	<object id="command5" class="org.springextensions.actionscript.samples.cafetownsend.command.LoginEmployeeCommand" scope="prototype"/>
+	
+	<object id="command6" class="org.springextensions.actionscript.samples.cafetownsend.command.LogoutCommand"/>
+	
+	<object id="command7" class="org.springextensions.actionscript.samples.cafetownsend.command.SaveEmployeeEditsCommand"/>
+	
+	<object id="command8" class="org.springextensions.actionscript.samples.cafetownsend.command.UpdateEmployeeCommand"/>
+
+</objects>

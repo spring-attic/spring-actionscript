@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs title="Frequently Asked Questions" toplink="false">
+
+  <part id="general">
+    <title>General</title>
+   
+    <faq id="runtime-errors">
+      <question>
+        When running my application using Spring Actionscript's XMLApplicationContext I get these kinds of runtime errors: "Error: A class with the name 'XXXXX' could not be found.". What's wrong?
+      </question>
+      <answer>
+        <p>Your class han't been included properly, this documentation section will tell you all you need to know: <a href="docs/reference/html/Class-inclusion.html">Forcing Actionscript class inclusion</a></p>
+      </answer>
+    </faq>
+
+    <faq id="trace-errors">
+      <question>
+        I see a lot of trace messages reporting constructor errors when starting my application, what's wrong?
+      </question>
+      <answer>
+        <p>These traces come from the as3commons-reflect library, the errors that are being reported are harmless, yet necessary to work around a certain Flash Player bug.</p>
+        <p>To turn these error messages off you can use this code:</p>
+        <source>
+	private static var loggerSetup:* = setupLogging();
+	private static var logger:ILogger = LoggerFactory.getLogger("YourAppName.Main");
+
+	private static function setupLogging():void {
+		LoggerFactory.loggerFactory = new FlexLoggerFactory();
+
+		var traceTarget:TraceTarget = new TraceTarget();
+		traceTarget.includeCategory = true;
+		traceTarget.includeDate = true;
+		traceTarget.includeLevel = true;
+		traceTarget.includeTime = true;
+		traceTarget.filters = ["YourAppName.*"];
+		Log.addTarget(traceTarget);
+
+		var traceTargetSpring:TraceTarget = new TraceTarget();
+		traceTargetSpring.includeCategory = true;
+		traceTargetSpring.includeDate = true;
+		traceTargetSpring.includeLevel = true;
+		traceTargetSpring.includeTime = true;
+		traceTargetSpring.level = LogEventLevel.INFO;
+		traceTargetSpring.filters = ["org.springextensions.*"];
+		Log.addTarget(traceTargetSpring);
+
+		var traceTargetReflect:TraceTarget = new TraceTarget();
+		traceTargetReflect.includeCategory = true;
+		traceTargetReflect.includeDate = true;
+		traceTargetReflect.includeLevel = true;
+		traceTargetReflect.includeTime = true;
+		traceTargetReflect.level = LogEventLevel.WARN;
+		traceTargetReflect.filters = ["org.as3commons.reflect.*"];
+		Log.addTarget(traceTargetReflect);
+	}
+        </source>
+      </answer>
+    </faq>
+
+    <faq id="autowired-metadata">
+      <question>
+        My classes that have been annotated with the [Autowired] metadata are not being autowired, what's wrong?
+      </question>
+      <answer>
+      	Make sure you have added this compiler switch to your project: -keep-as3-metadata += Autowired
+      </answer>
+    </faq>
+
+    <faq id="turn-off-autowiring">
+      <question>
+        I don't need all of this fancy autowiring functionality on my objects, can I turn it off completely?
+      </question>
+      <answer>
+      	You can remove autowiring by setting the autowireProcessor property to null, like this:
+      	<source>
+      	applicationContext.autowireProcessor = null;
+      	</source>
+      </answer>
+    </faq>
+
+    <faq id="skip-metadata">
+      <question>
+        Is it possible to prevent the autowiring process from examining the class metadata for objects that are created by the container?
+      </question>
+      <answer>
+      	Add this attribute to your object declaration:
+      	<source>
+      	&lt;object class="..." skip-metadata="true"/&gt;
+      	</source>
+      </answer>
+    </faq>
+
+    <faq id="prevent-property-caching">
+      <question>
+        Spring Actionscript suffixes my property file URL with a random string to prevent it from being cached, can I turn this behavior off?
+      </question>
+      <answer>
+      	Add this attribute to your property file declaration:
+      	<source>
+      	&lt;property file="strings.properties" prevent-cache="false"/&gt;
+      	</source>
+      </answer>
+    </faq>
+
+    <faq id="skip-postprocessors">
+      <question>
+        Is it possible to skip the postprocessing step in the wiring pipeline for objects that are created by the container?
+      </question>
+      <answer>
+      	Add this attribute to your object declaration:
+      	<source>
+      	&lt;object class="..." skip-postprocessors="true"/&gt;
+      	</source>
+      </answer>
+    </faq>
+
+  </part>
+  
+</faqs>

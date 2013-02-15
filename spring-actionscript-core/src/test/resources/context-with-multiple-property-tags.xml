@@ -1,0 +1,27 @@
+<objects>
+
+	<property file="strings.properties.txt"/>
+	<property file="strings.overrides.properties.txt"/>
+
+	<object id="string1" class="String">
+		<constructor-arg value="${s1}"/>
+	</object>
+
+	<object id="string2" class="String">
+		<constructor-arg value="${s2}"/>
+	</object>
+
+	<object id="string3" class="String">
+		<constructor-arg value="${s3}/file.ext?id={0}"/>
+	</object>
+
+	<object id="o" class="Object">
+		<property name="a">
+			<array>
+				<value>${s2}</value>
+				<value>${s1}</value>
+			</array>
+		</property>
+	</object>
+
+</objects>

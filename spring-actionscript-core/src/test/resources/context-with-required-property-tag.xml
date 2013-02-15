@@ -1,0 +1,14 @@
+<objects>
+
+	<!--
+		The strings.required.properties file does not exist so this should throw an IOError.
+	  -->
+	<object class="org.springextensions.actionscript.ioc.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="strings.required.properties.txt"/>
+	</object>
+
+	<object id="string" class="String">
+		<constructor-arg value="${s1}"/>
+	</object>
+
+</objects>
