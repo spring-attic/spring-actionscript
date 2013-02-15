@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<objects
-	xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd"
-	xmlns="http://www.springactionscript.org/schema/objects"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
-	<object id="securityProcessor" class="org.springextensions.actionscript.security.SimpleSecurityStageProcessor"/>
-
-</objects>

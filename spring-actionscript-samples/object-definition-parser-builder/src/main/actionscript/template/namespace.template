@@ -1,7 +1,0 @@
-package ${package} {
-	
-	/**
-	 * TODO namespace documentation
-	 */
-	public namespace ${namespacename} = "${schemaurl}";
-}

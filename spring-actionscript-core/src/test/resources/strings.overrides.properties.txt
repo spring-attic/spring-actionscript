@@ -1,2 +1,0 @@
-s1=First overridden string
-s2=Second overridden string
