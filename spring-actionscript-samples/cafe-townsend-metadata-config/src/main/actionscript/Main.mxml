@@ -1,57 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
-				layout="vertical"
-				backgroundColor="#000000"
-				preinitialize="application1_preinitializeHandler(event)"
-				viewSourceURL="srcview/index.html">
+<mx:Application
+		xmlns:mx="http://www.adobe.com/2006/mxml"
+		layout="vertical"
+		backgroundColor="#000000"
+		creationComplete="creationCompleteHandler(event)"
+		viewSourceURL="srcview/index.html">
 
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
-			import mx.events.FlexEvent;
+		import mx.controls.Alert;
+		import mx.events.FlexEvent;
 
-			import org.springextensions.actionscript.configuration.AppConfig;
-			import org.springextensions.actionscript.context.impl.metadata.MetadataApplicationContext;
-			import org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController;
-			import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryAuthenticationService;
-			import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryEmployeeService;
-			import org.springextensions.actionscript.samples.cafetownsend.presentation.MainView;
+		import org.springextensions.actionscript.context.config.ContextNamespaceHandler;
+		import org.springextensions.actionscript.context.support.FlexXMLApplicationContext;
+		import org.springextensions.actionscript.ioc.factory.config.EventHandlerMetadataProcessor;
+		import org.springextensions.actionscript.samples.cafetownsend.application.ApplicationController;
+		import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryAuthenticationService;
+		import org.springextensions.actionscript.samples.cafetownsend.infrastructure.service.InMemoryEmployeeService;
+		import org.springextensions.actionscript.samples.cafetownsend.presentation.MainView;
+		import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
 
-			//Ensure that the configuration class gets compiled into the application:
-			{
-				AppConfig;
-			}
+		// --------------------------------------------------------------------
+		//
+		// Private Variables
+		//
+		// --------------------------------------------------------------------
 
-			// --------------------------------------------------------------------
-			//
-			// Private Variables
-			//
-			// --------------------------------------------------------------------
+		private var _compiledClasses:Array = [ApplicationController, InMemoryAuthenticationService, InMemoryEmployeeService];
+		private var _appContext:FlexXMLApplicationContext;
 
-			private var _compiledClasses:Array = [ApplicationController, InMemoryAuthenticationService, InMemoryEmployeeService];
-			private var _appContext:MetadataApplicationContext;
+		// --------------------------------------------------------------------
+		//
+		// Private Methods
+		//
+		// --------------------------------------------------------------------
 
-			// --------------------------------------------------------------------
-			//
-			// Private Methods
-			//
-			// --------------------------------------------------------------------
+		private function creationCompleteHandler(event:FlexEvent):void {
+			_appContext = new FlexXMLApplicationContext();
+			_appContext.addConfigLocation("application-context.xml");
+			_appContext.addNamespaceHandler(new ContextNamespaceHandler());
+			_appContext.addEventListener(Event.COMPLETE, applicationContext_completeHandler);
+			_appContext.addEventListener(IOErrorEvent.IO_ERROR, applicationContext_ioErrorHandler);
+			_appContext.load();
+		}
 
-			private function applicationContext_completeHandler(event:Event):void {
-				addChild(new MainView());
-			}
+		private function applicationContext_completeHandler(event:Event):void {
+			addChild(new MainView());
+		}
 
-			private function applicationContext_ioErrorHandler(event:IOErrorEvent):void {
-				Alert.show("An error occurred when loading the xml for the application context: '" + event.text + "'", "Error Loading Application Context");
-			}
-
-			protected function application1_preinitializeHandler(event:FlexEvent):void {
-				var rootViews:Vector.<DisplayObject> = new <DisplayObject>[this];
-				_appContext = new MetadataApplicationContext(rootViews);
-				_appContext.addEventListener(Event.COMPLETE, applicationContext_completeHandler);
-				_appContext.addEventListener(IOErrorEvent.IO_ERROR, applicationContext_ioErrorHandler);
-				_appContext.load();
-			}
+		private function applicationContext_ioErrorHandler(event:IOErrorEvent):void {
+			Alert.show("An error occurred when loading the xml for the application context: '" + event.text + "'", "Error Loading Application Context");
+		}
 		]]>
 	</mx:Script>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,28 @@
  */
 package org.springextensions.actionscript.context {
 
+  /**
+   * Interface to be implemented by any object that wishes to be notified
+   * of the IApplicationContext that it runs in.
+   *
+   * <p>
+   * <b>Author:</b> Christophe Herreman<br/>
+   * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
+   * <b>Since:</b> 0.1
+   * </p>
+   * @see org.springextensions.actionscript.context.support.ApplicationContextAwareProcessor ApplicationContextAwareProcessor
+   * @docref container-documentation.html#knowing_who_you_are
+   */
+  public interface IApplicationContextAware {
+	
 	/**
-	 * Interface to be implemented by any object that wishes to be notified
-	 * of the IApplicationContext that it runs in.
-	 *
-	 * @author Christophe Herreman
-	 * @productionversion SpringActionscript 2.0
+	 * @private
 	 */
-	public interface IApplicationContextAware {
-
-		/**
-		 * Sets the IApplicationContext that this object runs in.
-		 * @param value the IApplicationContext that this object runs in
-		 */
-		function get applicationContext():IApplicationContext;
-
-		/**
-		 * @param value
-		 */
-		function set applicationContext(value:IApplicationContext):void;
-	}
+	function get applicationContext():IApplicationContext;
+    /**
+     * Sets the IApplicationContext that this object runs in.
+     * @param value the IApplicationContext that this object runs in
+     */
+    function set applicationContext(value:IApplicationContext):void;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,114 +14,31 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.context {
-	import flash.display.DisplayObject;
 
-	import org.as3commons.stageprocessing.IStageObjectProcessorRegistryAware;
-	import org.springextensions.actionscript.context.config.IConfigurationPackage;
-	import org.springextensions.actionscript.ioc.config.IObjectDefinitionsProvider;
-	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.config.IConfigurableListableObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.support.IObjectDefinitionRegistry;
 
 	/**
+	 * Central interface for the configuration of an application.
 	 *
-	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
+	 * @author Christophe Herreman
 	 */
-	public interface IApplicationContext extends IObjectFactory, IStageObjectProcessorRegistryAware {
-		/**
-		 * Returns a <code>Vector</code> of <code>IApplicationContexts</code> that have been registered as a child of the current <code>IApplicationContext</code>.
-		 */
-		function get childContexts():Vector.<IApplicationContext>;
+	public interface IApplicationContext extends IConfigurableListableObjectFactory {
 
 		/**
-		 * Returns all the <code>IObjectDefinitionsProviders</code> that have been added to the current <code>IApplicationContext</code>.
+		 * A unique id for the current <code>IApplicationContext</code>.
 		 */
-		function get definitionProviders():Vector.<IObjectDefinitionsProvider>;
+		function get id():String;
 
 		/**
-		 * Returns all the <code>IObjectFactoryPostProcessors</code> that have been added to the current <code>IApplicationContext</code>.
+		 * A 'friendly' display name for the <code>IApplicationContext</code>.
 		 */
-		function get objectFactoryPostProcessors():Vector.<IObjectFactoryPostProcessor>;
+		function get displayName():String;
 
 		/**
-		 *
+		 * Returns the parent application context or <code>null</code> if no parent is set.
 		 */
-		function get applicationContextInitializer():IApplicationContextInitializer;
+		function get parentContext():IApplicationContext;
 
-		/**
-		 * @private
-		 */
-		function set applicationContextInitializer(value:IApplicationContextInitializer):void;
-
-		/**
-		 *
-		 */
-		function get ignoredRootViews():Vector.<DisplayObject>;
-
-		/**
-		 *
-		 */
-		function get rootViews():Vector.<DisplayObject>;
-
-		/**
-		 * @param childContext the childContext.
-		 * @param settings determines what data the parent context will share with te specified child context.
-		 * @return the current <code>IApplicationContext</code>.
-		 */
-		function addChildContext(childContext:IApplicationContext, settings:ContextShareSettings = null):IApplicationContext;
-
-		/**
-		 *
-		 * @param provider
-		 */
-		function addDefinitionProvider(provider:IObjectDefinitionsProvider):IApplicationContext;
-
-		/**
-		 *
-		 * @param rootView
-		 */
-		function addIgnoredRootView(rootView:DisplayObject):void;
-
-		/**
-		 *
-		 * @param objectFactoryPostProcessor
-		 */
-		function addObjectFactoryPostProcessor(objectFactoryPostProcessor:IObjectFactoryPostProcessor):IApplicationContext;
-
-		/**
-		 *
-		 * @param rootView
-		 */
-		function addRootView(rootView:DisplayObject):void;
-
-		/**
-		 *
-		 * @param configurationPackage
-		 */
-		function configure(configurationPackage:IConfigurationPackage):IApplicationContext;
-
-		/**
-		 *
-		 */
-		function load():void;
-
-		/**
-		 *
-		 * @param childContext
-		 * @return
-		 */
-		function removeChildContext(childContext:IApplicationContext):IApplicationContext;
-
-		/**
-		 *
-		 * @param rootView
-		 */
-		function removeIgnoredRootView(rootView:DisplayObject):void;
-
-		/**
-		 *
-		 * @param rootView
-		 */
-		function removeRootView(rootView:DisplayObject):void;
 	}
 }

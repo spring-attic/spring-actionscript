@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:view="org.springextensions.actionscript.samples.cafetownsend.view.*"
+				layout="vertical"
+				backgroundColor="#000000"
+                viewSourceURL="srcview/index.html"
+				creationComplete="init()">
+	<mx:Metadata>
+		[RouteMVCEvents]
+		[Event(name="loadEmployees",type="org.springextensions.actionscript.samples.cafetownsend.control.LoadEmployeesEvent")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import org.springextensions.actionscript.context.support.FlexXMLApplicationContext;
+			import org.springextensions.actionscript.samples.cafetownsend.control.LoadEmployeesEvent;
+			import org.springextensions.actionscript.samples.cafetownsend.model.AppModelLocator;
+			import org.springextensions.actionscript.core.mvc.MVCControllerObjectFactoryPostProcessor;
+			import org.springextensions.actionscript.samples.cafetownsend.command.AddNewEmployeeCommand;
+			import org.springextensions.actionscript.samples.cafetownsend.command.CancelEmployeeEditsCommand;
+			import org.springextensions.actionscript.samples.cafetownsend.command.DeleteEmployeeCommand;
+			import org.springextensions.actionscript.samples.cafetownsend.command.LoadEmployeesCommand;
+			import org.springextensions.actionscript.samples.cafetownsend.command.LoginEmployeeCommand;
+			import org.springextensions.actionscript.samples.cafetownsend.command.LogoutCommand;
+			import org.springextensions.actionscript.samples.cafetownsend.command.SaveEmployeeEditsCommand;
+			import org.springextensions.actionscript.samples.cafetownsend.command.UpdateEmployeeCommand;
+			import org.springextensions.actionscript.stage.DefaultAutowiringStageProcessor;
+
+			{
+				AddNewEmployeeCommand;
+				CancelEmployeeEditsCommand;
+				DeleteEmployeeCommand;
+				LoadEmployeesCommand;
+				LoginEmployeeCommand;
+				LogoutCommand;
+				SaveEmployeeEditsCommand;
+				UpdateEmployeeCommand;
+				DefaultAutowiringStageProcessor;
+				MVCControllerObjectFactoryPostProcessor;
+			}
+
+			private var _applicationContext:FlexXMLApplicationContext;
+			
+			[Autowired]
+			[Bindable]
+			public var model:AppModelLocator;
+			
+			private function init():void {
+				_applicationContext = new FlexXMLApplicationContext("application-context.xml");
+				_applicationContext.addEventListener(Event.COMPLETE,loadEmployees);
+				_applicationContext.load();
+			}
+
+			private function loadEmployees(event:Event):void {
+				_applicationContext.removeEventListener(Event.COMPLETE,loadEmployees);
+				var cgEvent:LoadEmployeesEvent = new LoadEmployeesEvent();
+				dispatchEvent(cgEvent);
+			}
+		]]>
+	</mx:Script>
+
+
+	<mx:Style source="../resources/assets/main.css"/>
+	<mx:Image source="assets/header.jpg"
+			  width="700"/>
+	<mx:HBox paddingBottom="10"
+			 paddingLeft="10"
+			 paddingRight="10"
+			 paddingTop="10"
+			 backgroundColor="#ffffff"
+			 width="700">
+		<mx:VBox width="100%"
+				 verticalScrollPolicy="off"
+				 paddingRight="10">
+			<mx:ViewStack width="100%"
+						  paddingBottom="10"
+						  paddingTop="10"
+						  resizeToContent="true"
+						  selectedIndex="{model.viewing}">
+				<view:EmployeeLogin/>
+				<view:EmployeeList/>
+				<view:EmployeeDetail/>
+			</mx:ViewStack>
+		</mx:VBox>
+	</mx:HBox>
+
+</mx:Application>

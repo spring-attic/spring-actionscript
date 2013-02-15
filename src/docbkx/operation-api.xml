@@ -1,0 +1,1091 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter annotations="" version="5.0" xml:id="the_operation_api"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1998/Math/MathML"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook">
+  <title>The Operation API</title>
+
+  <section xml:id="the_operation_api_introduction">
+    <title>Introduction</title>
+
+    <para>One of the most prevalent actions in any Flash or Flex application
+    is: <emphasis>Get stuff from the server back-end</emphasis>. Be it calling
+    a remote object, loading a sub-application, module or resource file, all
+    of these actions have one thing in common: They are
+    <emphasis>asynchronous</emphasis>.</para>
+
+    <para>The Flex framework and Flash player seem to use different kinds of
+    asynchronous patterns for different kinds of retrieval. There's the
+    responder method, the event based method (all be it with an optional
+    progress reporting mechanism), calls to a singleton that returns an
+    IEventDispatcher instance or some other interface, etc.</para>
+
+    <para>The Spring Actionscript Operation API aims to facilitate a common
+    wrapper for these different patterns in order to make using and combining
+    them a little easier. The provided interfaces and base classes will give a
+    developer the opportunity to easily write his own logic. In addition to
+    this, Spring Actionscript already offers classes for the most common
+    asynchronous tasks such as the loading of Flex modules, resource modules
+    and remote object calls.</para>
+
+    <note>
+      <para>The Operation API is <emphasis role="bold">not</emphasis> an
+      <abbrev>MVC</abbrev> or <abbrev>MVCS</abbrev> framework. The Spring
+      Actionscript team believes that a framework approach is too rigid,
+      instead it offers a set of low-level classes and interfaces that allows
+      a developer to create a custom solution for each project/application
+      he/she is working on. No application is the same, therefore Spring
+      Actionscript chose to offer building blocks instead of a
+      framework.</para>
+    </note>
+
+    <para>All the classes and interfaces described in this chapter can be
+    found in the <literal
+    xlink:href="asdocpackage://org.springextensions.actionscript.core">org.springextensions.actionscript.core</literal>
+    package.</para>
+
+    <section xml:id="operations_commands_services_and_tasks">
+      <title>Operations, commands, services and tasks</title>
+
+      <para>The Operation API, broadly speaking, has four concepts:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Operation: An asynchronous action.</para>
+        </listitem>
+
+        <listitem>
+          <para>Command: An action with deferred execution.</para>
+        </listitem>
+
+        <listitem>
+          <para>Service: A collection of related operations.</para>
+        </listitem>
+
+        <listitem>
+          <para>Task: A collection of commands that are executed using a
+          control flow.</para>
+        </listitem>
+      </orderedlist>
+
+      <section xml:id="operations">
+        <title>Operations</title>
+
+        <para>An operation represents any kind of asynchronous action and is
+        described by the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        interface:</para>
+
+        <programlisting>public interface IOperation extends IEventDispatcher {
+
+ function get result():*;
+
+ function get error():*;
+
+ function addCompleteListener(listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void;
+
+ function addErrorListener(listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void;
+
+ function removeCompleteListener(listener:Function, useCapture:Boolean = false):void;
+
+ function removeErrorListener(listener:Function, useCapture:Boolean = false):void;
+
+}</programlisting>
+
+        <para>The most important properties of this interface are the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation#result()">result</literal>
+        and <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation#error()">error</literal>
+        properties, these will be assigned with the results of the
+        asynchronous action. The names speak for themselves.</para>
+
+        <note>
+          <para>An <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+          implementation will always execute its action immediately after
+          creation, all necessary parameters are therefore typically passed to
+          the constructor of an implementation.</para>
+        </note>
+
+        <section xml:id="long_running_operations">
+          <title>Long running operations</title>
+
+          <para>Operations that take long amounts of time to complete, such as
+          downloading modules or other types of assets benefit from being able
+          to notify the user of their progress. Typically a progress bar could
+          be display this. For these types of operations there is the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IProgressOperation">IProgressOperation</literal>
+          interface, which is a simple extension of <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>:</para>
+
+          <programlisting>public interface IProgressOperation extends IOperation {
+
+ function get progress():uint;
+
+ function get total():uint;
+
+ function addProgressListener(listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void;
+
+ function removeProgressListener(listener:Function, useCapture:Boolean = false):void;
+}</programlisting>
+        </section>
+
+        <section xml:id="operation_queues">
+          <title>Operation queues</title>
+
+          <para>In some cases a collection of <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperations</literal>
+          need to be run at once, yet each individual <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.OperationEvent#COMPLETE()">OperationEvent.COMPLETE</literal>
+          event doesn't need to be listened for. All that is important is that
+          all of the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperations</literal>
+          are completed successfully. For this situation the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.OperationQueue">OperationQueue</literal>
+          class can help out. A simple usage of this class might be like
+          this:</para>
+
+          <programlisting>var queue:OperationQueue = new OperationQueue();
+queue.addCompleteListener(<emphasis role="bold">handleQueueComplete</emphasis>);
+queue.addOperation(new FirstOperation());
+queue.addOperation(new SecondOperation());
+queue.addOperation(new ThirdOperation());
+queue.addOperation(new FourthOperation());</programlisting>
+
+          <para>And that's all, upon adding the operations the queue
+          immediately starts running. So after all four operations have
+          completed the specified <emphasis
+          role="bold">handleQueueComplete</emphasis> method will be invoked
+          and the application can go on about its business.</para>
+        </section>
+
+        <section xml:id="common_spring_actionscript_operations">
+          <title>Common Spring Actionscript operations</title>
+
+          <para>Here is a list of all the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+          implementations for common usage scenarios that Spring Actionscript
+          contains:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadPropertiesOperation">LoadPropertiesOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadPropertiesBatchOperation">LoadPropertiesBatchOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadStyleModuleOperation">LoadStyleModuleOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadURLOperation">LoadURLOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.module.LoadModuleOperation">LoadModuleOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.rpc.net.NetConnectionOperation">NetConnectionOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.rpc.remoting.RemoteObjectOperation">RemoteObjectOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.localization.LoadResourceBundleOperation">LoadResourceBundleOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.localization.LoadResourceModuleOperation">LoadResourceModuleOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadURLStreamOperation">LoadURLStreamOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.rpc.http.HTTPServiceOperation">HTTPServiceOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.rpc.soap.WebServiceOperation">WebServiceOperation</literal></para>
+            </listitem>
+          </itemizedlist>
+        </section>
+      </section>
+
+      <section xml:id="commands">
+        <title>Commands</title>
+
+        <para>A command is any kind of action whose execution is deferred.
+        Only after invoking the command's <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand#execute()">execute()</literal>
+        method will the action do its work. The basic <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommand</literal>
+        interface is very modest:</para>
+
+        <programlisting>public interface ICommand {
+
+ function execute():*;
+
+}</programlisting>
+
+        <para>This represents a <emphasis>synchronous</emphasis> command, so
+        the logic that is executed by an implementation will be available
+        immediately after the call to the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand#execute()">execute()</literal>
+        method, and typically be returned in the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand#execute()">execute()</literal>'s
+        result.</para>
+
+        <para>More interesting is the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.IAsyncCommand">IAsyncCommand</literal>
+        interface which is actually just a combination of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommand</literal>
+        and <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        interfaces:</para>
+
+        <programlisting>public interface IAsyncCommand extends ICommand, IOperation {
+
+}</programlisting>
+
+        <para>This interface allows a command to be constructed that will
+        execute an asynchronous action. So contrary to an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        instance an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.IAsyncCommand">IAsyncCommand</literal>
+        can be <emphasis>created</emphasis>, but its logic
+        <emphasis>executed</emphasis> at a later moment.</para>
+
+        <para>Because the command is asynchronous the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation#result()">result</literal>
+        property will be null directly after the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand#execute()">execute()</literal>
+        method has been called, also the result of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand#execute()">execute()</literal>
+        method will be either <emphasis>null</emphasis> or
+        <emphasis>undefined</emphasis>. To retrieve the result of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.IAsyncCommand">IAsyncCommand</literal>,
+        add listeners for the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.OperationEvent#COMPLETE()">OperationEvent.COMPLETE</literal>
+        and <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.OperationEvent#ERROR()">OperationEvent.ERROR</literal>
+        events.</para>
+
+        <section xml:id="composite_commands">
+          <title>Composite commands</title>
+
+          <para>Just like <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperations</literal>
+          its very well possible that a collection of <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommands</literal>
+          or <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.IAsyncCommand">IAsyncCommands</literal>
+          (or a mixed collection of them) needs to be executed. For this
+          scenario the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">CompositeCommand</literal>
+          class is ideal. It allows a list of <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommands</literal>
+          to be executed in parallel or sequence. The <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">CompositeCommand</literal>
+          class is an implementation of the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.ICompositeCommand">ICompositeCommand</literal>
+          interface:</para>
+
+          <programlisting>public interface ICompositeCommand extends ICommand, IOperation {
+
+ function addCommand(command:ICommand):void;
+
+ function get numCommands():uint;
+
+ function get kind():ComposeiteCommandKind;
+}</programlisting>
+
+          <para>A simple example of the usage of a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">CompositeCommand</literal>
+          instance would be like this:</para>
+
+          <programlisting>var compositeCommand:CompositeCommand = new CompositeCommand(ComposeiteCommandKind.SEQUENCE);
+compositeCommand.addCommand(new FirstCommand());
+compositeCommand.addCommand(new SecondCommand());
+compositeCommand.addCommand(new ThirdCommand());
+compositeCommand.addCommand(new FourthCommand());
+compositeCommand.addCompleteListener(<emphasis role="bold">handleCompositeCommandComplete</emphasis>);
+compositeCommand.addErrorListener(<emphasis role="bold">handleCompositeCommandError</emphasis>);
+compositeCommand.execute();</programlisting>
+
+          <para>This will execute the <emphasis
+          role="bold">FirstCommand</emphasis> instance, wait for it to
+          complete, execute the <emphasis role="bold">SecondCommand</emphasis>
+          instance, wait for it to complete, etc.</para>
+
+          <para>If all commands complete successfully the specified <emphasis
+          role="bold">handleCompositeCommandComplete</emphasis> method will be
+          invoked, if an error occurs the <emphasis
+          role="bold">handleCompositeCommandError</emphasis> method is invoked
+          instead.</para>
+
+          <note>
+            <para>The <literal
+            xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand#failOnFault()">failOnFault</literal>
+            property determines whether the <literal
+            xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">CompositeCommand</literal>
+            instance should stop executing its list of commands in the case of
+            an error. Default this property is set to <emphasis
+            role="bold">false</emphasis>. So all commands will be executed no
+            matter what their result is.</para>
+          </note>
+
+          <para>See the section '<link
+          linkend="the_compositecommand_xml_shortcut">the composite-command
+          XML shortcut</link>' to find out about custom <abbrev>XML</abbrev>
+          configuration for this class.</para>
+        </section>
+
+        <section xml:id="genericoperationcommand">
+          <title>GenericOperationCommand</title>
+
+          <para>Having an <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommand</literal>
+          implementation of each and every <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+          in an application isn't always practical, therefore the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.GenericOperationCommand">GenericOperationCommand</literal>
+          might help out a little. The <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.GenericOperationCommand">GenericOperationCommand</literal>
+          is nothing more than a simple <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.IAsyncCommand">IAsyncCommand</literal>
+          wrapper. All that a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.GenericOperationCommand">GenericOperationCommand</literal>
+          needs is the Class of an arbitrary <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+          and an optional list of constructor arguments. For example, here is
+          how the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.module.LoadModuleOperation">LoadModuleOperation</literal>
+          would be wrapped:</para>
+
+          <programlisting>var genericOperationCommand = new GenericOperationCommand(LoadModuleOperation, 'module.swf');
+genericOperationCommand.addCompleteHandler(operationCompleteHandler);
+genericOperationCommand.execute();
+</programlisting>
+        </section>
+
+        <section xml:id="genericoperationcommand_inside_a_compositecommand">
+          <title>GenericOperationCommand inside a CompositeCommand</title>
+
+          <para>Its not necessary to wrap an <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+          in a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.GenericOperationCommand">GenericOperationCommand</literal>
+          when adding it to a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">CompositeCommand</literal>.
+          The <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">CompositeCommand</literal>
+          also has an <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand#addOperation()">addOperation()</literal>
+          method which has this signature:</para>
+
+          <programlisting>function addOperation(operationClass:Class, ...constructorArgs):ICompositeCommand;</programlisting>
+
+          <para>Which is basically the same as the constructor for a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.GenericOperationCommand">GenericOperationCommand</literal>,
+          so adding a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.module.LoadModuleOperation">LoadModuleOperation</literal>
+          to a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">CompositeCommand</literal>
+          instance would work like this:</para>
+
+          <programlisting>compositeCommand.addOperation(LoadModuleOperation, 'module.swf');</programlisting>
+        </section>
+
+        <section xml:id="the_operationhandler_helper_class">
+          <title>The OperationHandler helper class</title>
+
+          <para>The <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.OperationHandler">OperationHandler</literal>
+          is a helper class that generically handles <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+          events and either routes their result or error data to a specified
+          method or assigns them to a specified property on an object
+          instance.</para>
+
+          <para>Below are some examples of its usage.</para>
+
+          <section>
+            <title>Assigning an operation result to an instance
+            property</title>
+
+            <programlisting>public class MyPresentationModel {
+
+  private var _operationHandler:OperationHandler
+
+  public var <emphasis role="bold">products</emphasis>:Array;
+
+  public function MyPresentationModel(){
+    _operationHandler = new OperationHandler(this.errorHandler);
+  }
+
+  public function getProducts():void {
+    var operation:IOperation = serviceImplementation.getProducts();
+    _operationHandler.handleOperation(operation,null,this,"<emphasis
+                role="bold">products</emphasis>");
+  }
+
+  protected function errorHandler(error:):void {
+    //implementation omitted
+  }
+}
+</programlisting>
+          </section>
+
+          <section>
+            <title>Assigning an operation result to an instance property using
+            an extra method</title>
+
+            <para>If the data returned from the IOperation needs some extra
+            processing, specify an extra method for it like in this
+            example:</para>
+
+            <programlisting>public class MyPresentationModel {
+
+  private var _operationHandler:OperationHandler
+
+  public var products:ArrayCollection;
+
+  public function MyPresentationModel(){
+    _operationHandler = new OperationHandler(this.errorHandler);
+  }
+
+  public function getProducts():void {
+    var operation:IOperation = serviceImplementation.getProducts();
+    _operationHandler.handleOperation(operation,<emphasis role="bold">convertArray</emphasis>,this,"products");
+  }
+
+  protected function <emphasis role="bold">convertArray</emphasis>(input:Array):ArrayCollection {
+    return new ArrayCollection(input);
+  }
+
+  protected function errorHandler(error:):void {
+    //implementation omitted
+  }
+}
+</programlisting>
+          </section>
+        </section>
+      </section>
+
+      <section xml:id="services">
+        <title>Services</title>
+
+        <para>It makes sense to encapsulate a number of operations in one
+        interface. The easiest example would be the <abbrev>CRUD</abbrev>
+        operations for a specific object.</para>
+
+        <para>Let's imagine a user service whose interface looks like
+        this:</para>
+
+        <programlisting>public interface IUserService {
+
+ function createUser():IOperation;
+
+ function updateUser(user:User):IOperation;
+
+ function deleteUser(user:User):IOperation;
+
+}</programlisting>
+
+        <para>In a lot of cases the implementation for such a service will
+        rely on a RemoteObject. For this situation Spring Actionscript offers
+        the base class <literal
+        xlink:href="asdoc://org.springextensions.actionscript.rpc.remoting.RemoteObjectService">RemoteObjectService</literal>.
+        So the implementation for the IUserService could inherit from
+        this:</para>
+
+        <programlisting>public class UserService extends RemoteObjectService implements IUserService {
+
+ public function UserService(remoteObject:RemoteObject) {
+  Assert.notNull(remoteObject,"remoteObject argument must not be null");
+  super(remoteObject);
+ }
+
+ public function createUser():IOperation {
+  return call('createUser');
+ }
+
+ public function updateUser(user:User):IOperation {
+  return call('updateUser',user);
+ }
+
+ public function deleteUser(user:User):IOperation {
+  return call('deleteUser',user);
+ }
+}</programlisting>
+
+        <para>This service could be injected into a presentation model, a
+        command, a supervising presenter, etc. All depending on the specific
+        patterns used in an application.</para>
+
+        <para>Let's look at a command example:</para>
+
+        <programlisting>public class CreateUserCommand extends AbstractOperation implements IAsyncCommand {
+
+ private var _userService:IUserService;
+ private var _applicationModel:IApplicationModel;
+
+ public function CreateUserCommand(userService:IUserService, applicationModel:IApplicationModel) {
+  Assert.notNull(userService,"userService argument must not be null");
+  Assert.notNull(applicationModel,"applicationModel argument must not be null");
+  _userService = userService;
+  _applicationModel = applicationModel;
+ }
+
+ public function execute():* {
+  var operation:IOperation = _userService.createUser();
+  operation.addCompleteListener(handleComplete);
+  operation.addErrorListener(handleError);
+ }
+
+ protected function handleComplete(event:OperationEvent):void {
+  _applicationModel.users.addItem(event.result as User);
+  dispatchCompleteEvent(event.result);
+ }
+
+ protected function handleError(event:OperationEvent):void {
+  dispatchErrorEvent(event.error);
+ }
+
+}</programlisting>
+
+        <para>In this example the command receives a reference to an
+        IUserService and IApplicationModel instance. In this example we assume
+        the IApplicationModel instance has a property called <emphasis
+        role="bold">users</emphasis> of type ArrayCollection. Once the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        that was received from the service completes it adds the result of the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        (which is a User object) to the user collection in the application
+        model.</para>
+      </section>
+
+      <section xml:id="tasks">
+        <title>Tasks</title>
+
+        <para>In order to support more complex execution of <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommand</literal>
+        collections there is finally the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask">ITask</literal>
+        interface. This interface describes an object that not only can
+        execute collections of <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommands</literal>
+        both in parallel and in sequence, but also does this with basic
+        control flow functionality.</para>
+
+        <para>First let's take a quick look and the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask">ITask</literal>
+        interface:</para>
+
+        <programlisting>public interface ITask extends ICommand, IOperation {
+
+ function get context():Object;
+ function set context(value:Object):void;
+
+ function get parent():ITask;
+ function set parent(value:ITask):void;
+
+ function next(item:Object, ...constructorArgs):ITask;
+
+ function and(item:Object, ...constructorArgs):ITask;
+
+ function if_(condition:IConditionProvider=null, ifElseBlock:IIfElseBlock=null):IIfElseBlock;
+
+ function else_():IIfElseBlock;
+
+ function while_(condition:IConditionProvider=null, whileBlock:IWhileBlock=null):IWhileBlock;
+
+ function for_(count:uint, countProvider:ICountProvider=null, forBlock:IForBlock=null):IForBlock;
+
+ function exit():ITask;
+
+ function reset(doHardReset:Boolean = false):ITask;
+
+ function pause(duration:uint, pauseCommand:ICommand=null):ITask;
+
+ function end():ITask;
+}</programlisting>
+
+        <para>First thing that is apparent in this interface is that almost
+        each method returns an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask">ITask</literal>
+        instance. This actually implies that this is a so-called
+        <emphasis>fluent interface</emphasis>. Meaning that method calls to a
+        single instance of an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask">ITask</literal>
+        can be chained. For instance, if we want to use a <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.support.Task">Task</literal>
+        instance to execute a number of commands in parallel we can write
+        this:</para>
+
+        <programlisting>var task:Task = new Task().and(new FirstCommand()).and(new SecondCommand()).and(new ThirdCommand()).and(new FourthCommand());
+task.addEventListener(TaskEvent.TASK_COMPLETE, <emphasis role="bold">handleTaskComplete</emphasis>);
+task.execute();</programlisting>
+
+        <para>This is basically the same as an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommand">ICompositeCommand</literal>
+        set to <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.CompositeCommandKind#PARALLEL">CompositeCommandKind.PARALLEL</literal>,
+        so not that interesting. But the nice thing about a <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.support.Task">Task</literal>
+        is the opportunity to mix the different types of execution. So if we
+        first want to execute a number of commands in
+        <emphasis>parallel</emphasis> but after that a few in
+        <emphasis>sequence</emphasis>, we can use the same <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.support.Task">Task</literal>
+        instance:</para>
+
+        <programlisting>var task:Task = new Task().<emphasis role="bold">and</emphasis>(new FirstCommand()).<emphasis
+            role="bold">and</emphasis>(new SecondCommand()).<emphasis
+            role="bold">next</emphasis>(new ThirdCommand()).<emphasis
+            role="bold">next</emphasis>(new FourthCommand());
+task.addEventListener(TaskEvent.TASK_COMPLETE, <emphasis role="bold">handleTaskComplete</emphasis>);
+task.execute();</programlisting>
+
+        <para>This will first execute <emphasis>FirstCommand</emphasis> and
+        <emphasis>SecondCommand</emphasis> in parallel and afterwards execute
+        <emphasis role="bold">ThirdCommand</emphasis> and <emphasis
+        role="bold">FourthCommand</emphasis> in sequence.</para>
+
+        <para>The first argument for the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.support.Task#next()">next()</literal>
+        and <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.support.Task#and()">and()</literal>
+        methods can be either an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommand</literal>
+        implementation, or a Class that implements the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        interface along with an optional list of constructor arguments for the
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        instantiation. So this can also be a valid invocation:</para>
+
+        <programlisting>new Task().<emphasis role="bold">and</emphasis>(LoadModuleOperation, 'module.swf');</programlisting>
+
+        <para>Now let's have a look at some control flow elements, what if a
+        certain command needs to be executed more than once? We can use a
+        <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask#for_()">for_()</literal>
+        invocation for this:</para>
+
+        <programlisting>var task:Task = new Task();
+
+<emphasis>task.for_(10)
+ .next(new FirstCommand())
+.end();
+</emphasis>
+task.addEventListener(TaskEvent.TASK_COMPLETE, handleTaskComplete);
+task.execute();
+</programlisting>
+
+        <para>This will execute the <emphasis
+        role="bold">FirstCommand</emphasis> 10 times. Now, it won't always be
+        possible to know the exact number of iterations at compile-time.
+        Therefore its possible to pass an optional <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ICountProvider">ICountProvider</literal>
+        instance to the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask#for_()">for_()</literal>
+        method. The <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ICountProvider">ICountProvider</literal>
+        interface is quite small:</para>
+
+        <programlisting>public interface ICountProvider {
+ function getCount():uint;
+}</programlisting>
+
+        <para>Any implementations of this interface can perform their own kind
+        of logic to determine the exact count, this implementation can also be
+        an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>
+        so the logic for retrieving the count may be asynchronous, internally
+        the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.support.ForBlock">ForBlock</literal>
+        will take care of this.</para>
+
+        <para>An <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.command.ICommand">ICommand</literal>
+        may also be executed conditionally, for this use the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask#if_()">if_()</literal>
+        method and pass an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.IConditionProvider">IConditionProvider</literal>
+        to it:</para>
+
+        <programlisting>var task:Task = new Task();
+
+<emphasis>task.if_(new MyConditionProvider())
+ .next(new FirstCommand())
+.end();</emphasis>
+
+task.addEventListener(TaskEvent.TASK_COMPLETE, handleTaskComplete);
+task.execute();</programlisting>
+
+        <para>Now let's take a look at the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.IConditionProvider">IConditionProvider</literal>
+        interface:</para>
+
+        <programlisting>public interface IConditionProvider {
+ function getResult():Boolean;
+}</programlisting>
+
+        <para>The result of the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.IConditionProvider#getResult()">getResult()</literal>
+        method determines whether the commands inside the if block will be
+        executed or not. Again, an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.IConditionProvider">IConditionProvider</literal>
+        implementation may also itself be an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.operation.IOperation">IOperation</literal>,
+        and therefore have its logic be executed in an asynchronous
+        manner.</para>
+
+        <para>Of course, the <emphasis role="bold">if</emphasis> block may
+        also have an <emphasis role="bold">else</emphasis> block:</para>
+
+        <programlisting>var task:Task = new Task();
+
+task.<emphasis role="bold">if_</emphasis>(new ConditionProvider())
+ .next(new FirstCommand())
+ .<emphasis role="bold">else_</emphasis>()
+ .next(new SecondCommand())
+.end();
+
+task.addEventListener(TaskEvent.TASK_COMPLETE, handleTaskComplete);
+task.execute();</programlisting>
+
+        <para>An <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.IConditionProvider">IConditionProvider</literal>
+        can also be used by a <emphasis role="bold">while</emphasis>
+        block:</para>
+
+        <programlisting>var task:Task = new Task();
+
+task.while_(new MyConditionProvider())
+ .next(new FirstCommand())
+.end();
+
+task.addEventListener(TaskEvent.TASK_COMPLETE, handleTaskComplete);
+task.execute();</programlisting>
+
+        <para>In this case the <emphasis role="bold">FirstCommand</emphasis>
+        will be executed for as long as the <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.IConditionProvider#getResult()">IConditionProvider.getResult()</literal>
+        method returns <emphasis role="bold">true</emphasis>.</para>
+
+        <para>In closing there are three last methods that an <literal
+        xlink:href="asdoc://org.springextensions.actionscript.core.task.ITask">ITask</literal>
+        implementation offers:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>Exit(): stops the execution of the entire task.</para>
+          </listitem>
+
+          <listitem>
+            <para>Reset(): restarts the execution of the current task.</para>
+          </listitem>
+
+          <listitem>
+            <para>Pause(): pauses the execution of the current task for a
+            specified period.</para>
+          </listitem>
+        </orderedlist>
+
+        <section xml:id="the_task_namespace_handler">
+          <title>The task namespace handler</title>
+
+          <para>Configuring a task in Spring Actionscript <abbrev>XML</abbrev>
+          is of course the final piece of functionality that Spring
+          Actionscript offers. There is a namespace handler to make task
+          configuration a little easier. There's two things that need to be
+          added to the context and configuration.</para>
+
+          <para>First of all add the namespace to the configuration:</para>
+
+          <programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;objects
+  xmlns="http://www.springactionscript.org/schema/objects"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  <emphasis role="bold">xmlns:t="http://www.springactionscript.org/schema/task"</emphasis>
+  xsi:schemaLocation="
+  http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+  <emphasis role="bold">http://www.springactionscript.org/schema/task http://www.springactionscript.org/schema/util/spring-actionscript-task-1.1.xsd</emphasis>"&gt;
+
+ <lineannotation>&lt;!-- further markup ommitted --&gt;</lineannotation>
+&lt;/objects&gt;</programlisting>
+
+          <para>After that an instance of the <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.task.xml.TaskNamespaceHandler">TaskNamespaceHandler</literal>
+          class needs to be added to the application context:</para>
+
+          <programlisting>applicationContext.addNamespaceHandler(new TaskNamespaceHandler());</programlisting>
+
+          <para>That's it, the application context is now ready to be able to
+          parse task specific configuration <abbrev>XML</abbrev>.</para>
+
+          <para>Let's re-create the example where two commands are executed in
+          parallel and two in sequence:</para>
+
+          <programlisting>&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:and&gt;
+  &lt;object id="command1" scope="prototype" class="classes.commands.FirstCommand"/&gt;
+ &lt;/t:and&gt;
+ &lt;t:and&gt;
+  &lt;object id="command2" scope="prototype" class="classes.commands.SecondCommand"/&gt;
+ &lt;/t:and&gt;
+ &lt;t:next&gt;
+  &lt;object id="command3" scope="prototype" class="classes.commands.ThirdCommand"/&gt;
+ &lt;/t:next&gt;
+ &lt;t:next&gt;
+  &lt;object id="command3" scope="prototype" class="classes.commands.FourthCommand"/&gt;
+ &lt;/t:next&gt;
+&lt;/t:task&gt;</programlisting>
+
+          <para>Its also possible to declare the command objects outside of
+          the task specific <abbrev>XML</abbrev>:</para>
+
+          <programlisting>&lt;object id="command1" scope="prototype" class="classes.commands.FirstCommand"/&gt;
+&lt;object id="command2" scope="prototype" class="classes.commands.SecondCommand"/&gt;
+&lt;object id="command3" scope="prototype" class="classes.commands.ThirdCommand"/&gt;
+&lt;object id="command3" scope="prototype" class="classes.commands.FourthCommand"/&gt;
+
+&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:and command="command1"/&gt;
+ &lt;t:and command="command2"/&gt;
+ &lt;t:next command="command3"/&gt;
+ &lt;t:next command="command4"/&gt;
+&lt;/t:task&gt;</programlisting>
+
+          <para>A conditional execution could be configured like this:</para>
+
+          <programlisting>&lt;object id="command1" scope="prototype" class="classes.commands.FirstCommand"/&gt;
+&lt;object id="command2" scope="prototype" class="classes.commands.SecondCommand"/&gt;
+&lt;object id="myCondition" scope="prototype" class="classes.condition.MyConditionProvider"/&gt;
+
+&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:if condition="myCondition"&gt;
+  &lt;t:next command="command1"/&gt;
+  &lt;t:else/&gt;
+  &lt;t:next command="command2"/&gt;
+ &lt;/t:if&gt;
+&lt;/t:task&gt;</programlisting>
+
+          <para>A for loop would look like this:</para>
+
+          <programlisting>&lt;object id="command1" scope="prototype" class="classes.commands.FirstCommand"/&gt;
+&lt;object id="command2" scope="prototype" class="classes.commands.SecondCommand"/&gt;
+
+&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:for count="10"&gt;
+  &lt;t:next command="command1"/&gt;
+  &lt;t:next command="command2"/&gt;
+ &lt;/t:for&gt;
+&lt;/t:task&gt;</programlisting>
+
+          <para>Or, when using an <literal
+          xlink:href="asdoc://org.springextensions.actionscript.core.task.ICountProvider">ICountProvider</literal>:</para>
+
+          <programlisting>&lt;object id="command1" scope="prototype" class="classes.commands.FirstCommand"/&gt;
+&lt;object id="command2" scope="prototype" class="classes.commands.SecondCommand"/&gt;
+&lt;object id="myCount" scope="prototype" class="classes.counts.MyCountProvider"/&gt;
+
+&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:for count-provider="myCount"&gt;
+  &lt;t:next command="command1"/&gt;
+  &lt;t:next command="command2"/&gt;
+ &lt;/t:for&gt;
+&lt;/t:task&gt;</programlisting>
+
+          <para>And finally, of course, the while loop:</para>
+
+          <programlisting>&lt;object id="command1" scope="prototype" class="classes.commands.FirstCommand"/&gt;
+&lt;object id="command2" scope="prototype" class="classes.commands.SecondCommand"/&gt;
+&lt;object id="myCondition" scope="prototype" class="classes.condition.MyConditionProvider"/&gt;
+
+&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:while condition="myCondition"&gt;
+  &lt;t:next command="command1"/&gt;
+  &lt;t:next command="command2"/&gt;
+ &lt;/t:while&gt;
+&lt;/t:task&gt;</programlisting>
+        </section>
+
+        <section>
+          <title>Common operation XML shortcuts</title>
+
+          <para>To add, for instance, a <literal
+          xlink:href="asdoc://org.springextensions.actionscript.module.LoadModuleOperation">LoadModuleOperation</literal>
+          to a task, this <abbrev>XML</abbrev> mark up would normally be
+          needed:</para>
+
+          <programlisting>&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:and&gt;
+  &lt;object class="org.springextensions.actionscript.core.command.GenericOperationCommand"&gt;
+    &lt;constructor-arg value="org.springextensions.actionscript.module.LoadModuleOperation" type="Class"/&gt;
+    &lt;constructor-arg value="modules/mymodule.swf"/&gt;
+  &lt;/object&gt;
+ &lt;/t:and&gt;
+ <lineannotation>//etc...</lineannotation>
+&lt;/t:task&gt;</programlisting>
+
+          <para>This is quite verbose so Spring Actionscript offers
+          <abbrev>XML</abbrev> shortcuts for a number of common
+          operations:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.module.LoadModuleOperation">LoadModuleOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadPropertiesBatchOperation">LoadPropertiesBatchOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadPropertiesOperation">LoadPropertiesOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.localization.LoadResourceModuleOperation">LoadResourceModuleOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadStyleModuleOperation">LoadStyleModuleOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadURLOperation">LoadURLOperation</literal></para>
+            </listitem>
+
+            <listitem>
+              <para><literal
+              xlink:href="asdoc://org.springextensions.actionscript.core.io.support.LoadURLStreamOperation">LoadURLStreamOperation</literal></para>
+            </listitem>
+          </itemizedlist>
+
+          <para>Here's an example of how all these operations can be
+          configured in <abbrev>XML</abbrev> for a task:</para>
+
+          <programlisting>&lt;t:task id="testTask" scope="prototype"&gt;
+ &lt;t:next&gt;
+  <emphasis role="bold">&lt;t:load-module url="modules/mymodule.swf" application-domain="appDomainObjectName" security-domain="secDomainObjectName"/&gt;</emphasis>
+ &lt;/t:next&gt;
+ &lt;t:next&gt;
+  <emphasis role="bold">&lt;t:load-properties-batch locations="props/properties1.properties,props/properties2.properties"
+    ignore-resource-not-found="true" prevent-cache="false"/&gt;</emphasis>
+ &lt;/t:next&gt;
+ &lt;t:next&gt;
+  <emphasis role="bold">&lt;t:load-properties location="props/properties1.properties" prevent-cache="false"/&gt;</emphasis>
+ &lt;/t:next&gt;
+ &lt;t:next&gt;
+  <emphasis role="bold">&lt;t:load-resource-module url="resource.swf" update="false" application-domain="appDomainObjectName"
+    security-domain="secDomainObjectName"/&gt;</emphasis>
+ &lt;/t:next&gt;
+ &lt;t:next&gt;
+  <emphasis role="bold">&lt;t:load-style-module url="styles.swf" update="false" application-domain="appDomainObjectName"
+    security-domain="secDomainObjectName" flex-module-factory="moduleFactoryName"/&gt;</emphasis>
+ &lt;/t:next&gt;
+ &lt;t:next&gt;
+  <emphasis role="bold">&lt;t:load-url url="someAsset.png" data-format="binary"/&gt;</emphasis>
+ &lt;/t:next&gt;
+ &lt;t:next&gt;
+  <emphasis role="bold">&lt;t:load-url-stream url="someAsset.png"/&gt;</emphasis>
+ &lt;/t:next&gt;
+&lt;/t:task&gt;</programlisting>
+
+          <para>The application domain attributes could be configured like
+          this as well:</para>
+
+          <programlisting>&lt;t:load-resource-module url="resource.swf" update="false" <emphasis
+              role="bold">application-domain="this.applicationDomain"</emphasis>/&gt;</programlisting>
+
+          <para>This would assign the application domain that is associated
+          with the application context that has consumed this configuration.
+          See this section: '<link
+          linkend="injecting_the_application_context_using_the_this_reference">Injecting
+          the application context using the 'this' reference</link>' for more
+          information.</para>
+
+          <para>In that same vain the flex module factory for a
+          LoadStyleModuleOperation could be configured like this:</para>
+
+          <programlisting>&lt;t:load-style-module url="styles.swf" update="false" <emphasis
+              role="bold">application-domain="this.applicationDomain"
+  flex-module-factory="this.ownerModule.moduleFactory"</emphasis>/&gt;</programlisting>
+        </section>
+
+        <section xml:id="the_compositecommand_xml_shortcut">
+          <title>The composite-command XML shortcut</title>
+
+          <para>A <literal>CompositeCommand</literal> can also be configured
+          using a bit of custom <abbrev>XML</abbrev>, instead of writing
+          this...</para>
+
+          <programlisting>&lt;object id="myCompositeCommand" class="org.springextensions.actionscript.core.command.CompositeCommand"&gt;
+  &lt;property name="failOnFault" value="true"/&gt;
+  &lt;property name="kind"&gt;
+    &lt;ref&gt;
+      &lt;util:constant static-field="org.springextensions.actionscript.core.command.CompositeCommandKind.PARALLEL.value"/&gt;
+    &lt;/ref&gt;
+  &lt;/property&gt;
+  &lt;method-invocation name="addCommand"&gt;
+    &lt;arg&gt;
+      &lt;object id="myCommand1" class="..."/&gt;
+    &lt;/arg&gt;
+  &lt;/method-invocation&gt;
+  &lt;method-invocation name="addCommand"&gt;
+    &lt;arg&gt;
+      &lt;object id="myCommand2" class="..."/&gt;
+    &lt;/arg&gt;
+  &lt;/method-invocation&gt;
+  <lineannotation>&lt;!-- etc, etc --&gt;</lineannotation>
+&lt;/object&gt;</programlisting>
+
+          <para>...this rather more abbreviated form is possible using the
+          Task namespace handler:</para>
+
+          <programlisting>&lt;t:composite-command fail-on-fault="true" kind="parallel"&gt;
+  &lt;object id="myCommand1" class="..."/&gt;
+  &lt;object id="myCommand2" class="..."/&gt;
+&lt;/t:composite-command&gt;
+</programlisting>
+        </section>
+      </section>
+    </section>
+  </section>
+</chapter>

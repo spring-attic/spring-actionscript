@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,20 @@
  */
 package org.springextensions.actionscript.ioc.factory {
 
-	/**
-	 * Interface to be implemented by all objects that want to know what
-	 * container they run in.
-	 *
-	 * @author Christophe Herreman
-	 * @productionversion SpringActionscript 2.0
-	 */
-	public interface IObjectFactoryAware {
-		/**
-		 * @param objectFactory the <code>IObjectFactory</code> instance
-		 */
-		function set objectFactory(objectFactory:IObjectFactory):void;
-	}
+  /**
+   * Interface to be implemented by all objects that want to know what
+   * container they run in.
+   *
+   * <p>
+   * <b>Author:</b> Christophe Herreman<br/>
+   * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
+   * <b>Since:</b> 0.1
+   * </p>
+   */
+  public interface IObjectFactoryAware {
+    /**
+     * @param objectFactory the <code>IObjectFactory</code> instance
+     */
+    function set objectFactory(objectFactory:IObjectFactory):void;
+  }
 }

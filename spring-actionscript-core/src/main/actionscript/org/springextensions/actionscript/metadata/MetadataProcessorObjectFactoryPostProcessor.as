@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.metadata {
-
-	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.lang.Assert;
-	import org.as3commons.logging.api.ILogger;
-	import org.as3commons.logging.api.getClassLogger;
-	import org.as3commons.metadata.process.IMetadataProcessor;
-	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectFactoryPostProcessor;
+	import org.as3commons.logging.ILogger;
+	import org.as3commons.logging.LoggerFactory;
+	import org.springextensions.actionscript.ioc.factory.config.IConfigurableListableObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.config.IObjectFactoryPostProcessor;
 
 	/**
 	 * <code>IObjectFactoryPostProcessor</code> implementation that checks if the specified <code>objectFactory</code>
 	 * contains a <code>MetadataProcessorObjectPostProcessor</code>, if not it creates an instance and registers it
 	 * with the factory.
 	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
+	 * @docref annotations.html
+	 * @sampleref metadataprocessor
 	 */
 	public class MetadataProcessorObjectFactoryPostProcessor implements IObjectFactoryPostProcessor {
 
-		private static const LOGGER:ILogger = getClassLogger(MetadataProcessorObjectFactoryPostProcessor);
+		// --------------------------------------------------------------------
+		//
+		// Private Static Variables
+		//
+		// --------------------------------------------------------------------
+
+		private static var logger:ILogger = LoggerFactory.getClassLogger(MetadataProcessorObjectFactoryPostProcessor);
+
+		// --------------------------------------------------------------------
+		//
+		// Constructor
+		//
+		// --------------------------------------------------------------------
 
 		/**
 		 * Creates a new <code>MetadataProcessorObjectFactoryPostProcessor</code> instance.
@@ -41,24 +51,26 @@ package org.springextensions.actionscript.metadata {
 			super();
 		}
 
+		// --------------------------------------------------------------------
+		//
+		// Public Methods
+		//
+		// --------------------------------------------------------------------
+
 		/**
 		 * Registers an <code>ObjectDefinition</code> for a <code>MetadataProcessorObjectPostProcessor</code> instance
-		 * with the specified <code>IObjectFactory</code>.
+		 * with the specified <code>IConfigurableListableObjectFactory</code>.
 		 * @param objectFactory The specified <code>IConfigurableListableObjectFactory</code>.
 		 */
-		public function postProcessObjectFactory(objectFactory:IObjectFactory):IOperation {
+		public function postProcessObjectFactory(objectFactory:IConfigurableListableObjectFactory):void {
 			Assert.notNull(objectFactory, "objectFactory argument must not be null");
 
-			var names:Vector.<String> = objectFactory.objectDefinitionRegistry.getObjectDefinitionNamesForType(IMetadataProcessorObjectPostProcessor);
-			var noMetadataProcessorObjectPostProcessorRegistered:Boolean = (names == null);
-			names = objectFactory.objectDefinitionRegistry.getObjectDefinitionNamesForType(IMetadataProcessor);
-			var metadataProcessorsRegistered:Boolean = (names != null);
+			var noMetadataProcessorObjectPostProcessorRegistered:Boolean = (objectFactory.getObjectNamesForType(IMetaDataProcessorObjectPostProcessor).length == 0);
 
-			if ((noMetadataProcessorObjectPostProcessorRegistered) && (metadataProcessorsRegistered == true)) {
-				LOGGER.debug("No MetadataProcessorObjectPostProcessor found in the object factory, registering default MetadataProcessorObjectPostProcessor");
+			if (noMetadataProcessorObjectPostProcessorRegistered) {
+				logger.debug("No MetadataProcessorObjectPostProcessor found in the object factory, registering MetadataProcessorObjectPostProcessor");
 				objectFactory.addObjectPostProcessor(objectFactory.createInstance(MetadataProcessorObjectPostProcessor));
 			}
-			return null;
 		}
 	}
 }

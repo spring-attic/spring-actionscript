@@ -1,0 +1,35 @@
+<objects>
+
+	<!--
+		The strings.mayexist.properties file may exist.
+		In this case, it doesn't and if we set the required attribute
+		to false, no error will be thrown.
+	  -->
+	<object class="org.springextensions.actionscript.ioc.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="strings.mayexist.properties.txt"/>
+		<property name="ignoreResourceNotFound" value="true"/>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</object>
+
+	<object id="string1" class="String">
+		<constructor-arg value="${s1}"/>
+	</object>
+
+	<object id="string2" class="String">
+		<constructor-arg value="${s2}"/>
+	</object>
+
+	<object id="string3" class="String">
+		<constructor-arg value="${s3}/file.ext?id={0}"/>
+	</object>
+
+	<object id="o" class="Object">
+		<property name="a">
+			<array>
+				<value>${s2}</value>
+				<value>${s1}</value>
+			</array>
+		</property>
+	</object>
+
+</objects>

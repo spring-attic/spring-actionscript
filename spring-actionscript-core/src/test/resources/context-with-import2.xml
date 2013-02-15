@@ -1,0 +1,11 @@
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects.xsd ">
+
+	<import file="context-with-import.xml"/>
+	
+	<object id="string3" class="String">
+		<constructor-arg value="string 3"/>
+	</object>
+
+</objects>

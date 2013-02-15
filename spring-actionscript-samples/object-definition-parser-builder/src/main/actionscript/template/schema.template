@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="${schemaurl}"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="${schemaurl}"
+			elementFormDefault="qualified">
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			Custom Schema
+			Schema Authors: Spring Actionscript ObjectDefinitionParserBuilder
+			]]>
+		</xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:import namespace="http://www.springactionscript.org/schema/objects"/>
+
+${schemaelements}
+
+</xsd:schema>

@@ -1,0 +1,50 @@
+/*
+ * Copyright 2007-2010 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springextensions.actionscript.ioc.factory {
+
+	import flash.utils.Dictionary;
+
+	import org.springextensions.actionscript.ioc.factory.support.IObjectDefinitionRegistry;
+
+	/**
+	 * Provides an object factory with list type methods of accessing definitions.
+	 *
+	 * @author Christophe Herreman
+	 * @docref container-documentation.html#instantiating_a_container
+	 */
+	public interface IListableObjectFactory extends IObjectFactory, IObjectDefinitionRegistry {
+
+		/**
+		 * Returns the names of all object definitions and explicit singletons in this factory that are of
+		 * the given type.
+		 *
+		 * @param type The type that is searched for
+		 *
+		 * @return an array containing definition names that implement the given type
+		 */
+		function getObjectNamesForType(type:Class):Array;
+
+		/**
+		 * Returns all object definitions and explicit singletons that are of the given type.
+		 *
+		 * @param type the type that is searched for
+		 *
+		 * @return An object (hashmap) containing definitions that implement the given type. Definition
+		 *        names are used as key.
+		 */
+		function getObjectsOfType(type:Class):Object;
+	}
+}

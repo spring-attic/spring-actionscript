@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd ">
+
+	<object id="phoneNumber" autowire-candidate="true" class="org.springextensions.actionscript.objects.testclasses.PhoneNumber">
+		<constructor-arg value="001"/>
+		<constructor-arg value="111"/>
+		<constructor-arg value="555"/>
+	</object>
+	    
+	<object autowire="byType" id="contact" dependency-check="objects" lazy-init="true" class="org.springextensions.actionscript.objects.testclasses.Contact">
+	</object>
+
+	<object autowire="byType" id="contact2" dependency-check="all" lazy-init="true" class="org.springextensions.actionscript.objects.testclasses.Contact">
+	</object>
+
+	<object autowire="byType" id="contact3" dependency-check="simple" lazy-init="true" class="org.springextensions.actionscript.objects.testclasses.Contact">
+	</object>
+
+    <object autowire="byType" id="contact4" lazy-init="true" class="org.springextensions.actionscript.objects.testclasses.Contact">
+	</object>
+
+</objects>

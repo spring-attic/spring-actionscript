@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Author: Damir Murat
+  Version: $Revision: 516 $, $Date: 2008-04-05 22:09:50 +0200 (Sat, 05 Apr 2008) $, $Author: dmurat1 $
+  Since: 0.5
+-->
+<objects
+    xmlns="http://www.springactionscript.org/schema/objects"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springactionscript.org/schema/objects
+        http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+
+  <object id="userListMediatorObject" class="org.puremvc.arch_101.unit_03.lab_02.view.mediator.UserListMediator"
+          lazy-init="true" init-method="init">
+    <property name="userProxy" ref="userProxyObject"/>
+  </object>
+  <object id="rolePanelMediator" class="org.puremvc.arch_101.unit_03.lab_02.view.mediator.RolePanelMediator"
+          lazy-init="true"/>
+
+  <object id="startupCommandObject" class="org.puremvc.arch_101.unit_03.lab_02.controller.StartupCommand"/>
+  <object id="deleteUserCommand" class="org.puremvc.arch_101.unit_03.lab_02.controller.DeleteUserCommand">
+    <property name="userProxy" ref="userProxyObject"/>
+  </object>
+</objects>

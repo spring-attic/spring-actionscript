@@ -1,0 +1,29 @@
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects.xsd ">
+
+	<object id="amfChannel" class="mx.messaging.channels.AMFChannel">
+		<constructor-arg value="my-amf"/>
+		<constructor-arg value="http://{server.name}:{server.port}/messagebroker/amf"/>
+		<property name="id" value="amfChannel"/>
+		<property name="pollingEnabled" value="true"/>
+	</object>
+
+	<object id="channelset" class="mx.messaging.ChannelSet">
+		<method-invocation name="addChannel">
+			<arg>
+				<ref>amfChannel</ref>
+			</arg>
+		</method-invocation>
+	</object>
+
+	<object id="contactService" class="mx.rpc.remoting.mxml.RemoteObject">
+		<property name="destination" value="contactService"/>
+		<property name="showBusyCursor" value="true"/>
+		<property name="makeObjectsBindable" value="true"/>
+		<property name="channelSet">
+			<ref>channelset</ref>
+		</property>
+	</object>
+	
+</objects>

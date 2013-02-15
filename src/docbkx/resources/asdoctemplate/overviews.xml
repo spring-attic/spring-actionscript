@@ -1,0 +1,25 @@
+
+<overviews>
+    
+	
+<all-classes>
+		
+<description>Documentation for classes includes syntax, usage information, and code samples for methods, properties, and event handlers and listeners for those APIs that belong to a specific class in ActionScript. The classes are listed alphabetically. If you are not sure to which class a certain method or property belongs, you can look it up in the Index.</description>
+	</all-classes>
+	
+<deprecated>
+		
+<shortDescription>A list of deprecated items and suggested alternatives when available.</shortDescription>
+		
+<description></description>
+	</deprecated>
+	
+
+<packages>
+<package name="org.springextensions.actionscript.collections">
+<shortDescription>Classes and Interfaces for collections.</shortDescription><longDescription>Classes and Interfaces for collections.</longDescription>
+</package>
+<package name="org.springextensions.actionscript.config">
+<shortDescription>Classes and Interfaces for config.</shortDescription><longDescription>Classes and Interfaces for config.</longDescription>
+</package>
+</packages></overviews>

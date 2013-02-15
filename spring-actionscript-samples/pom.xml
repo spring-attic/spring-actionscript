@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>org.springextensions.actionscript</groupId>
+        <artifactId>spring-actionscript-superpom</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.springextensions.actionscript</groupId>
+    <artifactId>spring-actionscript-samples</artifactId>
+    <version>1.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Spring ActionScript Samples</name>
+
+    <modules>
+        <module>localization</module>
+        <module>movie-app</module>
+        <module>movie-app-mxml</module>
+        <module>movie-app-metadata</module>
+        <module>metadataprocessor</module>
+        <module>multiple-modules</module>
+        <!--
+        <module>object-definition-parser-builder</module>
+        -->
+        <module>security</module>
+        <module>stagewiring</module>
+        <!--
+		<module>organizer</module>
+		-->
+        <module>puremvc-standard-arch101demo</module>
+        <module>puremvc-standard-arch101demo2</module>
+        <module>cairngormstore</module>
+        <module>cafe-townsend</module>
+		<module>cafe-townsend-metadata-config</module>
+        <module>cafe-townsend-mvc</module>
+    </modules>
+
+    <properties>
+        <test.apps.dir>test-apps</test.apps.dir>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springextensions.actionscript</groupId>
+            <artifactId>spring-actionscript-core</artifactId>
+            <type>swc</type>
+            <scope>merged</scope>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.cairngorm</groupId>
+            <artifactId>cairngorm</artifactId>
+            <type>swc</type>
+            <scope>merged</scope>
+            <version>2.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.puremvc</groupId>
+            <artifactId>puremvc-as3-standard</artifactId>
+            <type>swc</type>
+            <scope>merged</scope>
+            <version>2.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>flex</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>framework</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>framework</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>zip</type>
+            <classifier>configs</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>rpc</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>utilities</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>playerglobal</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+            <classifier>${flashplayer.version.major}</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>framework</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>rb.swc</type>
+            <scope>merged</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>rpc</artifactId>
+            <version>${flex-sdk.version}</version>
+            <type>rb.swc</type>
+            <scope>merged</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-lang</artifactId>
+            <version>${as3commons-lang.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-reflect</artifactId>
+            <version>${as3commons-reflect.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>playerglobal</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-logging</artifactId>
+            <version>${as3commons-logging.version}</version>
+            <type>swc</type>
+            <scope>merged</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.as3commons</groupId>
+                    <artifactId>as3commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+    
+    <build>
+        
+        <sourceDirectory>src/main/actionscript</sourceDirectory>
+        
+        <plugins>
+            
+            <plugin>
+                <!-- disable reports -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <generateReports>false</generateReports>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>${flexmojos.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.adobe.flex</groupId>
+                        <artifactId>compiler</artifactId>
+                        <version>${flex-sdk.version}</version>
+                        <type>pom</type>
+                    </dependency>
+                </dependencies>
+                <extensions>true</extensions>
+            </plugin>
+           
+
+        </plugins>
+        
+    </build>
+
+    <reporting>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <reportSets>
+                    <reportSet></reportSet>
+                </reportSets>
+            </plugin>
+
+        </plugins>
+
+    </reporting>
+
+</project>

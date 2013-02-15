@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,23 @@
  */
 package org.springextensions.actionscript.stage {
 
-	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import org.springextensions.actionscript.ioc.IObjectDefinition;
 
 	/**
 	 * Objects implementing this interface are used to retrieve an <code>IObjectDefinition</code>
 	 * for already existing objects to be wired. Useful for <code>IDependencyInjector</code> that
 	 * have to deal with already existing objects and can't use factory methods.
 	 *
-	 * @author Martino Piccinato
-	 * @productionversion SpringActionscript 2.0
+	 * <p>
+	 * <b>Author:</b> Martino Piccinato<br/>
+	 * <b>Version:</b> $Revision:$, $Date:$, $Author:$<br/>
+	 * <b>Since:</b> 0.8
+	 * </p>
+	 *
+	 * @see org.springextensions.actionscript.ioc.IDependencyInjector
+	 * @see org.springextensions.actionscript.context.support.FlexXMLApplicationContext
+	 * @docref container-documentation.html#how_to_determine_which_objectdefinition_to_use_for_which_stage_component
+	 * @sampleref stagewiring
 	 */
 	public interface IObjectDefinitionResolver {
 

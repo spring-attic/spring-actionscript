@@ -4,16 +4,6 @@ body {
    margin-left: 2em;
 }
 
-.hl-annotation {
-	color: #0000dd;
-	font-style:normal;
-	font-weight:bold;
-}
-
-b.hl-keyword {
-	color: #0033ff;
-}
-
 a,
 a[accesskey^="h"],
 a[accesskey^="n"],

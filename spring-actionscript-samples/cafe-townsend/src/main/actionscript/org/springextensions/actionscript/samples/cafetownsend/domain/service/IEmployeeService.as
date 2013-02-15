@@ -1,6 +1,6 @@
 package org.springextensions.actionscript.samples.cafetownsend.domain.service {
-
-	import org.as3commons.async.operation.IOperation;
+	
+	import org.springextensions.actionscript.core.operation.IOperation;
 	import org.springextensions.actionscript.samples.cafetownsend.domain.Employee;
 
 	/**

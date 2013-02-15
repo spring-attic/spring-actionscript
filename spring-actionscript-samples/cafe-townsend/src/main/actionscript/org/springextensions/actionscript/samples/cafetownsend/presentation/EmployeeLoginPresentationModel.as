@@ -1,18 +1,17 @@
 package org.springextensions.actionscript.samples.cafetownsend.presentation {
-
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
 	import mx.controls.Alert;
 
-	import org.as3commons.async.operation.IOperation;
-	import org.as3commons.async.operation.event.OperationEvent;
-	import org.as3commons.eventbus.IEventBus;
-	import org.as3commons.eventbus.IEventBusAware;
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.StringUtils;
-	import org.as3commons.logging.api.ILogger;
-	import org.as3commons.logging.api.getClassLogger;
+	import org.as3commons.logging.ILogger;
+	import org.as3commons.logging.LoggerFactory;
+	import org.springextensions.actionscript.core.event.EventBus;
+	import org.springextensions.actionscript.core.operation.IOperation;
+	import org.springextensions.actionscript.core.operation.OperationEvent;
 	import org.springextensions.actionscript.samples.cafetownsend.application.ApplicationEvents;
 	import org.springextensions.actionscript.samples.cafetownsend.application.service.IAuthenticationService;
 
@@ -21,7 +20,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 	 *
 	 * @author Christophe Herreman
 	 */
-	public class EmployeeLoginPresentationModel extends EventDispatcher implements IEventBusAware {
+	public class EmployeeLoginPresentationModel extends EventDispatcher {
 
 		// --------------------------------------------------------------------
 		//
@@ -29,7 +28,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		//
 		// --------------------------------------------------------------------
 
-		private static var logger:ILogger = getClassLogger(EmployeeLoginPresentationModel);
+		private static var logger:ILogger = LoggerFactory.getClassLogger(EmployeeLoginPresentationModel);
 
 		// --------------------------------------------------------------------
 		//
@@ -134,7 +133,6 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		// ----------------------------
 
 		private var m_loggingIn:Boolean = false;
-		private var _eventBus:IEventBus;
 
 		private function get loggingIn():Boolean {
 			return m_loggingIn;
@@ -170,12 +168,12 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		// --------------------------------------------------------------------
 
 		private function loginOperation_completeHandler(event:OperationEvent):void {
-			logger.info("Received result '{0}' from login method.", [event.result]);
+			logger.info("Received result '{0}' from login method.", event.result);
 
 			loggingIn = false;
 
 			if (event.result) {
-				_eventBus.dispatch(ApplicationEvents.LOGGED_IN);
+				EventBus.dispatch(ApplicationEvents.LOGGED_IN);
 			} else {
 				username = "";
 				password = "";
@@ -186,14 +184,6 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		private function loginOperation_errorHandler(event:OperationEvent):void {
 			loggingIn = false;
 			Alert.show("There was an error when logging in", "Application Error");
-		}
-
-		public function get eventBus():IEventBus {
-			return _eventBus;
-		}
-
-		public function set eventBus(value:IEventBus):void {
-			_eventBus = value;
 		}
 	}
 }

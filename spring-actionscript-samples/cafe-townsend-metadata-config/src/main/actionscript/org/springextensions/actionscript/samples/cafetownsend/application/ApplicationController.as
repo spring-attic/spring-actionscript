@@ -1,10 +1,11 @@
 package org.springextensions.actionscript.samples.cafetownsend.application {
 
 	import flash.events.Event;
+
 	import flash.events.EventDispatcher;
 
-	import org.as3commons.async.operation.IOperation;
 	import org.as3commons.lang.Assert;
+	import org.springextensions.actionscript.core.operation.IOperation;
 	import org.springextensions.actionscript.samples.cafetownsend.application.service.IAuthenticationService;
 
 	/**
@@ -13,7 +14,7 @@ package org.springextensions.actionscript.samples.cafetownsend.application {
 	 * @author Christophe Herreman
 	 */
 	[RouteEvents]
-	[Event(name="loggedOut", type="flash.events.Event")]
+	[Event(name="loggedOut")]
 	[Component]
 	public class ApplicationController extends EventDispatcher {
 

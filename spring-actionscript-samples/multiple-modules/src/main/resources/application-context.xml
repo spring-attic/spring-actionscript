@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects
+	xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd"
+	xmlns="http://www.springactionscript.org/schema/objects"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<object id="injectedText" class="String">
+		<constructor-arg value="This was injected by the Application context"/>
+	</object>
+
+
+	<object id="injectedText2" class="String" scope="prototype">
+		<constructor-arg ref="referencedText"/>
+	</object>
+
+	<object id="referencedText" class="String">
+		<constructor-arg value="This was ALSO injected by the Application context"/>
+	</object>
+
+</objects>

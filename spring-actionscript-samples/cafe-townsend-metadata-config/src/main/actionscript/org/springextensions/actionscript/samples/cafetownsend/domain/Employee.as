@@ -1,4 +1,4 @@
-package org.springextensions.actionscript.samples.cafetownsend.domain {
+package  org.springextensions.actionscript.samples.cafetownsend.domain {
 
 	import org.as3commons.lang.ICloneable;
 	import org.springextensions.actionscript.domain.ICopyFrom;
@@ -18,12 +18,12 @@ package org.springextensions.actionscript.samples.cafetownsend.domain {
 		//
 		// --------------------------------------------------------------------
 
-		public function Employee(id:int=-1, firstname:String="", lastname:String="", email:String="", startdate:Date=null) {
+		public function Employee(id:int = -1, firstname:String = "", lastname:String = "", email:String = "", startdate:Date = null) {
 			this.id = id;
 			this.firstname = firstname;
 			this.lastname = lastname;
 			this.email = email;
-			this.startdate = (startdate == null) ? new Date() : startdate;
+			this.startdate = ( startdate == null ) ?  new Date() : startdate;
 		}
 
 		// --------------------------------------------------------------------

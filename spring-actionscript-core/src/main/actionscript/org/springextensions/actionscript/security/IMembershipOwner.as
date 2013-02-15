@@ -1,0 +1,48 @@
+/*
+ * Copyright 2007-2010 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springextensions.actionscript.security {
+	import flash.events.IEventDispatcher;
+	
+	/**
+	 * Describes an object that hold a list of role and right names.
+	 * @author Roland Zwaga
+	 * @sampleref security
+	 * @docref container-documentation.html#the_simplesecuritystageprocessor_class
+	 */
+	public interface IMembershipOwner extends IEventDispatcher {
+		
+		/**
+		 * An array of strings that represent the role names that are applicable to the current <code>IMembershipOwner</code>
+		 */
+		function get roles():Array;
+		/**
+		 * @private
+		 */
+		[Bindable(event="rolesChanged")]
+		function set roles(value:Array):void;
+
+		/**
+		 * An array of strings that represent the right names that are applicable to the current <code>IMembershipOwner</code>
+		 */
+		function get rights():Array;
+		/**
+		 * @private
+		 */
+		[Bindable(event="rightsChanged")]
+		function set rights(value:Array):void;
+
+	}
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.metadata {
-	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+
+	import org.springextensions.actionscript.ioc.factory.config.IObjectPostProcessor;
 
 	/**
 	 * Describes and object that acts as a registry for <code>IMetaDataProcessors</code> and is able
 	 * to dispatch objects with the appropriate metadata annotations to their respective <code>process()</code> methods.
 	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
+	 * @docref annotations.html
+	 * @sampleref metadataprocessor
 	 */
-	public interface IMetadataProcessorObjectPostProcessor extends IObjectPostProcessor {
-		function get beforeInitializationRegistry():IMetadataProcessorRegistry;
-		function set beforeInitializationRegistry(value:IMetadataProcessorRegistry):void;
-		function get afterInitializationRegistry():IMetadataProcessorRegistry;
-		function set afterInitializationRegistry(value:IMetadataProcessorRegistry):void;
+	public interface IMetaDataProcessorObjectPostProcessor extends IObjectPostProcessor {
+		/**
+		 * Associates the specified <code>IMetadataProcessor</code> instance with the specified <code>metaDataName</code>.
+		 * @param metaDataName The specified <code>metaDataName</code>.
+		 * @param metaDataProcessor The specified <code>IMetadataProcessor</code>.
+		 */
+		function addProcessor(metaDataName:String, metaDataProcessor:IMetadataProcessor):void;
 	}
 }

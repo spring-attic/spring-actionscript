@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+	<mx:Script>
+		<![CDATA[
+			[Autowired(mode="byName")]
+			[Bindable]
+			public var repeaterLabel:String = "";
+		]]>
+	</mx:Script>
+	<mx:Label id="lblAutowiredText" text="{repeaterLabel}"/>
+</mx:Canvas>

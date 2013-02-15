@@ -40,7 +40,7 @@
 		</menu>
 
 		<menu name="Documentation">
-			<item name="HTML" href="docs/reference/html/index.html" />
+			<item name="HTML" href="docs/reference/html/springactionscript.html" />
 			<item name="Samples" href="samples.html" />
 			<item name="PDF" href="docs/reference/pdf/springactionscript.pdf" />
 			<item name="XML Schemas" href="http://www.springactionscript.org/schema" />

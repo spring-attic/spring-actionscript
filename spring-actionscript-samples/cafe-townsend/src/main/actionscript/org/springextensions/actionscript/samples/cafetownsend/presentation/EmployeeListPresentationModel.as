@@ -2,13 +2,13 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-
-	import org.as3commons.async.operation.IOperation;
-	import org.as3commons.async.operation.event.OperationEvent;
+	
 	import org.as3commons.lang.Assert;
+	import org.springextensions.actionscript.core.operation.IOperation;
+	import org.springextensions.actionscript.core.operation.OperationEvent;
 	import org.springextensions.actionscript.samples.cafetownsend.domain.Employee;
 	import org.springextensions.actionscript.samples.cafetownsend.domain.service.IEmployeeService;
 
@@ -120,36 +120,36 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		public function get deleteAllowed():Boolean {
 			return (!deleting && !saving && (m_selectedEmployee != null));
 		}
-
+		
 		// ----------------------------
 		// deleting
 		// ----------------------------
-
+		
 		private var m_deleting:Boolean;
-
+		
 		[Bindable(event="deletingChange")]
 		private function get deleting():Boolean {
 			return m_deleting;
 		}
-
+		
 		private function set deleting(value:Boolean):void {
 			if (value !== m_deleting) {
 				m_deleting = value;
 				dispatchEvent(new Event("deletingChange"));
 			}
 		}
-
+		
 		// ----------------------------
 		// saving
 		// ----------------------------
-
+		
 		private var m_saving:Boolean;
-
+		
 		[Bindable(event="savingChange")]
 		private function get saving():Boolean {
 			return m_saving;
 		}
-
+		
 		private function set saving(value:Boolean):void {
 			if (value !== m_saving) {
 				m_saving = value;
@@ -169,7 +169,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 
 		public function deleteSelectedEmployee():void {
 			deleting = true;
-
+			
 			var operation:IOperation = _employeeService.deleteEmployee(m_selectedEmployee);
 			operation.addCompleteListener(deleteEmployee_completeHandler);
 		}
@@ -198,7 +198,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 			Alert.show("There was an error loading the list of employees.", "Application Error");
 		}
 
-		private function createDetailsPresentationModel(employee:Employee=null):EmployeeDetailPresentationModel {
+		private function createDetailsPresentationModel(employee:Employee = null):EmployeeDetailPresentationModel {
 			var result:EmployeeDetailPresentationModel = new EmployeeDetailPresentationModel(employee);
 			result.addEventListener(EmployeeDetailPresentationModel.COMMIT, employeeDetailsPresentationModel_commitHandler);
 			result.addEventListener(EmployeeDetailPresentationModel.CANCEL, employeeDetailsPresentationModel_cancelHandler);
@@ -209,7 +209,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 			var employee:Employee = employeeDetailsPresentationModel.employee;
 			var operation:IOperation = _employeeService.saveEmployee(employee);
 			operation.addCompleteListener(saveEmployee_completeHandler);
-
+			
 			saving = true;
 			employeeDetailsPresentationModel = null;
 		}
@@ -222,10 +222,10 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 			deleting = false;
 			selectedEmployee = null;
 		}
-
+		
 		private function saveEmployee_completeHandler(event:OperationEvent):void {
 			saving = false;
 		}
-
+		
 	}
 }

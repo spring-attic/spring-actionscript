@@ -2,8 +2,8 @@ package org.springextensions.actionscript.samples.cafetownsend.infrastructure.se
 
 	import mx.collections.ArrayCollection;
 
-	import org.as3commons.async.operation.IOperation;
-	import org.as3commons.async.operation.impl.MockOperation;
+	import org.springextensions.actionscript.core.operation.IOperation;
+	import org.springextensions.actionscript.core.operation.MockOperation;
 	import org.springextensions.actionscript.samples.cafetownsend.domain.Employee;
 	import org.springextensions.actionscript.samples.cafetownsend.domain.service.IEmployeeService;
 
@@ -48,7 +48,7 @@ package org.springextensions.actionscript.samples.cafetownsend.infrastructure.se
 		public function deleteEmployee(employee:Employee):IOperation {
 			var numEmployees:uint = _employees.length;
 
-			for (var i:uint = 0; i < numEmployees; i++) {
+			for (var i:uint = 0; i<numEmployees; i++) {
 				if (employee == _employees[i]) {
 					_employees.removeItemAt(i);
 					break;

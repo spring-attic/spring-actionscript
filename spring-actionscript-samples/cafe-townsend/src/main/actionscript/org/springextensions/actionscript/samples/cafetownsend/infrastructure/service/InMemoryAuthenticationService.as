@@ -1,7 +1,7 @@
 package org.springextensions.actionscript.samples.cafetownsend.infrastructure.service {
 
-	import org.as3commons.async.operation.IOperation;
-	import org.as3commons.async.operation.impl.MockOperation;
+	import org.springextensions.actionscript.core.operation.IOperation;
+	import org.springextensions.actionscript.core.operation.MockOperation;
 	import org.springextensions.actionscript.samples.cafetownsend.application.service.IAuthenticationService;
 
 	/**

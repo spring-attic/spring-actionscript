@@ -8,7 +8,7 @@
                 version="1.0" exclude-result-prefixes="xsl fo">
 
     <xsl:import href="urn:docbkx:stylesheet"/>
-    
+
   <!--###################################################
                     HTML Settings
    ################################################### -->

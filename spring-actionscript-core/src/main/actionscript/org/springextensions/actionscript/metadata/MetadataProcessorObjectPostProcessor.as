@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,65 +14,102 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.metadata {
-	import org.as3commons.logging.api.ILogger;
-	import org.as3commons.logging.api.getClassLogger;
-	import org.as3commons.metadata.process.IMetadataProcessor;
-	import org.as3commons.metadata.registry.IMetadataProcessorRegistry;
-	import org.as3commons.metadata.registry.impl.AS3ReflectMetadataProcessorRegistry;
+	import flash.utils.Dictionary;
+
+	import org.as3commons.logging.ILogger;
+	import org.as3commons.logging.LoggerFactory;
+	import org.as3commons.reflect.IMetaDataContainer;
+	import org.as3commons.reflect.Type;
 	import org.springextensions.actionscript.ioc.factory.IInitializingObject;
+	import org.springextensions.actionscript.ioc.factory.IListableObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
 	import org.springextensions.actionscript.ioc.factory.IObjectFactoryAware;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
+	import org.springextensions.actionscript.ioc.factory.config.IConfigurableObjectFactory;
+	import org.springextensions.actionscript.ioc.factory.config.IObjectPostProcessor;
+	import org.springextensions.actionscript.utils.OrderedUtils;
+	import org.springextensions.actionscript.utils.TypeUtils;
 
 	/**
 	 * Default implementation of the <code>IMetaDataProcessorObjectPostProcessor</code> which acts as the main
 	 * registry for <code>IMetaDataProcessor</code> definitions that are found in the specified <code>IObjectFactory</code>.
 	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
+	 * @docref annotations.html
+	 * @sampleref metadataprocessor
 	 */
-	public class MetadataProcessorObjectPostProcessor implements IMetadataProcessorObjectPostProcessor, IInitializingObject, IObjectFactoryAware {
+	public class MetadataProcessorObjectPostProcessor implements IMetaDataProcessorObjectPostProcessor, IInitializingObject, IObjectFactoryAware {
 
-		private static var LOGGER:ILogger = getClassLogger(MetadataProcessorObjectPostProcessor);
+		private static var LOGGER:ILogger = LoggerFactory.getClassLogger(MetadataProcessorObjectPostProcessor);
+
+		// --------------------------------------------------------------------
+		//
+		// Private Variables
+		//
+		// --------------------------------------------------------------------
+
+		private var _procs:Dictionary;
+
+		// --------------------------------------------------------------------
+		//
+		// Constructor
+		//
+		// --------------------------------------------------------------------
 
 		/**
 		 * Creates a new <code>MetadataProcessorObjectPostProcessor</code> instance.
 		 */
 		public function MetadataProcessorObjectPostProcessor() {
 			super();
-			_afterInitializationRegistry = new AS3ReflectMetadataProcessorRegistry();
-			_beforeInitializationRegistry = new AS3ReflectMetadataProcessorRegistry();
+			_procs = new Dictionary();
 		}
 
-		private var _afterInitializationRegistry:IMetadataProcessorRegistry;
-		private var _beforeInitializationRegistry:IMetadataProcessorRegistry;
+		// --------------------------------------------------------------------
+		//
+		// Public Properties
+		//
+		// --------------------------------------------------------------------
 
 		private var _objectFactory:IObjectFactory;
-
-		public function get afterInitializationRegistry():IMetadataProcessorRegistry {
-			return _afterInitializationRegistry;
-		}
-
-		public function set afterInitializationRegistry(value:IMetadataProcessorRegistry):void {
-			_afterInitializationRegistry = value;
-		}
-
-		public function get beforeInitializationRegistry():IMetadataProcessorRegistry {
-			return _beforeInitializationRegistry;
-		}
-
-		public function set beforeInitializationRegistry(value:IMetadataProcessorRegistry):void {
-			_beforeInitializationRegistry = value;
-		}
 
 		/**
 		 * @private
 		 */
 		public function set objectFactory(objectFactory:IObjectFactory):void {
 			_objectFactory = objectFactory;
-			if (_objectFactory != null) {
-				(_afterInitializationRegistry as AS3ReflectMetadataProcessorRegistry).applicationDomain = _objectFactory.applicationDomain;
-				(_beforeInitializationRegistry as AS3ReflectMetadataProcessorRegistry).applicationDomain = _objectFactory.applicationDomain;
+		}
+
+		// --------------------------------------------------------------------
+		//
+		// Public Methods
+		//
+		// --------------------------------------------------------------------
+
+		/**
+		 * Invokes processObject() with all registered <code>IMetadataProcessor</code> that have their
+		 * <code>processBeforeInitialization</code> property set to <code>true</code>.
+		 */
+		public function postProcessBeforeInitialization(object:*, objectName:String):* {
+			if (!(object is IMetadataProcessor)) {
+				return processObject(_procs[true], object, objectName);
 			}
+			return object;
+		}
+
+		/**
+		 * Invokes processObject() with all registered <code>IMetadataProcessor</code> that have their
+		 * <code>processBeforeInitialization</code> property set to <code>false</code>.
+		 * <p>If the specified <code>object</code> is an <code>IMetadataProcessor</code> implementation
+		 * it will register it with the current <code>MetadataProcessorObjectPostProcessor</code>.</p>
+		 */
+		public function postProcessAfterInitialization(object:*, objectName:String):* {
+			if (object is IMetadataProcessor) {
+				var metaDataProcessor:IMetadataProcessor = IMetadataProcessor(object);
+				for each (var metaDataName:String in metaDataProcessor.metadataNames) {
+					addProcessor(metaDataName, metaDataProcessor);
+				}
+				return object;
+			}
+
+			return processObject(_procs[false], object, objectName);
 		}
 
 		/**
@@ -85,57 +122,98 @@ package org.springextensions.actionscript.metadata {
 		}
 
 		/**
-		 * Invokes processObject() with all registered <code>IMetadataProcessor</code> that have their
-		 * <code>processBeforeInitialization</code> property set to <code>false</code>.
-		 * <p>If the specified <code>object</code> is an <code>IMetadataProcessor</code> implementation
-		 * it will register it with the current <code>MetadataProcessorObjectPostProcessor</code>.</p>
+		 * @inheritDoc
 		 */
-		public function postProcessAfterInitialization(object:*, objectName:String):* {
-			return _afterInitializationRegistry.process(object, [objectName]);
+		public function addProcessor(metaDataName:String, metaDataProcessor:IMetadataProcessor):void {
+			var processorLookup:Dictionary = _procs[metaDataProcessor.processBeforeInitialization];
+			if (processorLookup == null) {
+				processorLookup = new Dictionary();
+				_procs[metaDataProcessor.processBeforeInitialization] = processorLookup;
+			}
+			var processorArray:Array = processorLookup[metaDataName];
+			if (processorArray == null) {
+				processorArray = [];
+				processorLookup[metaDataName] = processorArray;
+			}
+			processorArray[processorArray.length] = metaDataProcessor;
+			processorArray = OrderedUtils.sortOrderedArray(processorArray);
 		}
 
-		/**
-		 * Invokes processObject() with all registered <code>IMetadataProcessor</code> that have their
-		 * <code>processBeforeInitialization</code> property set to <code>true</code>.
-		 */
-		public function postProcessBeforeInitialization(object:*, objectName:String):* {
-			return _beforeInitializationRegistry.process(object, [objectName]);
+		// --------------------------------------------------------------------
+		//
+		// Protected Methods
+		//
+		// --------------------------------------------------------------------
+
+		protected function processObject(names:Dictionary, object:*, objectName:String):* {
+			if (names == null) {
+				return;
+			}
+			var type:Type = Type.forInstance(object, _objectFactory.applicationDomain);
+			if (TypeUtils.isSimpleProperty(type)) {
+				return object;
+			}
+			for (var name:String in names) {
+				//LOGGER.debug("Invoking IMetadataProcessors for {0} metadata", name);
+				var processors:Array = names[name] as Array;
+				var containers:Array = [];
+				if (type.hasMetaData(name)) {
+					containers[containers.length] = type;
+				}
+				var otherContainers:Array = type.getMetaDataContainers(name);
+				if (otherContainers != null) {
+					containers = containers.concat(otherContainers);
+				}
+				for each (var container:IMetaDataContainer in containers) {
+					for each (var proc:IMetadataProcessor in processors) {
+						proc.process(object, container, name, objectName);
+					}
+				}
+			}
+			return object;
+		}
+
+		// --------------------------------------------------------------------
+		//
+		// Private Methods
+		//
+		// --------------------------------------------------------------------
+
+		private function addMetadataProcessorsFromObjectPostProcessors():void {
+			if (_objectFactory is IConfigurableObjectFactory) {
+				var metadataProcessors:Array = getMetadataProcessors(IConfigurableObjectFactory(_objectFactory).objectPostProcessors);
+				var numMetadataProcessors:int = metadataProcessors.length;
+
+				if (numMetadataProcessors > 0) {
+					LOGGER.debug("{0} IMetadataProcessor found in object post processors, adding them to the current MetadataProcessorObjectPostProcessor.", numMetadataProcessors);
+
+					for each (var metadataProcessor:IMetadataProcessor in metadataProcessors) {
+						registerMetadataProcessor(metadataProcessor);
+					}
+				}
+			}
 		}
 
 		private function addMetadataProcessorsFromObjectDefinitions():void {
-			var processors:Vector.<String> = _objectFactory.objectDefinitionRegistry.getObjectDefinitionNamesForType(IMetadataProcessor);
+			if (_objectFactory is IListableObjectFactory) {
+				var processors:Array = IListableObjectFactory(_objectFactory).getObjectNamesForType(IMetadataProcessor);
 
-			if (processors != null) {
-				LOGGER.debug("{0} IMetadataProcessors found in object definitions, adding them to the current MetadataProcessorObjectPostProcessor.", [processors.length]);
-				for each (var name:String in processors) {
-					var metadataProcessor:IMetadataProcessor = IMetadataProcessor(_objectFactory.getObject(name));
-					if ((!(metadataProcessor is IMetadataDestroyer)) && (!(metadataProcessor is IClassScanner))) {
-						registerMetadataProcessor(metadataProcessor);
+				if (processors.length > 0) {
+					LOGGER.debug("{0} IMetadataProcessor found in object definitions, adding them to the current MetadataProcessorObjectPostProcessor.", processors.length);
+					for each (var name:String in processors) {
+						var metaDataProcessor:IMetadataProcessor = _objectFactory.getObject(name);
+						registerMetadataProcessor(metaDataProcessor);
 					}
 				}
 			}
 		}
 
-		private function addMetadataProcessorsFromObjectPostProcessors():void {
-			var metadataProcessors:Vector.<IMetadataProcessor> = getMetadataProcessors(_objectFactory.objectPostProcessors);
-			if (metadataProcessors != null) {
-				LOGGER.debug("{0} IMetadataProcessor found in object post processors, adding them to the current MetadataProcessorObjectPostProcessor.", [metadataProcessors.length]);
-
-				for each (var metadataProcessor:IMetadataProcessor in metadataProcessors) {
-					if ((!(metadataProcessor is IMetadataDestroyer)) && (!(metadataProcessor is IClassScanner))) {
-						registerMetadataProcessor(metadataProcessor);
-					}
-				}
-			}
-		}
-
-		private function getMetadataProcessors(objectPostProcessors:Vector.<IObjectPostProcessor>):Vector.<IMetadataProcessor> {
-			var result:Vector.<IMetadataProcessor>;
+		private function getMetadataProcessors(objectPostProcessors:Array):Array {
+			var result:Array = [];
 
 			for each (var objectPostProcessor:IObjectPostProcessor in objectPostProcessors) {
-				if ((objectPostProcessor is IMetadataProcessor) && (!(objectPostProcessor is IMetadataDestroyer))) {
-					result ||= new Vector.<IMetadataProcessor>();
-					result[result.length] = IMetadataProcessor(objectPostProcessor);
+				if (objectPostProcessor is IMetadataProcessor) {
+					result.push(objectPostProcessor);
 				}
 			}
 
@@ -143,12 +221,12 @@ package org.springextensions.actionscript.metadata {
 		}
 
 		private function registerMetadataProcessor(metadataProcessor:IMetadataProcessor):void {
-			var registry:IMetadataProcessorRegistry = _afterInitializationRegistry;
-			if ((metadataProcessor is ISpringMetadaProcessor) && ((metadataProcessor as ISpringMetadaProcessor).processBeforeInitialization)) {
-				registry = _beforeInitializationRegistry;
+			for each (var metaDataName:String in metadataProcessor.metadataNames) {
+				LOGGER.debug("Registered metadata '[{0}]' with processor '{1}'", metaDataName, metadataProcessor);
+				_objectFactory.wire(metadataProcessor);
+				addProcessor(metaDataName, metadataProcessor);
 			}
-			LOGGER.debug("Adding metadataprocessor {0}", [metadataProcessor]);
-			registry.addProcessor(metadataProcessor);
 		}
+
 	}
 }

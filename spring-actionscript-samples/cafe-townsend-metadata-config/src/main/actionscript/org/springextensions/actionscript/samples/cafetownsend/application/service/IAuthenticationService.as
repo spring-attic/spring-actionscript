@@ -1,7 +1,6 @@
 package org.springextensions.actionscript.samples.cafetownsend.application.service {
-	import org.as3commons.async.operation.IOperation;
 
-
+	import org.springextensions.actionscript.core.operation.IOperation;
 
 	/**
 	 * Service interface for logging in and out of the application.

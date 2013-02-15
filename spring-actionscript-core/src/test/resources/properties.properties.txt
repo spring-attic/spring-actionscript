@@ -1,0 +1,8 @@
+property1=value of property 1
+property2= value of property 2
+property3 = value of property 3
+ property4 = value of property 4
+ property5 = value of property 5
+  property6 = value of property 6
+
+property7 = value of property 7

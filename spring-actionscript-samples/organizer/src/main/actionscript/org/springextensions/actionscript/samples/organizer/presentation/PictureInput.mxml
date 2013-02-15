@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	styleName="pictureFrame">
+
+	<mx:Metadata>
+        [Event(name="change", type="flash.events.Event")]
+    </mx:Metadata>
+
+	<!--<mx:states>
+		<mx:State name="camera">
+			<mx:RemoveChild target="{bCamera}"/>
+			<mx:SetProperty target="{pic}" name="visible" value="false"/>
+			<mx:SetProperty target="{vd}" name="visible" value="true"/>
+			<mx:AddChild relativeTo="{controlbar1}">
+				<mx:ButtonBar id="cameraButtons" itemClick="cameraButtons_click(event)" width="100%">
+					<mx:dataProvider>
+						<mx:Object icon="@Embed('/assets/camera.png')" toolTip="Take Picture"/>
+						<mx:Object icon="@Embed('/assets/cross.png')" toolTip="Cancel"/>
+					</mx:dataProvider>
+				</mx:ButtonBar>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>-->
+
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			import mx.graphics.ImageSnapshot;
+			import mx.graphics.codec.JPEGEncoder;
+			
+			private var _source:ByteArray;
+
+			public var missingImageSource:* = "assets/nopic.png";
+			
+			[Bindable] public var pictureWidth:int = 160;
+			[Bindable] public var pictureHeight:int = 160;
+
+		    private var camera:Camera;
+		    
+			public function set source(source:ByteArray):void
+			{
+				_source = source;
+				if (source == null)
+				{
+					pic.source = missingImageSource;
+				}
+				else
+				{
+					pic.source = _source;
+				}
+			}
+			
+			public function get source():ByteArray
+			{
+				return _source;
+			}
+			
+			private function cameraButtons_click(event:ItemClickEvent):void 
+			{
+				switch (event.index)
+				{
+					case 0:
+						takePicture(vd);
+						vd.attachCamera(null);
+						break;
+					case 1:
+			        	vd.attachCamera(null);
+						currentState = "";
+						break;						
+				}
+            }			
+			
+			private function startCamera():void
+			{
+	            camera = Camera.getCamera();
+		        currentState = "camera";
+		        vd.attachCamera(camera);
+			}
+			
+	        private function takePicture(object:DisplayObject):void
+	        {
+				var bd:BitmapData = ImageSnapshot.captureBitmapData(object);
+				var encoder:JPEGEncoder = new JPEGEncoder();
+				source = encoder.encode(bd);
+				currentState = "";
+				dispatchEvent(new Event(Event.CHANGE));
+	        }
+	        
+		]]>
+	</mx:Script>
+	
+	<mx:Image id="pic" width="{pictureWidth}" height="{pictureHeight}" source="@Embed('/assets/nopic.png')"/>
+	<mx:VideoDisplay id="vd" width="{pictureWidth}" height="{pictureHeight}" visible="false"/>
+	
+	<!--<mx:ControlBar paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" id="controlbar1">
+		<mx:Button id="bCamera" icon="@Embed('/assets/camera_edit.png')" width="100%" 
+			click="startCamera()"/> 
+	</mx:ControlBar>	-->
+
+</mx:Canvas>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright 2007-2010 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:context="org.springextensions.actionscript.context.*"
+                layout="absolute"
+                creationComplete="onCreationComplete()"
+                viewSourceURL="srcview/index.html">
+
+	<mx:Script>
+		<![CDATA[
+		import org.as3commons.lang.ClassUtils;
+		import org.springextensions.actionscript.context.support.XMLApplicationContext;
+		import org.springextensions.actionscript.samples.movieapp.CSVMovieSource;
+		import org.springextensions.actionscript.samples.movieapp.MovieLister;
+		import org.springextensions.actionscript.samples.movieapp.StaticMovieSource;
+
+		// specify the org.springextensions.actionscript.samples.stagewiring.classes that need to be compiled in the swf
+		private var _includeClasses:Array = [StaticMovieSource, CSVMovieSource];
+
+		private var _applicationContext:XMLApplicationContext;
+		private var _movieLister:MovieLister;
+
+		[Bindable]
+		private var _applicationContextComplete:Boolean = false;
+
+		//
+		// UI is ready
+		//
+		private function onCreationComplete():void {
+			logMessage("creation complete; setting up object factory to load applicationContext");
+
+			// an instance of XMLApplicationContext is able to load an XML file with object definitions and parse it
+			_applicationContext = new XMLApplicationContext("application-context.xml");
+
+			// listen for the object definitions loading to complete (loaded and parsed mxml object definitions)
+			_applicationContext.addEventListener(Event.COMPLETE, onApplicationContextComplete);
+
+			// start the loading
+			_applicationContext.load();
+
+			logMessage("started loading applicationContext");
+		}
+
+		// the application context has loaded we can now get objects from it
+		private function onApplicationContextComplete(event:Event):void {
+			logMessage("finished loading applicationContext");
+			logMessage("trying to load 'movieLister' object from object factory");
+
+			// We can get objects from the application context with the getObject() method. As an argument, we pass in the
+			// id of the object definition in the applicationcontext xml file here we request the 'movieLister' and put it
+			// in a var (note: container.getObject("staticMovieSource") would give us the StaticMovieSource object defined
+			// in the applicationcontext).
+			// Programmatically we would do something like:
+			// var movieSource:IMovieSource = new StaticMovieSource();
+			// var movieLister:MovieLister = new MovieLister();
+			// movieLister.movieSource = movieSource;
+			// ... but the container does that for us
+			_movieLister = _applicationContext.getObject("movieLister");
+
+			logMessage(
+					"successfully loaded 'movieLister' of type '" + ClassUtils.forInstance(_movieLister) +
+					"' object from application context with movie source '" + _movieLister.movieSource + "'");
+
+			// Mark the object factory complete flag as true. This will enable the UI controls to search for movies
+			// because their 'enabled' property is bound to this var.
+			_applicationContextComplete = true;
+		}
+
+		private function onGetMoviesButtonClick(event:Event):void {
+			logMessage("searching for movies directed by '" + directorTextInput.text + "'");
+
+			// Search movies from the given director. If the director's name is left blank, then all movies will be returned
+			var director:String = directorTextInput.text;
+			var movies:Array = (director == "") ? _movieLister.getAll() : _movieLister.getMoviesDirectedBy(director);
+
+			logMessage("'" + movies.length + "' movie(s) found");
+
+			// show all movie matches
+			for (var i:int = 0; i < movies.length; i++) {
+				logMessage("movie #" + (i + 1) + ": " + movies[i]);
+			}
+		}
+
+		/**
+		 * Writes a message to the textarea.
+		 */
+		private function logMessage(message:String):void {
+			var time:Date = new Date();
+			textArea.text += time.hours + ":" + time.minutes + ":" + time.seconds + " - " + message + "\n";
+			trace(time.hours + ":" + time.minutes + ":" + time.seconds + " - " + message);
+		}
+		]]>
+	</mx:Script>
+
+	<mx:Panel layout="absolute" top="0" bottom="0" right="0" left="0" title="Spring ActionScript Movie Application">
+		<mx:TextArea top="0" right="0" bottom="0" left="0" id="textArea"/>
+		<mx:ControlBar horizontalAlign="right">
+			<mx:Label text="Director (leave blank for all movies)"/>
+			<mx:TextInput id="directorTextInput" enabled="{_applicationContextComplete}"/>
+			<mx:Button label="Get Movies" id="getMoviesButton" enabled="{_applicationContextComplete}"
+			           click="onGetMoviesButtonClick(event)"/>
+		</mx:ControlBar>
+	</mx:Panel>
+</mx:Application>

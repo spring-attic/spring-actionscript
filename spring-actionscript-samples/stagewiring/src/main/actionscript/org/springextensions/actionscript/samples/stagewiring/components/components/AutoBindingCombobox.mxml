@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			[Bindable]
+			[Autowired(name="modelInstance", property="products")]
+			public var products:ArrayCollection;
+		]]>
+	</mx:Script>
+	<mx:ComboBox id="cbProducts"
+				 dataProvider="{this.products}"/>
+</mx:Canvas>

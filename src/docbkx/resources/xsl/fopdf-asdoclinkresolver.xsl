@@ -6,7 +6,7 @@
 
 <xsl:import href="urn:docbkx:stylesheet"/>
 
-<xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel.xml')/asdoc" />
+<xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel_classes.xml')/asdoc" />
 
 <xsl:template match="//*[@xlink:href]">
     <xsl:if test="starts-with(@xlink:href, 'asdoc://')">

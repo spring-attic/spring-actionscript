@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+	xmlns:util="http://www.springactionscript.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd
+    http://www.springactionscript.org/schema/util http://www.springactionscript.org/schema/util/spring-actionscript-util-1.0.xsd">
+ 
+    <object class="org.springextensions.actionscript.test.context.objects.MockContextLoader"/>
+    
+    <object class="org.springextensions.actionscript.test.context.objects.MockObject2"/>
+    
+    <object id="namedObject" class="org.springextensions.actionscript.test.context.objects.MockObject">
+    	<property name="name" value="MockObjectFromContext"/>
+    </object>
+    
+</objects>

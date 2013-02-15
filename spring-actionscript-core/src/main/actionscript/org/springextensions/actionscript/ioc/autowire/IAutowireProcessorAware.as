@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.autowire {
-
-	/**
-	 * Interface to be implemented by all objects that need a reference to
-	 * an <code>IAutowireProcessor</code> instance.
-	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
-	 */
+	
+  /**
+   * Interface to be implemented by all objects that need a reference to
+   * an <code>IAutowireProcessor</code> instance.
+   * @author Roland Zwaga
+   */
 	public interface IAutowireProcessorAware {
 
 		/**
 		 * @param autowireProcessor the <code>IAutowireProcessor</code> instance
 		 */
 		function get autowireProcessor():IAutowireProcessor;
-		/**
-		 * @private
-		 */
-		function set autowireProcessor(value:IAutowireProcessor):void;
+	    /**
+	     * @private
+	     */
+	    function set autowireProcessor(value:IAutowireProcessor):void;
+		
 	}
 }

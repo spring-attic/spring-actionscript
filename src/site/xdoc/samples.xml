@@ -4,7 +4,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <properties>
   	<title></title>
-    <author email="roland@stackandheap.com">Roland Zwaga</author>
+    <author email="scab@dds.nl">Roland Zwaga</author>
   </properties>
 
   <head>    
@@ -13,12 +13,55 @@
 
   <body>
     <section name="Sample applications">
+    	<p>This is a list of all the sample applications that are available in the Spring Actionscript repository:</p>
     	<ul>
-    		<li><a href="/samples/cafe-townsend/Main.html" target="_blank">Cafe Townsend - XML Configuration</a> - (<a href="/samples/cafe-townsend/srcview/index.html" target="_blank">source view</a>)</li>
-    		<li><a href="/samples/cafe-townsend-mxml/Main.html" target="_blank">Cafe Townsend - MXML Configuration</a> - (<a href="/samples/cafe-townsend-mxml/srcview/index.html" target="_blank">source view</a>)</li>
-    		<li><a href="/samples/cafe-townsend-metadata/Main.html" target="_blank">Cafe Townsend - Metadata Configuration</a> - (<a href="/samples/cafe-townsend-metadata/srcview/index.html" target="_blank">source view</a>)</li>
-    		<li><a href="/samples/cafe-townsend-multi-module/Main.html" target="_blank">Cafe Townsend - Multi-module implementation</a> - (<a href="/samples/cafe-townsend-multi-module/srcview/index.html" target="_blank">source view</a>)</li>
-    	</ul>
+		<li><a href="test-apps/metadataprocessor/metadataprocessor.swf">Metadata processing</a> 
+			(<a href="test-apps/metadataprocessor/srcview/index.html">view source</a>)
+		 	(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/metadataprocessor">browse SVN</a>)</li>
+		<li><a href="test-apps/cafe-townsend/cafe-townsend.swf">Cafe Townsend</a>
+			(<a href="test-apps/cafe-townsend/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/cafe-townsend">browse SVN</a>)</li>
+		<li><a href="test-apps/cafe-townsend-mvc/cafe-townsend-mvc.swf">Cafe Townsend Spring MVC implementation</a> 
+			(<a href="test-apps/cafe-townsend-mvc/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/cafe-townsend-mvc">browse SVN</a>)</li>
+		<li><a href="test-apps/cafe-townsend-metadata-config/cafe-townsend-metadata-config.swf">Cafe Townsend metadata config implementation</a> 
+			(<a href="test-apps/cafe-townsend-metadata-config/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/cafe-townsend-metadata-config">browse SVN</a>)</li>
+		<li><a href="test-apps/cairngormstore/cairngormstore.swf">Cairngorm Store</a> 
+			(<a href="test-apps/cairngormstore/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/cairngormstore">browse SVN</a>)</li>
+		<li><a href="test-apps/localization/localization.swf">Localization example</a> 
+			(<a href="test-apps/localization/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/localization">browse SVN</a>)</li>
+		<li><a href="test-apps/movie-app/movie-app.swf">Movie-app</a> 
+			(<a href="test-apps/movie-app/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/movie-app">browse SVN</a>)</li>
+		<li><a href="test-apps/movie-app-mxml/movie-app-mxml.swf">Movie-app with MXML based application context</a> 
+			(<a href="test-apps/movie-app-mxml/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/movie-app-mxml">browse SVN</a>)</li>
+		<li><a href="test-apps/movie-app-metadata/movie-app-metadata.swf">Movie-app with metadata based application context</a> 
+			(<a href="test-apps/movie-app-metadata/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/movie-app-metadata">browse SVN</a>)</li>
+		<li><a href="test-apps/multiple-modules/multiple-modules.swf">Multiple modules in their own application domain with their own context</a> 
+			(<a href="test-apps/multiple-modules/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/multiple-modules">browse SVN</a>)</li>
+		<li><a href="test-apps/puremvc-standard-arch101demo/puremvc-standard-arch101demo.swf">PureMVC standard arch101demo</a> 
+			(<a href="test-apps/puremvc-standard-arch101demo/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/puremvc-standard-arch101demo">browse SVN</a>)</li>
+		<li><a href="test-apps/puremvc-standard-arch101demo2/puremvc-standard-arch101demo2.swf">PureMVC standard arch101demo2</a> 
+			(<a href="test-apps/puremvc-standard-arch101demo2/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/puremvc-standard-arch101demo2">browse SVN</a>)</li>
+		<li><a href="test-apps/security/security.swf">Security example</a> 
+			(<a href="test-apps/security/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/security">browse SVN</a>)</li>
+		<li><a href="test-apps/stagewiring/stagewiring.swf">Stage wiring example</a> 
+			(<a href="test-apps/stagewiring/srcview/index.html">view source</a>) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/stagewiring">browse SVN</a>)</li>
+		<li>Object Definition Parser Builder (Code generator) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/object-definition-parser-builder">browse SVN</a>)</li>
+		<li>Organizer (reference application) 
+			(<a href="https://fisheye.springsource.org/browse/se-springactionscript-as/trunk/spring-actionscript-samples/organizer">browse SVN</a>)</li>
+	</ul>
     </section>
   </body>
 </document>

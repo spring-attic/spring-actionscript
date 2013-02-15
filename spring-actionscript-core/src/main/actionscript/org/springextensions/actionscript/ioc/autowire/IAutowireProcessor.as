@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc.autowire {
-	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+
+	import org.springextensions.actionscript.ioc.IObjectDefinition;
 
 	/**
 	 * Interface that needs to be implemented by objects that can perform autowiring
 	 * on arbitrary objects.
 	 * @author Martino Piccinato
 	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
 	 */
 	public interface IAutowireProcessor {
 
@@ -42,11 +42,6 @@ package org.springextensions.actionscript.ioc.autowire {
 		 */
 		function preprocessObjectDefinition(objectDefinition:IObjectDefinition):void;
 
-		/**
-		 *
-		 * @param clazz
-		 * @return
-		 */
 		function findAutowireCandidateName(clazz:Class):String;
 	}
 }

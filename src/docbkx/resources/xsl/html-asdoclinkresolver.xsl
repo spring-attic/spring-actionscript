@@ -2,70 +2,48 @@
 <!--     Spring Actionscript XSL to create links to asdoc API for html transformation-->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                xmlns:db="http://docbook.org/ns/docbook"
-                version="1.0"
-                exclude-result-prefixes="xsl fo xlink db">
+                xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" exclude-result-prefixes="xsl fo xlink">
 
-  <xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel.xml')/asdoc" />
+<xsl:variable name="springasdoc" select="document('../../../../target/site/asdoc/toplevel_classes.xml')/asdoc" />
 
-	<xsl:template match="//db:filename">
-		<xsl:variable name="file-name" select="."/>
-		<script language="javascript" type="text/javascript"><![CDATA[
-<!--
-
-// start the Viewer
-if (!RunPlayer(
-    "width", "100%",
-    "height", "1200",]]>
-    "graphUrl", "graphs/<xsl:value-of select="$file-name"/>",<![CDATA[
-    "overview", "true",
-    "toolbar", "true",
-    "tooltips", "true",
-    "movable", "true",
-    "links", "true",
-    "linksInNewWindow", "true",
-    "viewport", "full"
-    )) {
-  // if RunPlayer() returns false: Flash Player is either too old or not installed
-  // in this case: try to install a current flash player
-  if (!InstallFlashUpdate("width", "100%", "height", "100%")) {
-    // Flash Player is too old for the auto-update or not installed at all
-    // Place alternative content here
-    document.write('This content requires the Adobe Flash Player 9.0.38 or higher. '
-        + '<a href=http://www.adobe.com/go/getflash/>Get Flash</a>');
-  }
-}
--->]]>
-</script>
-	</xsl:template>
-
-  <xsl:template match="//db:literal[count(@linkend)=0 and count(@xlink:href)=0]">
-    <xsl:variable name="class-name" select="."/>
-    <xsl:variable name="classtest" select="$springasdoc/classRec[@name=$class-name]/@fullname"/>
-    <xsl:variable name="intftest" select="$springasdoc/interfaceRec[@name=$class-name]/@fullname"/>
-    <xsl:choose>
-      <xsl:when test="$classtest">
-        <xsl:call-template name="getAsdocURL">
-          <xsl:with-param name="class-path" select="$classtest"/>
-          <xsl:with-param name="class-name" select="$class-name"/>
-          <xsl:with-param name="description" select="$springasdoc/classRec[@name=$class-name]/description"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:when test="$intftest">
-        <xsl:call-template name="getAsdocURL">
-          <xsl:with-param name="class-path" select="$intftest"/>
-          <xsl:with-param name="class-name" select="$class-name"/>
-          <xsl:with-param name="description" select="$springasdoc/interfaceRec[@name=$class-name]/description"/>
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template match="//*[@xlink:href!='']">
+<xsl:template match="//*[@xlink:href]">
+    <xsl:if test="starts-with(@xlink:href, 'asdoc://')">
+      <xsl:variable name="classpath" select="@xlink:href"/>
+      <xsl:choose>
+        <xsl:when test="contains($classpath,'#')">
+          <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', translate(substring-after($classpath,'asdoc://'), '.', '/'))"/>
+          <xsl:variable name="asdocurl2">
+            <xsl:call-template name="replace-substring">
+              <xsl:with-param name="value" select="$asdocurl"/>
+              <xsl:with-param name="from"><![CDATA[#]]></xsl:with-param>
+              <xsl:with-param name="to"><![CDATA[.html#]]></xsl:with-param>
+            </xsl:call-template>
+          </xsl:variable>
+          <a class="asclassdetail" href="{$asdocurl2}" target="_blank">
+            <xsl:apply-templates />
+            <xsl:call-template name="getClassDetailDescription">
+              <xsl:with-param name="classpath" select="substring-after($classpath,'asdoc://')"/>
+            </xsl:call-template>
+          </a>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', translate(substring-after($classpath,'asdoc://'), '.', '/'), '.html')"/>
+          <a class="asclass" href="{$asdocurl}" target="_blank">
+            <xsl:apply-templates />
+            <xsl:call-template name="getClassDescription">
+              <xsl:with-param name="classpath" select="substring-after($classpath,'asdoc://')"/>
+            </xsl:call-template>
+          </a>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:if>
+    <xsl:if test="starts-with(@xlink:href, 'asdocpackage://')">
+      <xsl:variable name="classpath" select="@xlink:href"/>
+	    <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', translate(substring-after($classpath,'asdocpackage://'), '.', '/'), '/package-detail.html')"/>
+	    <a class="asclass" href="{$asdocurl}" target="_blank">
+	      <xsl:apply-templates />
+	    </a>
+    </xsl:if>
     <xsl:if test="starts-with(@xlink:href, 'dtd://')">
       <xsl:variable name="dtdpath" select="@xlink:href"/>
       <xsl:variable name="dtdurl"  select="concat('configuration-reference.html#', translate(substring-after($dtdpath,'dtd://'), '.', '/'))"/>
@@ -105,35 +83,6 @@ if (!RunPlayer(
         <xsl:value-of select="$value"/>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-
-  <xsl:template name="getAsdocURL">
-    <xsl:param name="class-path"/>
-    <xsl:param name="class-name"/>
-    <xsl:param name="description"/>
-    <xsl:variable name="replaced">
-      <xsl:call-template name="replace-substring">
-        <xsl:with-param name="value" select="$class-path"/>
-        <xsl:with-param name="from"><![CDATA[.]]></xsl:with-param>
-        <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
-      </xsl:call-template>
-    </xsl:variable>
-    <xsl:variable name="asdocurlsuffix">
-      <xsl:call-template name="replace-substring">
-        <xsl:with-param name="value" select="$replaced"/>
-        <xsl:with-param name="from"><![CDATA[:]]></xsl:with-param>
-        <xsl:with-param name="to"><![CDATA[/]]></xsl:with-param>
-      </xsl:call-template>
-    </xsl:variable>
-    <xsl:variable name="asdocurl"  select="concat('../../../asdoc/', $asdocurlsuffix)"/>
-    <a class="asclass" href="{$asdocurl}.html" target="_blank">
-      <xsl:value-of select="$class-name"/>
-      <xsl:if test="$description">
-        <span class="toolTipContent">
-          <xsl:value-of select="$description" disable-output-escaping="yes" />
-        </span>
-      </xsl:if>
-    </a>
   </xsl:template>
 
   <xsl:template name="getClassDetailDescription">

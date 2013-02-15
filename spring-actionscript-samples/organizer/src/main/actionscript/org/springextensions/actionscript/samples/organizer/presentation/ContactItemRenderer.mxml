@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                width="300" height="120">
+
+	<fx:Script>
+		<![CDATA[
+
+		import org.springextensions.actionscript.core.operation.IOperation;
+		import org.springextensions.actionscript.core.operation.OperationEvent;
+		import org.springextensions.actionscript.samples.organizer.application.service.IContactImageService;
+		import org.springextensions.actionscript.samples.organizer.domain.Contact;
+
+		[Bindable]
+		private var contact:Contact;
+
+		[Autowired]
+		public var _imageService:IContactImageService;
+
+		public function get imageService():IContactImageService {
+			return _imageService;
+		}
+
+		public function set imageService(value:IContactImageService):void {
+			_imageService = value;
+			loadImage();
+		}
+
+		override public function get data():Object {
+			return super.data;
+		}
+
+		override public function set data(value:Object):void {
+			if ((value !== data) && (value is Contact)) {
+				contact = Contact(value);
+				loadImage();
+			}
+		}
+
+		private function loadImage():void {
+			if (imageService && contact) {
+				var operation:IOperation = imageService.getImageData(contact);
+				operation.addCompleteListener(function(event:OperationEvent):void {
+					byteArrayToBitmapData(event.result);
+				});
+			}
+		}
+
+		private var loader:Loader = new Loader();
+
+		private function byteArrayToBitmapData(ba:ByteArray):void {
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, getBitmapData);
+			loader.loadBytes(ba);
+		}
+
+		private function getBitmapData(e:Event):void {
+			var content:* = loader.content;
+			var bitmapData:BitmapData = new BitmapData(content.width, content.height);
+			bitmapData.draw(content, new Matrix());
+			image.source = bitmapData;
+		}
+
+		]]>
+	</fx:Script>
+
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="hovered"/>
+		<s:State name="selected"/>
+	</s:states>
+
+	<s:Rect left="0" right="0" top="0" bottom="0">
+		<s:fill>
+			<s:SolidColor color="black"
+			              alpha="0"
+			              alpha.hovered="0.1"
+			              alpha.selected="0.2"/>
+		</s:fill>
+	</s:Rect>
+
+	<s:Group>
+		<s:layout>
+			<s:HorizontalLayout paddingTop="5" paddingLeft="5"/>
+		</s:layout>
+
+		<s:BitmapImage id="image" width="60" height="60"/>
+
+		<s:Group>
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			<s:Label text="{contact.firstName}" fontWeight="bold"/>
+			<s:Label text="{contact.lastName}" fontWeight="bold"/>
+			<s:Label text="{contact.email}"/>
+		</s:Group>
+	</s:Group>
+
+
+</s:ItemRenderer>

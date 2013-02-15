@@ -1,102 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document xmlns="http://maven.apache.org/XDOC/2.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
 	<properties>
 		<title>Spring Actionscript</title>
-		<author email="roland@stackandheap.com">Roland Zwaga</author>
+		<author email="scab@dds.nl">Roland Zwaga</author>
 	</properties>
 
 	<body>
-
-		<section name="THIS IS A BETA SITE CONTAINING BETA SOFTWARE">
-			<p>Anything you read and download here might be unstable and is subject to change. However, feel free to play around and test the new possibilities
-				of Spring Actionscript v2.0. <a href="http://forum.springsource.org/forumdisplay.php?60-Spring-Actionscript" target="_blank">Please refer to our forums</a> if you have any questions, criticism or suggestions.</p>
-			<hr/>
-		</section>
-
+	
 		<section name="Spring Actionscript">
-			<p> Spring ActionScript is an offshoot of the Java-based Spring Framework written in
-				ActionScript 3. It is targeted for the Flash, Flex and AIR platforms. The framework contains
-				a versatile Inversion of Control Container, a micro MVC library and extensions for the
-				Cairngorm and PureMVC frameworks. </p>
-			<hr/>
-		</section>
-		
-		<section name="Sources">
-			<p>Since the v2.0 beta is in continueing development it might be a good idea to create your own build directly from the SVN sources.</p>
-			<p>In order to do this check out this branche: <a href="https://src.springframework.org/svn/se-springactionscript-as/branches/2.0" target="_blank">https://src.springframework.org/svn/se-springactionscript-as/branches/2.0</a></p>
-			<p>You either create an IDE project for the various projects in the branche, or use the provided Maven pom.</p>
-			<p>Running the <strong>mvn clean compile</strong> command will build all the libraries, <strong>mvn clean test</strong> will run the tests. <strong>mvn clean site post-site</strong> will generate the site and reference documentation.</p>
-			<blockquote><strong>NB:</strong> Generating the documentation locally will require you to install the javax.media.jai_core library v1.1.3 manually in your local maven repository.</blockquote>
+			<p>
+				Spring ActionScript is an offshoot of the Java-based Spring Framework written in ActionScript 3.
+				It is targeted for the Flash, Flex and AIR platforms. The framework contains an Inversion of Control
+				Container, an Operation and Task API, an EventBus, a metadata handling system, extensions for the Cairngorm and PureMVC frameworks
+				and several other utilities.
+			</p>
+			<hr />
 		</section>
 
 		<section name="Downloads">
 			<subsection name="Latest">
 				<ul>
 					<li>
-						<script type="text/javascript"> //<![CDATA[
+						<script type="text/javascript">
+							//<![CDATA[
 						  
 							window.onload = function() {
 								var sasNoDep = document.getElementById('springas_nodep');
 								sasNoDep.onclick = function () {
-									pageTracker._trackPageview('/downloads/spring-actionscript-2.0-distribution.zip');
+									pageTracker._trackPageview('/downloads/spring-actionscript-1.1-distribution.zip');
 								};
 								var sasDep = document.getElementById('springas_dep');
 								sasDep.onclick = function () {
-									pageTracker._trackPageview('/downloads/spring-actionscript-2.0-distribution-with-dependencies.zip');
-								};
-								var sasFlex = document.getElementById('springas_flex');
-								sasFlex.onclick = function () {
-									pageTracker._trackPageview('/downloads/spring-actionscript-flex-2.0.zip');
+									pageTracker._trackPageview('/downloads/spring-actionscript-1.1-distribution-with-dependencies.zip');
 								};
 							};
 							//]]>
 						</script>
-						<a id="springas_nodep" href="downloads/spring-actionscript-2.0-SNAPSHOT-distribution.zip"
-							onclick="javascript: pageTracker._trackPageview('/downloads/spring-actionscript-2.0-SNAPSHOT-distribution.zip');"
-							>Spring Actionscript 2.0 BETA</a>
+						<a id="springas_nodep" href="downloads/spring-actionscript-1.1-distribution.zip"
+							onclick="javascript: pageTracker._trackPageview('/downloads/spring-actionscript-1.1-distribution'); ">Spring Actionscript 1.1</a>
 					</li>
 					<li>
 						<a id="springas_dep"
-							href="downloads/spring-actionscript-2.0-SNAPSHOT-distribution-with-dependencies.zip"
-							onclick="javascript: pageTracker._trackPageview('/downloads/spring-actionscript-2.0-SNAPSHOT-distribution-with-dependencies.zip');">Spring
-							Actionscript 2.0</a> (with dependencies) BETA</li>
+							href="downloads/spring-actionscript-1.1-distribution-with-dependencies.zip">Spring Actionscript 1.1</a>
+						(with dependencies)
+					</li>
 				</ul>
-				<p>Spring Actionscript uses the following base libraries internally, the functionality that Spring uses is merged into the swc's so
-				there is no immediate need to include these libraries as well.</p>
+				<p>
+				It is recommended that you download the archive 'with dependencies'.<br/>
+				If you do not, you will have to provide the following libraries:
+				</p>
 				<ul>
-					<li>as3commons-async</li>
-					<li>as3commons-bytecode</li>
-					<li>as3commons-collections</li>
-					<li>as3commons-eventbus</li>
+					<li>as3commons-reflect</li>
 					<li>as3commons-lang</li>
 					<li>as3commons-logging</li>
-					<li>as3commons-metadata</li>
-					<li>as3commons-reflect</li>
-					<li>as3commons-stageprocessing</li>
-					<li>flex-async (only for the Flex extensions of course)</li>
+					<li>as3commons-bytecode</li>
 				</ul>
-				<p> The .swc files for these libraries can be downloaded from the <a
-						href="http://www.as3commons.org" target="_blank">AS3Commons website</a>
+				<p>
+				The .swc files for these libraries can be downloaded from the <a href="http://www.as3commons.org" target="_blank">AS3Commons website</a>
 				</p>
-				<p> Once you have downloaded the files, they need to be installed in a permanent library
-					location.<br/> You need to inform your IDE that you want these libraries included in the
-					search path of the compiler and build.<br/>
+				<p>
+				Once you have downloaded the files, they need to be installed in a permanent library location.<br/>
+				You need to inform your IDE that you want these libraries included in the search path of the compiler and build.<br/>
 				</p>
 			</subsection>
 			<subsection name="Maven repository">
-				<p> Spring Actionscript is also deployed to <a
-						href="http://projects.yoolab.org/maven/index.html">yoolab.org maven repository</a> where
-					you can find all <a
-						href="http://projects.yoolab.org/maven/content/repositories/releases/org/springextensions/actionscript/"
-						>releases</a> and <a
-						href="http://projects.yoolab.org/maven/content/repositories/snapshots/org/springextensions/actionscript/"
-						>snapshots</a>
+				<p>
+					Spring Actionscript is also deployed to
+					<a href="http://projects.yoolab.org/maven/index.html">yoolab.org maven repository</a>
+					where you can find all
+					<a
+						href="http://projects.yoolab.org/maven/content/repositories/releases/org/springextensions/actionscript/">releases</a>
+					and
+					<a
+						href="http://projects.yoolab.org/maven/content/repositories/snapshots/org/springextensions/actionscript/">snapshots</a>
 				</p>
-				<p> Use the following code to use it in your maven project: <source>
-						<![CDATA[
+				<p>
+					Use the following code to use it in your maven project:
+
+					<source>
+					<![CDATA[
 	<repositories>
 		...
 		<repository>
@@ -117,18 +101,17 @@
 	</repositories>
 						]]>
 					</source>
+
 				</p>
 			</subsection>
 			<subsection name="SourceMate">
-				<p> ElementRiver has created the <a href="http://www.elementriver.com/sourcemate/"
-						>SourceMate</a> plugin for Flashbuilder, amongst other things this features code
-					completion for metadata. You can download a configuration file for SourceMate containing
-					the Spring Actionscript specific metadata <a href="sourcemate/spring-as-metadata.xml"
-						>here</a>. </p>
-				<p>If you are using Flashbuilder 4.5+ you won't need this anymore since this version of the
-					IDE offers native metadata completion. The downloadable swc's have been embedded with the
-					appropriate metadata.xml files.</p>
+				<p>
+					ElementRiver has created the <a href="http://www.elementriver.com/sourcemate/">SourceMate</a> plugin for Flashbuilder, amongst other things
+					this features code completion for metadata. You can download a configuration file for SourceMate containing the Spring Actionscript specific
+					metadata <a href="sourcemate/spring-as-metadata.xml">here</a>.
+				</p>
 			</subsection>
 		</section>
 	</body>
 </document>
+

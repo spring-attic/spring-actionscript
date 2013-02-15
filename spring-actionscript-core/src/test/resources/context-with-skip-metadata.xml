@@ -1,0 +1,9 @@
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects.xsd ">
+		
+	<property file="strings.properties.txt"/>
+
+	<object id="testMetadata" class="org.springextensions.actionscript.objects.testclasses.TestClassWithInjectPropertyName" skip-metadata="true"/>
+	
+</objects>

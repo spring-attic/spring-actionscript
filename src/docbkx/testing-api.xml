@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter annotations="" version="5.0" xml:id="the_testing_api"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:ns5="http://www.w3.org/1998/Math/MathML"
+         xmlns:ns4="http://www.w3.org/2000/svg"
+         xmlns:ns3="http://www.w3.org/1999/xhtml"
+         xmlns:ns="http://docbook.org/ns/docbook">
+  <title>Testing</title>
+
+  <section xml:id="testing_api_introduction">
+    <title>Introduction</title>
+
+    <para>Testing is a fundamental part of software development.</para>
+  </section>
+
+  <section xml:id="integration_testing">
+    <title>Integration Testing</title>
+
+    <section xml:id="testing_overview">
+      <title>Overview</title>
+
+      <para>It is important to be able to perform some integration testing
+      without requiring deployment of your application or connecting to other
+      enterprise infrastructure. This will enable you to test things such
+      as:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>The correct wiring of your Spring IOC container
+          contexts.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The Spring ActionScript Framework provides first class support for
+      integration testing in the form of classes that are packaged in the
+      <code>spring-actionscript-test.swc</code> library. In this library you
+      will find the <code>org.springextensisons.actionscript.test</code>
+      package which contain valuable classes for integration testing using a
+      Spring container, while at the same time not being reliant on a
+      deployment environment. Such tests will be slower to run than unit
+      tests, but much faster to run than the equivalent remote tests relying
+      on deployment.</para>
+
+      <para>Spring ActionScript offers support for unit and integration
+      testing in the form the Spring ActionScript TestContext Framework, which
+      is agnostic to the actual testing framework in use, thus allowing
+      instrumentation of tests in various environments. <emphasis>Note that
+      the Spring ActionScript TestContext Framework currently only supports
+      FlexUnit 4.</emphasis></para>
+
+      <section xml:id="testing_common_goals">
+        <title>Common Goals</title>
+
+        <para>The Spring ActionScript integration testing support framework
+        has several goals, including:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><link linkend="testing_ctx_management">Spring IoC Container
+            caching between test execution.</link></para>
+          </listitem>
+
+          <listitem>
+            <para><link linkend="testing_fixture_di">Dependency Injection of
+            test fixture instances</link>.</para>
+          </listitem>
+
+          <listitem>
+            <para><link linkend="testing_support_classes">Spring-specific
+            support classes</link> that are really useful when writing
+            integration tests.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>The following sections outline each of these goals and provide
+        direct link to information specific to the particular support
+        framework.</para>
+
+        <section xml:id="testing_ctx_management">
+          <title>Context management and caching</title>
+
+          <para>The Spring integration testing support framework provide
+          consistent loading of Spring <code>IApplicationContext</code>s and
+          caching of those context. Support for the caching of loaded contexts
+          is important, because if you are working on a large project, startup
+          time may become an issue - not because of the overhead of Spring
+          itself, but because the objects instantiated by the Spring container
+          will themselves take time to instantiate.</para>
+
+          <para>Test classes will generally provide an array containing the
+          resource locations of XML configuration metadata - typically on the
+          deploy path - used to configure the application. This will be the
+          same, or nearly the same, as the list of configuration locations
+          specified in deployment configuration.</para>
+
+          <para>By default, once loaded, the configured
+          <code>IApplicationContext</code> will be reused for each test. Thus
+          the setup cost will be incurred only once (per test fixture), and
+          subsequent test execution will be much faster. In the unlikely cases
+          that a test may 'dirty' the application context, require reloading -
+          for example, by changing an object definition or the state of an
+          application object - Spring's testing support provides mechanisms to
+          cause the test fixture to reload the configurations and rebuild the
+          application context before executing the next test.</para>
+
+          <para>Context management and caching with:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><link linkend="test_ctx_framework">The TestContext
+              Framework</link></para>
+            </listitem>
+          </itemizedlist>
+        </section>
+
+        <section xml:id="testing_fixture_di">
+          <title>Dependency Injection of test fixtures</title>
+
+          <para>When the Spring integration testing support framework loads
+          your application context, it can optionally configure instances of
+          your test classes via Dependency Injection. This provides a
+          convenient mechanism for setting up test fixtures using
+          pre-configured objects from your application context. A strong
+          benefit here is that you can reuse application context across
+          various testing scenarios (e.g., for configuring Spring-managed
+          object graphs, <code>DataSource</code>s, etc.), this avoiding the
+          need to duplicate complex test fixture set up for individual test
+          cases.</para>
+
+          <para>Dependency Injection of test fixtures with:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><link linkend="test_ctx_framework">The TestContext
+              Framework</link></para>
+            </listitem>
+          </itemizedlist>
+        </section>
+
+        <section xml:id="testing_support_classes">
+          <title>Integration testing support classes</title>
+
+          <para>The Spring integration testing support framework provides
+          several <code>abstract</code> support classes that can simplify
+          writing integration tests. These base test classes provide well
+          defined hooks into the testing framework as well as convenient
+          instance variable and methods, allowing access to such things
+          as:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>The <code>IApplicationContext</code>: useful for
+              performing explicit object lookups or testing the state of the
+              context as a whole.</para>
+            </listitem>
+          </itemizedlist>
+
+          <para>Often you will provide an application-wide superclass for
+          integration tests that provides further useful instance variables
+          used in many tests.</para>
+
+          <para>Support classes for:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><link linkend="test_ctx_framework">The TestContext
+              Framework</link></para>
+            </listitem>
+          </itemizedlist>
+        </section>
+      </section>
+
+      <section xml:id="testing_common_metadata">
+        <title>Common Metadata</title>
+
+        <para>The Spring ActionScript Framework provides a common set of
+        <emphasis>Spring-specific</emphasis> metadata that you can use in your
+        testing.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">[DirtiesContext]</emphasis></para>
+
+            <para>The presence of this metadata on a test method indicates the
+            underlying Spring container is 'dirtied' during the execution of
+            the test method, and thus must be rebuilt after the test method
+            finishes execution (regardless of whether the test passed or
+            not).</para>
+
+            <programlisting>[DirtiesContext]
+public function testProcessWhichDirtiesAppCtx():void {
+    // some logic that results in the Spring container being dirtied
+}</programlisting>
+          </listitem>
+        </itemizedlist>
+
+        <para>Metadata support for:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><link linkend="test_ctx_framework">The TestContext
+            Framework</link>: supports all of the common metadata listed
+            above while providing additional TestContext-specific (e.g.,
+            <code>[ContextConfiguration]</code>,
+            <code>TestExecutionListeners</code>, etc.). Note, however, that
+            some metadata are only supported when used in conjunction with
+            FlexUnit (e.g., with the SpringFlexUnit4ClassRunner). Refer to the
+            documentation in the <emphasis>TestContext Framework</emphasis>
+            section for further details.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section xml:id="test_ctx_framework">
+        <title>Spring ActionScript TestContext Framework</title>
+
+        <para>The <emphasis>Spring TestContext Framework</emphasis> (located
+        in the <code>org.springextensions.actionscript.test.context</code>
+        package) provides generic, metadata driven unit and integration
+        testing support thia is agnostic of the testing framework in use. The
+        TestContext framework also places a great deal of importance on
+        <emphasis>convention over configuration</emphasis> with reasonable
+        defaults that can overridden via metadata-based configuration.</para>
+
+        <para>In addition to generic testing infrastructure, the TestContext
+        framework provides explicit support for FlexUnit 4 in the form
+        <code>abstract</code> support classes. For FlexUnit 4, the framework
+        provides a custom <code>IRunner</code> which allows one to write test
+        classes that are not required to extend a particular class
+        hierarchy.</para>
+
+        <para>The following section provides and overview of the internals of
+        the TestContext framework. If you are only interested in using the
+        framework and not necessarily interested in extending it with your own
+        custom listeners, feel free to skip ahead to the configuration
+        (<link linkend="testcontext_ctx_management">context
+        management</link>, <link linkend="testcontext_fixture_di">dependency injection</link>),
+        <link linkend="testcontext_support_classes">support
+        classes</link>, and <link linkend="testcontext_metadata">metadata support</link>
+        sections.</para>
+
+        <section>
+          <title>Key abstractions</title>
+
+          <para>The core of the framework consists of the
+          <code>TestContext</code> and <code>TestContextManager</code> classes
+          and the <code>ITestExecutionListener</code> interface. A
+          <code>TestContextManager</code> is created on a per-test basis. The
+          <code>TestContextManager</code> in turn manages a
+          <code>TestContext</code>, which is responsible for holding the
+          context of the current test. The <code>TestContextManager</code> is
+          also responsible for updating the state of the
+          <code>TestContext</code> as the test progresses and delegating to
+          <code>ITestExecutionListener</code>s, which instrument the actual
+          test execution (e.g., providing dependency injection, dirtying
+          context, etc.). Consult the ASDoc and the Spring ActionScript test
+          suite for further information and example of various
+          configurations.</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><code>TestContext</code>: encapsulate the context in which
+              a text is executed, agnostic of the actual testing framework in
+              use.</para>
+            </listitem>
+
+            <listitem>
+              <para><code>TestContextManager</code>: the main entry point into
+              the <emphasis>Spring ActionScript TestContext
+              Framework</emphasis>, which is responsible for managing a single
+              <code>TestContext</code> and signaling event to all registered
+              <code>ITestExecutionListener</code>s at well defined test
+              execution points: test instance preparation, prior to any
+              <emphasis>before methods</emphasis> of a particular testing
+              framework, and after and <emphasis>after methods</emphasis> of a
+              particular testing framework.</para>
+            </listitem>
+
+            <listitem>
+              <para><code>ITestExecutionListener</code>: defines a
+              <emphasis>listener</emphasis> API for reacting to test execution
+              events published by the <code>TestContextManager</code> with
+              which the listener is registered.</para>
+            </listitem>
+          </itemizedlist>
+
+          <para>Spring provides two <code>ITestExecutionListener</code>
+          implementations which are configured by default. (via the
+          <code>[TestExecutionListeners]</code> metadata):
+          <code>DependencyInjectionTestExecutionListener</code> and
+          <code>DirtiesContextTestExecutionListener</code>, which provide
+          support for dependency injection of the test instance and handling
+          of the <code>[DirtiesContext]</code> metadata, respectively.</para>
+        </section>
+
+        <section xml:id="testcontext_ctx_management">
+          <title>Context management and caching</title>
+
+          <para>Each <code>TestContext</code> provides context management and
+          caching support for the test instance for which it is responsible.
+          Test instances do not automatically receive access to the configured
+          <code>IApplicationContext</code>; however, if a test class
+          implements the <code>IApplicationContextAware</code> interface, a
+          reference to the <code>IApplicationContext</code> will be supplied
+          to the test instance (provided the
+          <code>DependencyInjectionTestExecutionListener</code> has been
+          configured, which is the default). Note that
+          <code>AbstractFlexUnit4SpringContextTests</code> already implements
+          <code>IApplicationContextAware</code> and therefor provides this
+          functionality out-of-the-box.</para>
+
+          <para>Configuration is achieved merely by declaring the
+          <code>[ContextConfiguration]</code> metadata at the class level. If
+          your test class does not explicitly declare an application context
+          resource <code>locations</code>, the configured
+          <code>IContextLoader</code> will determine how and whether or not to
+          load a context from default set of locations. If your class is named
+          <code>com.example.MyTest</code>,
+          <code>GenericXMLContextLoader</code> will load your application
+          context from "<code>/com/example/MyTest-context.xml</code>".</para>
+
+          <programlisting>package com.example {
+
+[RunWith("org.springextensions.actionscript.test.context.flexunit4.SpringFlexUnit4ClassRunner")]
+// IApplicationContext will be loaded from "/com/example/MyTest-context.xml"
+[ContextConfiguration]
+public class MyTest {
+    // class body...
+}
+}</programlisting>
+
+          <para>If the default location does not suit your needs, you are free
+          to explicitly configure the <code>locations</code> attribute of
+          <code>[ContextConfiguration]</code> (see code listing below) with a
+          comma delimited list of the resource locations of XML configuration
+          metadata (assuming an XML-capable <code>IContextLoader</code> has
+          been configured) used to configure the application. This will be the
+          same, or nearly the same, as the list of configuration locations
+          specified in deployment configuration. As an alternative you may
+          choose to implement and configure your own custom
+          <code>IContextLoader</code>.</para>
+
+          <programlisting>package com.example {
+    
+[RunWith("org.springextensions.actionscript.test.context.flexunit4.SpringFlexUnit4ClassRunner")]
+// IApplicationContext will be loaded from "/applicationContext.xml" and "/applicationContext-test.xml"
+// in the root of the deploy directory
+[ContextConfiguration(locations="/applicationContext.xml,/applicationContext-test.xml")]
+public class MyTest {
+    // class body...
+}
+}</programlisting>
+
+          <para><code>[ContextConfiguration]</code> also supports a boolean
+          <code>inheritLocations</code> key that denotes whether or not
+          resource locations from superclasses should be
+          <emphasis>inherited</emphasis>. The default value is
+          <code>true</code>, which means that an annotated class will
+          <emphasis>inherit</emphasis> the resource locations defined by an
+          annotated superclass. Specifically, the resource locations for an
+          annotated class will be appended to the list of resource locations
+          defined by an annotated superclass. In the following example, the
+          <code>IApplicationContext</code> for <code>ExtendedTest</code> will
+          be loaded from "/base-context.xml" <emphasis
+          role="bold">and</emphasis> "/extended-context.xml", in that order.
+          Objects defined in "/extended-context.xml" may therefore override
+          those defined in "/base-context.xml".</para>
+
+          <programlisting>[RunWith("org.springextensions.actionscript.test.context.flexunit4.SpringFlexUnit4ClassRunner")]
+// IApplicationContext will be loaded from "/base-context.xml" in the root of the deploy directory
+[ContextConfiguration(locations="/base-context.xml")]
+public class BaseTest {
+    // class body...
+}
+
+// IApplicationContext will be loaded from "/base-context.xml" and "/extended-context.xml"
+// in the root of the deploy directory
+[ContextConfiguration(locations="/extended-context.xml")]
+public class ExtendedTest extends BaseTest {
+    // class body...
+}</programlisting>
+
+          <para>If <code>inheritLocations</code> is set to <code>false</code>,
+          the resource locations for the annotated class will
+          <emphasis>shadow</emphasis> and effectively replace and resource
+          locations defined by a superclass.</para>
+
+          <para>By default, once loaded, the configured
+          <code>IApplicationContext</code> will be reused for each test. Thus
+          the setup cost will be incurred only once (per test fixture), and
+          subsequent test execution will be much faster. In the unlikely case
+          that a test may <emphasis>dirty</emphasis> the application context,
+          requiring reloading - for example, by changing an object definition
+          or the state of an application object - you may annotate your test
+          method with <code>[DirtiesContext]</code> (assuming
+          <code>DirtiesContextTestExecutionListener</code> has been
+          configured, which is the default) to cause the test fixture to
+          reload the configurations and rebuild the application context before
+          executing the next test.</para>
+        </section>
+
+        <section xml:id="testcontext_fixture_di">
+          <title>Dependency Injection of test fixtures</title>
+
+          <para>When you configure the
+          <code>DependencyInjectionTestExecutionListener</code> - which is
+          configured by default - via the
+          <code>[TestExecutionListeners]</code> metadata, the dependencies of
+          your test instances will be <emphasis>injected</emphasis> from
+          objects in the application context you configured via
+          <code>[ContextConfiguration]</code> by Setter Injection, Field
+          Injection, or both, depending on which annotations you choose
+          whether you place them on setter methods or fields.</para>
+
+          <tip>
+            <para>The TestContext framework does not instrument the manner in
+            which a test instance is instantiated. Thus the use of
+            <code>[Autowired]</code> for constructors has no effect for test
+            classes.</para>
+          </tip>
+
+          <para>Alternatively, if your test class implements
+          <code>IApplicationContextAware</code>, you can directly access the
+          <code>IApplicationContext</code> supplied to your test and perform
+          an explicit lookup using (for example) a call to
+          <code>applicationContext.getObject("property")</code>.</para>
+
+          <para>If you don't want dependency injection applied to your test
+          instances, simply don't annotate any fields or setter methods with
+          <code>[Autowired]</code>. Alternatively, you can disable dependency
+          injection altogether by explicitly configuring your class with
+          <code>[TestExecutionListeners]</code> and omitting
+          <code>DependencyInjectionTestExecutionListener</code> from the list
+          of listeners.</para>
+        </section>
+
+        <section xml:id="testcontext_support_classes">
+          <title>TestContext support classes</title>
+
+          <section xml:id="testcontext_support_classes_flexunit4">
+            <title>FlexUnit 4 support classes</title>
+
+            <para>The
+            <code>org.springextensions.actionscript.test.context.flexunit4</code>
+            package provides support classes for FlexUnit 4 based test
+            classes.</para>
+
+            <itemizedlist>
+              <listitem>
+                <para><code>AbstractFlexUnit4SpringContextTests</code>:</para>
+
+                <para>Abstract base test class that integrates the
+                <emphasis>Spring TestContext Framework</emphasis> with
+                explicit <code>IApplicationContext</code> testing support in a
+                FlexUnit 4 environment. When you extend
+                <code>AbstractFlexUnit4SpringContextTests</code> you will have
+                access to the following <emphasis>public</emphasis> instance
+                variables:</para>
+
+                <itemizedlist>
+                  <listitem>
+                    <para><code>applicationContext</code>: use this to perform
+                    explicit object lookups or to test the state of the
+                    context as a whole.</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+            </itemizedlist>
+          </section>
+
+          <section xml:id="testcontext_support_classes_flexunit4_runner">
+            <title>Custom Flex Unit 4 Runner</title>
+
+            <para>The <emphasis>Spring TestContext Framework</emphasis> offers
+            full integration with FlexUnit 4 via a custom runner. By
+            annotating test classes with
+            <code>[RunWith("org.springextensions.actionscript.test.context.flexunit4.SpringFlexUnit4ClassRunner")]</code>,
+            developers can implement standard FlexUnit 4 unit and integration
+            tests and simultaneously reap the benefits of the TestContext
+            framework such as support for loading application contexts,
+            dependency injection of test instances, etc. The following code
+            listing displays the minimal requirement for configuring a test
+            class to run with the custom Spring Runner. <emphasis>Note: that
+            <code>[TestExecutionListeners]</code> has been configured with an
+            empty list in order to disable default listeners, which would
+            otherwise require that an <code>IApplicationContext</code> be
+            configured via
+            <code>[ContextConfiguration]</code>.</emphasis></para>
+
+            <programlisting>[RunWith("org.springextensions.actionscript.test.context.flexunit4.SpringFlexUnit4ClassRunner")]
+[TestExecutionListeners("")]
+public class SimpleTest {
+
+    [Test]
+    public function testMethod():void {
+        // execute test logic...
+    }
+}</programlisting>
+          </section>
+        </section>
+
+        <section xml:id="testcontext_metadata">
+          <title>TestContext framework annotation support</title>
+
+          <para>The <emphasis>Spring TestContext Framework</emphasis> supports
+          all metadata as outlined in the <link linkend="testing_common_metadata">common metadata</link>
+          section. The following metadata, however, are <emphasis>only
+          supported when used in conjunction with FlexUnit (e.g., with the
+          <link linkend="testcontext_support_classes_flexunit4_runner">SpringFlexUnit4ClassRunner</link>
+          or the <link linkend="testcontext_support_classes_flexunit4">FlexUnit
+          4</link> support classes.</emphasis></para>
+
+          <itemizedlist>
+            <listitem>
+              <para><emphasis>Not Yet Implemented</emphasis></para>
+            </listitem>
+          </itemizedlist>
+
+          <para>The following non-test-specific annotations are supported by
+          the <emphasis>Spring TestContext Framework</emphasis> with their
+          standard semantics.</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><code>[Autowired]</code></para>
+            </listitem>
+
+            <listitem>
+              <para><code>[Required]</code></para>
+            </listitem>
+          </itemizedlist>
+
+          <para>The following list includes all annotations specific to the
+          <emphasis>Spring TestContext Framework</emphasis>. Refer to the
+          respective ASDoc for further information, including default key
+          values.</para>
+
+          <itemizedlist>
+            <listitem>
+              <para><code>[ContextConfiguration]</code></para>
+
+              <para>Defines class-level metadata that is used to determine how
+              to load and configure an <code>IApplicationContext</code>.
+              Specifically, <code>[ContextConfiguration]</code> defines the
+              application context resource <code>locations</code> to load as
+              well as the <code>IContextLoader</code> strategy to use for
+              loading the context.</para>
+
+              <programlisting>[ContextConfiguration(locations="example/test-context.xml", loader="com.example.CustomContextLoader")]
+public class CustomConfiguredApplicationContextTests {
+    // class body...
+}</programlisting>
+
+              <para>Note: <code>[ContextConfiguration]</code> provides support
+              for <emphasis>inherited</emphasis> resource locations by
+              default. See the <link linkend="testcontext_ctx_management">Context management and
+              caching</link> section and ASDoc for an example and further
+              details.</para>
+            </listitem>
+
+            <listitem>
+              <para><code>[TestExecutionListeners]</code></para>
+
+              <para>Defines class-level metadata for configuring which
+              <code>ITestExecutionListener</code>s should be registered with a
+              <code>TestContextManager</code>. Typically,
+              <code>[TestExecutionListeners]</code> will be used in
+              conjunction with <code>[ContextConfiguration]</code>.</para>
+
+              <programlisting>[ContextConfiguration]
+[TestExecutionListeners("CustomTestExecutionListener,AnotherTestExecutionListener")]
+public class CustomTestExecutionListenerTests {
+    // class body...
+}</programlisting>
+
+              <para>Note: <code>[TestExecutionListeners]</code> provides
+              support for <emphasis>inherited</emphasis> listeners by default.
+              See the ASDoc for an example and further details.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+      </section>
+    </section>
+  </section>
+</chapter>

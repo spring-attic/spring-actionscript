@@ -6,21 +6,6 @@
   </properties>
   <body>
 
-  <release version="2.0" date="2011-..-.." description="Release of version 2.0">
-  	<action system="jira" type="add" dev="rzwaga" date="01/08/2011">Complete overhaul of the 1.x code base</action>
-  </release>
-
-  <release version="1.2" date="2011-..-.." description="Release of version 1.2">
-  	<action system="jira" type="fix" dev="rzwaga" date="10/01/2011">Added topics and topicProperties metadata argument support to RouteEventsMetadataProcessor and EventHandlerMetadataProcessor.</action>
-  	<action system="jira" type="fix" dev="rzwaga" date="10/01/2011">Refactored RouteEventsMetadataProcessor, EventHandlerMetadataProcessor and introduced EventInterceptorMetadataProcessor to make use of the new EventBus system.</action>
-  	<action system="jira" type="fix" dev="rzwaga" date="10/01/2011">Refactored EventBus out of the core and into the new as3commons-eventbus project.</action>
-  	<action system="jira" type="fix" dev="rzwaga" date="12/12/2010">Fixed issue when disposing a FlexXMLApplicationContext with an assigned module that caused the disposal of application stage processors. (Thanks Christoph)</action>
-  	<action system="jira" type="fix" dev="rzwaga" date="08/12/2010" issue="121">AbstractOperation.dispatchCompleteEvent() did not set result property value if result argument was 0 or "" (empty string) or false etc.</action>
-  	<action system="jira" type="add" dev="rzwaga" date="30/10/2010">Added ObjectFactoryEvent.OBJECT_WIRED and made AbstractObjectFactory dispatch it after an object has been wired. (Also sent through the EventBus).</action>
-  	<action system="jira" type="add" dev="rzwaga" date="24/11/2010">Added isReady property to IObjectFactory interface, when true it means the IObjectFactory instance is ready for use.</action>
-  	<action system="jira" type="add" dev="rzwaga" date="25/11/2010">Added ApplicationContextLifeCycleEvent and dispatched it in its appropriate places in the context and objectfactory.</action>
-  </release>
-
   <release version="1.1" date="2010-10-28" description="Release of version 1.1">
   	<action system="jira" type="fix" dev="rzwaga" date="28/09/2010" issue="114">MXMLApplicationContext gets initialized properly when no configuration object is passed to the constructor.</action>
 	<action system="jira" type="fix" dev="cherreman" date="xx/xx/2010" issue="113">Added support for PostConstruct and PreDestroy metadata.</action>

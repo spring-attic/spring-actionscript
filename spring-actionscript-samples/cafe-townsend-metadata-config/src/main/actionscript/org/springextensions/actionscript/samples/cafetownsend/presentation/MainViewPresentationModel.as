@@ -3,8 +3,8 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 
-	import org.as3commons.logging.api.ILogger;
-	import org.as3commons.logging.api.getClassLogger;
+	import org.as3commons.logging.ILogger;
+	import org.as3commons.logging.LoggerFactory;
 
 	/**
 	 * Presentation model for the main view.
@@ -29,14 +29,14 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		//
 		// --------------------------------------------------------------------
 
-		private static var logger:ILogger = getClassLogger(MainViewPresentationModel);
+		private static var logger:ILogger = LoggerFactory.getClassLogger(MainViewPresentationModel);
 
 		// --------------------------------------------------------------------
 		//
 		// Constructor
 		//
 		// --------------------------------------------------------------------
-
+		
 		public function MainViewPresentationModel() {
 		}
 

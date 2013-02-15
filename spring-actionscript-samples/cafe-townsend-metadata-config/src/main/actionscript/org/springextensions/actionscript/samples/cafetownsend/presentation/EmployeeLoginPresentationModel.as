@@ -4,12 +4,12 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 
 	import mx.controls.Alert;
 
-	import org.as3commons.async.operation.IOperation;
-	import org.as3commons.async.operation.event.OperationEvent;
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.StringUtils;
-	import org.as3commons.logging.api.ILogger;
-	import org.as3commons.logging.api.getClassLogger;
+	import org.as3commons.logging.ILogger;
+	import org.as3commons.logging.LoggerFactory;
+	import org.springextensions.actionscript.core.operation.IOperation;
+	import org.springextensions.actionscript.core.operation.OperationEvent;
 	import org.springextensions.actionscript.samples.cafetownsend.application.ApplicationEvents;
 	import org.springextensions.actionscript.samples.cafetownsend.application.service.IAuthenticationService;
 
@@ -29,7 +29,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		//
 		// --------------------------------------------------------------------
 
-		private static var logger:ILogger = getClassLogger(EmployeeLoginPresentationModel);
+		private static var logger:ILogger = LoggerFactory.getClassLogger(EmployeeLoginPresentationModel);
 
 		// --------------------------------------------------------------------
 		//
@@ -169,7 +169,7 @@ package org.springextensions.actionscript.samples.cafetownsend.presentation {
 		// --------------------------------------------------------------------
 
 		private function loginOperation_completeHandler(event:OperationEvent):void {
-			logger.info("Received result '{0}' from login method.", [event.result]);
+			logger.info("Received result '{0}' from login method.", event.result);
 
 			loggingIn = false;
 

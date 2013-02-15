@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,21 @@ package org.springextensions.actionscript.ioc.factory {
 	 * @example
 	 * <code>
 	 * applicationContext.getObject('&amp;myFactoryObject');
-	 * </code>
+	 * </code> 
 	 *
 	 * <p>Factory objects are ideal for extending the core IoC container with
 	 * custom initialization objects.</p>
 	 *
 	 * @author Christophe Herreman
-	 * @productionversion SpringActionscript 2.0
+	 * @docref container-documentation.html#customizing_instantiation_logic_using_the_ifactoryobject_interface
 	 */
 	public interface IFactoryObject {
-
+	
 		/**
 		 * Returns an instance of the object managed by this factory.
 		 */
 		function getObject():*;
-
+		
 		/**
 		 * Returns the type of the object this factory manages or null if the type is unknown.
 		 */

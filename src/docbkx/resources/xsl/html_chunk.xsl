@@ -7,7 +7,6 @@
                 version="1.0" exclude-result-prefixes="xsl fo">
 
     <xsl:import href="urn:docbkx:stylesheet"/>
-    <xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
     <xsl:import href="html-asdoclinkresolver.xsl"/>
     <!--###################################################
                      HTML Settings
@@ -28,7 +27,6 @@
     </xsl:param>
     <!-- Show only Sections up to level 3 in the TOCs -->
     <xsl:param name="toc.section.depth">3</xsl:param>
-
     <!--###################################################
                          Labels
     ################################################### -->
@@ -74,39 +72,27 @@
                      Headers and Footers
     ################################################### -->
     <!-- let's have a Spring and SpringSource banner across the top of each page -->
-  <xsl:param name="target.window" select="'body'"/>
   <xsl:template name="user.head.content">
     <script src="js/jquery.js"></script>
     <script src="js/wtooltip-min.js"></script>
     <script src="js/springas.js"></script>
-  	<script src="js/GraphMLViewer.js"></script>
-    <base target="{$target.window}"/>
   </xsl:template>
 
   <xsl:template name="user.header.navigation">
-    <xsl:param name="prev" select="/foo"/>
-    <xsl:param name="next" select="/foo"/>
-    <xsl:param name="nav.context"/>
-    <xsl:if test="count($prev)>0">
-      <div style="background-color:white;border:none;height:73px;border:1px solid black;">
-        <a style="border:none;" href="http://forum.springframework.org/forumdisplay.php?f=60"
-           title="The Spring Framework - Spring Actionscript">
-          <img style="border:none;" src="images/xdev-spring_logo.jpg"/>
-        </a>
-        <a style="border:none;" href="http://www.springsource.com/" title="SpringSource">
-          <img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/s2-banner-rhs.png"/>
-        </a>
-      </div>
-    </xsl:if>
-  </xsl:template>
-  <!-- no other header navigation (prev, next, etc.) -->
-    
+        <div style="background-color:white;border:none;height:73px;border:1px solid black;">
+            <a style="border:none;" href="http://forum.springframework.org/forumdisplay.php?f=60"
+               title="The Spring Framework - Spring Actionscript">
+                <img style="border:none;" src="images/xdev-spring_logo.jpg"/>
+            </a>
+            <a style="border:none;" href="http://www.springsource.com/" title="SpringSource">
+                <img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/s2-banner-rhs.png"/>
+            </a>
+        </div>
+    </xsl:template>
+    <!-- no other header navigation (prev, next, etc.) -->
     <xsl:template name="header.navigation"/>
-    
     <xsl:param name="navig.showtitles">1</xsl:param>
-    
     <!-- let's have a 'Sponsored by SpringSource' strapline (or somesuch) across the bottom of each page -->
-    
     <xsl:template name="footer.navigation">
         <xsl:param name="prev" select="/foo"/>
         <xsl:param name="next" select="/foo"/>
@@ -122,7 +108,7 @@
                                         or ($chunk.tocs.and.lots != 0
                                             and $nav.context != 'toc')
                                         or ($next and $navig.showtitles != 0)"/>
-        <xsl:if test="$suppress.navigation = '0' and $suppress.footer.navigation = '0' and count($prev)>0">
+        <xsl:if test="$suppress.navigation = '0' and $suppress.footer.navigation = '0'">
             <div class="navfooter">
                 <xsl:if test="$footer.rule != 0">
                     <hr/>
@@ -209,13 +195,11 @@
                                 <td width="20%" align="center">
                                     <span style="color:white;font-size:90%;">
                                         <a href="http://www.springsource.com/"
-                                           title="SpringSource"
-                                           target="_blank">Sponsored by SpringSource
+                                           title="SpringSource">Sponsored by SpringSource
                                         </a>
                                          | 
                                         <a href="/"
-                                           title="SpringActionscript site"
-                                           target="_top">Back to Spring Actionscript site
+                                           title="SpringActionscript site">Back to Spring Actionscript site
                                         </a>
                                     </span>
                                 </td>
@@ -230,19 +214,6 @@
                     </table>
                 </xsl:if>
             </div>
-        </xsl:if>
-        <xsl:if test="count($prev)=0">
-          <div class="navfooter" align="center">
-            <hr width="100%"/>
-            <span style="color:white;font-size:90%;">
-              <a href="http://www.springsource.com/"
-                 title="SpringSource"
-                 target="_blank">
-                Sponsored by SpringSource
-              </a>
-            </span>
-            <hr width="100%"/>
-          </div>
         </xsl:if>
     </xsl:template>
     

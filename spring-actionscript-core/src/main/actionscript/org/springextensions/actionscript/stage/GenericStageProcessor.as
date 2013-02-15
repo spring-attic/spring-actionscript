@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.stage {
-	import flash.display.DisplayObject;
-
 	import org.as3commons.lang.Assert;
 	import org.as3commons.lang.StringUtils;
-	import org.as3commons.logging.api.ILogger;
-	import org.as3commons.logging.api.getClassLogger;
-	import org.as3commons.stageprocessing.impl.AbstractStageObjectProcessor;
+	import org.as3commons.logging.ILogger;
+	import org.as3commons.logging.LoggerFactory;
 
 	/**
 	 * This <code>IStageProcessor</code> uses certain stage components to be assigned to a specified target object. The assignment is done either by setting a property or
 	 * calling a method, specified by the <code>targetProperty</code> and <code>targetMethod</code> properties respectively.
 	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
+	 * @see org.springextensions.actionscript.stage.IStageProcessor IStageProcessor
+	 * @docref container-documentation.html#injecting_stage_components_into_other_objects
+	 * @sampleref stagewiring
 	 */
-	public class GenericStageProcessor extends AbstractStageObjectProcessor {
+	public class GenericStageProcessor extends AbstractStageProcessor {
 
-		private static const LOGGER:ILogger = getClassLogger(GenericStageProcessor);
+		private static const LOGGER:ILogger = LoggerFactory.getClassLogger(GenericStageProcessor);
 
 		/**
 		 * Creates a new <code>GenericStageProcessor</code> instance.
@@ -92,7 +91,7 @@ package org.springextensions.actionscript.stage {
 		 * or calls the specified method (<code>targetMethod</code>) and passes the object to it.
 		 * @throws Error If neither <code>targetProperty</code> nor <code>targetMethod</code> has been set.
 		 */
-		override public function process(object:DisplayObject):DisplayObject {
+		override public function process(object:Object):Object {
 			Assert.notNull(_targetObject, "targetObject must not be null");
 			if ((!StringUtils.hasText(_targetProperty)) && (!StringUtils.hasText(_targetMethod))) {
 				throw new Error("Either targetProperty or targetMethod property must have a value");

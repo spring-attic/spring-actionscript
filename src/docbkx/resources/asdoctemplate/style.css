@@ -563,19 +563,3 @@ html>body .listing pre
 {
 	height:10px;
 }
-
-.hideInheritedSkinState {
-	display: none;
-}
-
-.showInheritedSkinState {
-	display: inline;
-}
-
-.hideInheritedSkinPart {
-	display: none;
-}
-
-.showInheritedSkinPart {
-	display: inline;
-}

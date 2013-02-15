@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<code:FieldRepeaterBase
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:code="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.components.codebehind.*"
+	xmlns:item="org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.components.*">
+	<mx:Script>
+		<![CDATA[
+			import org.springextensions.actionscript.tooling.objectdefinitionparserbuilder.classes.FieldExportInfo;
+		]]>
+	</mx:Script>
+	<mx:Repeater id="mainrepeater" dataProvider="{this.dataProvider}">
+		<item:FieldRepeaterItem fieldExportInfo="{mainrepeater.currentItem as FieldExportInfo}"/>
+	</mx:Repeater>
+</code:FieldRepeaterBase>

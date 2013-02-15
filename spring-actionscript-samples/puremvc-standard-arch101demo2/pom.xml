@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springextensions.actionscript</groupId>
+        <artifactId>spring-actionscript-samples</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>puremvc-standard-arch101demo2</artifactId>
+    <packaging>swf</packaging>
+    <name>Spring ActionScript PureMvc Standard Integration Sample: AnotherArch101Demo</name>
+
+    <properties>
+        <target.bin.dir>${project.build.directory}/bin</target.bin.dir>
+        <target.name>PranaSampleAnotherArch101demo</target.name>
+        <target.swf.name>${target.name}.swf</target.swf.name>
+        <source.mxml.name>${target.name}.mxml</source.mxml.name>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springextensions.actionscript</groupId>
+            <artifactId>spring-actionscript-puremvc-standard</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <type>swc</type>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>${flexmojos.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <output>${target.bin.dir}/${target.swf.name}</output>
+                    <sourceFile>${source.mxml.name}</sourceFile>
+                    <configFile>src/main/config/configurationClassesCompilerConfig.xml</configFile>
+                    <rslUrls>
+                        <url>{artifactId}-{version}.{extension}</url>
+                    </rslUrls>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flexmojos-wrapper-execution</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>wrapper</goal>
+                        </goals>
+                        <configuration>
+                            <htmlName>${target.name}</htmlName>
+                            <outputDirectory>${target.bin.dir}</outputDirectory>
+                            <parameters>
+                                <swf>${target.name}</swf>
+                                <application>${target.name}</application>
+                                <version_major>${flashplayer.version.major}</version_major>
+                                <version_minor>${flashplayer.version.minor}</version_minor>
+                                <version_revision>${flashplayer.version.revision}</version_revision>
+                            </parameters>
+                            <templateURI>embed:express-installation-with-history</templateURI>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>source-view</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>clean-after-flexmojo-wrapper-execution</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${target.bin.dir}</directory>
+                                    <includes>
+                                        <include>template.zip</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources-after-flexmojo-wrapper-execution</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${target.bin.dir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>move-site-test-apps-files</id>
+                        <phase>site</phase>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="../../target/site/${test.apps.dir}/${project.artifactId}"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.swf"
+                                      tofile="../../target/site/${test.apps.dir}/${project.artifactId}/${project.artifactId}.swf"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy file="${project.build.directory}/applicationContext.xml"
+                                      todir="../../target/site/${test.apps.dir}/${project.artifactId}" overwrite="true"
+                                      verbose="true" failonerror="true"/>
+                                <copy
+                                        todir="../../target/site/${test.apps.dir}/${project.artifactId}"
+                                        overwrite="true"
+                                        verbose="true" failonerror="true">
+                                    <fileset dir="${project.build.directory}/bin"/>
+                                </copy>
+                                <copy todir="../../target/site/${test.apps.dir}/${project.artifactId}/srcview"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true">
+                                    <fileset dir="${project.build.directory}/srcview"/>
+                                </copy>
+                                <copy todir="../../target/site/${test.apps.dir}/${project.artifactId}/assets"
+                                      overwrite="true"
+                                      verbose="true" failonerror="true">
+                                    <fileset dir="${project.build.directory}/assets"/>
+                                </copy>
+
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

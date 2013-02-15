@@ -1,0 +1,8 @@
+//host=${application.url.host}
+//port=${application.url.port}
+
+host=localhost
+port=8400
+context-root=lcds-samples
+
+databasepath=db/organizer.db

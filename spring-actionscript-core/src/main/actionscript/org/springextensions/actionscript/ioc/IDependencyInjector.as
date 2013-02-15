@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,51 +14,30 @@
  * limitations under the License.
  */
 package org.springextensions.actionscript.ioc {
-	import flash.events.IEventDispatcher;
 
-	import org.springextensions.actionscript.ioc.autowire.IAutowireProcessor;
-	import org.springextensions.actionscript.ioc.factory.IInstanceCache;
-	import org.springextensions.actionscript.ioc.factory.IObjectFactory;
-	import org.springextensions.actionscript.ioc.factory.IReferenceResolver;
-	import org.springextensions.actionscript.ioc.factory.process.IObjectPostProcessor;
-	import org.springextensions.actionscript.ioc.objectdefinition.IObjectDefinition;
+	import flash.events.IEventDispatcher;
 
 	/**
 	 * Defines the most basic service used to implement dependency injection.
-	 * @author Martino Piccinato
-	 * @author Roland Zwaga
-	 * @productionversion SpringActionscript 2.0
+	 *
+	 * <p>
+	 * <b>Authors:</b> Martino Piccinato<br/>
+	 * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
+	 * <b>Since:</b> 0.1
+	 * </p>
+	 *
+	 * @see org.springextensions.actionscript.ioc.factory.config.IConfigurableObjectFactory
 	 */
 	public interface IDependencyInjector extends IEventDispatcher {
+
 		/**
 		 *
-		 * @param instance
+		 * @param object
 		 * @param objectDefinition
 		 * @param objectName
-		 * @param objectPostProcessors
-		 * @param referenceResolvers
-		 */
-		function wire(instance:*, objectFactory:IObjectFactory, objectDefinition:IObjectDefinition=null, objectName:String=null):Object;
-		/**
 		 *
-		 * @param objectDefinition
-		 * @param instance
-		 * @param objectFactory
 		 */
-		function executeMethodInvocations(objectDefinition:IObjectDefinition, instance:*, objectFactory:IObjectFactory):void;
-		/**
-		 *
-		 * @param instance
-		 * @param objectDefinition
-		 */
-		function initializeInstance(instance:*, objectDefinition:IObjectDefinition=null):void;
-		/**
-		 *
-		 * @param instance
-		 * @param objectDefinition
-		 * @param objectName
-		 * @param objectFactory
-		 */
-		function injectProperties(instance:*, objectDefinition:IObjectDefinition, objectName:String, objectFactory:IObjectFactory):void;
+		function wire(object:*, objectDefinition:IObjectDefinition = null, objectName:String = null):void
+
 	}
 }

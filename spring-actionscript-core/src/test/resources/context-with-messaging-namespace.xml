@@ -1,0 +1,19 @@
+<objects xmlns="http://www.springactionscript.org/schema/objects"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:messaging="http://www.springactionscript.org/schema/messaging"
+	xsi:schemaLocation="http://www.springactionscript.org/schema/objects http://www.springactionscript.org/schema/objects/spring-actionscript-objects.xsd
+	http://www.springactionscript.org/schema/messaging file:///home/christophe/IdeaProjects/springactionscript/spring-actionscript-core/src/main/actionscript/org/springextensions/actionscript/ioc/factory/xml/spring-actionscript-messaging-1.0.xsd">
+
+	<messaging:amf-channel/>
+
+	<messaging:channel-set/>
+
+	<messaging:consumer/>
+
+	<messaging:secure-amf-channel/>
+
+	<messaging:secure-streaming-amf-channel/>
+
+	<messaging:streaming-amf-channel/>
+
+</objects>

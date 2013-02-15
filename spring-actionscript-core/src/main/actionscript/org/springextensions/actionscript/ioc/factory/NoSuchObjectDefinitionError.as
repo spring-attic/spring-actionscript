@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2011 the original author or authors.
+ * Copyright 2007-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,35 @@
  */
 package org.springextensions.actionscript.ioc.factory {
 
-	/**
-	 * Error thrown when an object factory cannot find an object definition for the given name.
-	 * @author Christophe Herreman
-	 * @productionversion SpringActionscript 2.0
-	 */
-	public class NoSuchObjectDefinitionError extends Error {
+  /**
+   * Error throw when an object factory cannot find an object definition for
+   * the given name.
+   *
+   * <p>
+   * <b>Author:</b> Christophe Herreman<br/>
+   * <b>Version:</b> $Revision: 21 $, $Date: 2008-11-01 22:58:42 +0100 (za, 01 nov 2008) $, $Author: dmurat $<br/>
+   * <b>Since:</b> 0.1
+   * </p>
+   */
+  public class NoSuchObjectDefinitionError extends Error {
 
-		/**
-		 * Creates a new NoSuchObjectDefinitionError object.
-		 *
-		 * @param objectName the name of the object definition
-		 */
-		public function NoSuchObjectDefinitionError(objectName:String) {
-			super("No object named '" + objectName + "' is defined.");
-			_objectName = objectName;
-		}
+    private var _objectName:String;
 
-		private var _objectName:String;
+    /**
+     * Creates a new NoSuchObjectDefinitionError object.
+     *
+     * @param objectName the name of the object definition
+     */
+    public function NoSuchObjectDefinitionError(objectName:String) {
+      super("No object named '" + objectName + "' is defined.");
+      _objectName = objectName;
+    }
 
-		/**
-		 * @return The name of the object defintion that could not be found in the current object factory configuration.
-		 */
-		public function get objectName():String {
-			return _objectName;
-		}
-	}
+    /**
+     * @return The name of the object defintion that could not be found in the current object factory configuration. 
+     */
+    public function get objectName():String {
+      return _objectName;
+    }
+  }
 }
