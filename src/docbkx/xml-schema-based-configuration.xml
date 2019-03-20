@@ -248,7 +248,7 @@
       can add the following:</para>
 
       <programlisting>&lt;channel id="<emphasis role="bold">myChannel</emphasis>" connect-timeout="50"
- failover-uris="http://myfailoverserver.com/flex,http://localhost/flex" request-timeout="200" uri="http://myserver.com/flex"/&gt;</programlisting>
+ failover-uris="https://myfailoverserver.com/flex,http://localhost/flex" request-timeout="200" uri="https://myserver.com/flex"/&gt;</programlisting>
 
       <para>Then, to add the channel to the channelset, add this attribute to
       your channelset declaration:</para>
@@ -269,7 +269,7 @@
         channel tag that apply to <abbrev>AMF</abbrev> specifically:</para>
 
         <programlisting>&lt;amf-channel id="myChannel" connect-timeout="50"
- failover-uris="http://myfailoverserver.com/flex,http://localhost/flex" request-timeout="200" uri="http://myserver.com/flex"
+ failover-uris="https://myfailoverserver.com/flex,http://localhost/flex" request-timeout="200" uri="https://myserver.com/flex"
  <emphasis role="bold">piggybacking-enabled="false"
  polling-enabled="true"
  polling-interval="200</emphasis>"/&gt;</programlisting>

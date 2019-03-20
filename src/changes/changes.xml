@@ -1,6 +1,6 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 https://maven.apache.org/plugins/maven-changes-plugin/xsd/changes-1.0.0.xsd">
   <properties>
     <title>Spring ActionScript changes</title>
   </properties>
@@ -227,7 +227,7 @@
 
     <release version="0.7" date="2009-01-20" description="Release of version 0.7">
 	<action system="jira" type="add">Prana Framework is now Spring ActionScript</action>
-	<action system="jira" type="add">Reflection API is now a separate project (as3reflect: http://code.google.com/p/as3reflect/)</action>
+	<action system="jira" type="add">Reflection API is now a separate project (as3reflect: https://code.google.com/p/as3reflect/)</action>
 	<action system="jira" type="add">Cairngorm and PureMVC extensions removed from the core framework sources</action>
 	<action system="jira" type="add">added support for parent objects in XML config</action>
 	<action system="jira" type="add">added support for depends-on attribute in XML config</action>
@@ -378,7 +378,7 @@
     <release version="0.4" date="2008-01-26" description="Release of version 0.4">
 	<action system="jira" type="update">introduction of PureMVC support</action>
 	<action system="jira" type="add">added PureMVC sample application</action>
-	<action system="jira" type="add">nightly builds available at http://prana.herrodius.com</action>
+	<action system="jira" type="add">nightly builds available at https://prana.herrodius.com</action>
 	<action system="jira" type="fix">fixed config.xsl to ignore _svn folders</action>
 	<action system="jira" type="fix">fixed early dispatching of events in EventSequence</action>
 	<action system="jira" type="add">added "remove" method to IMap and Map</action>

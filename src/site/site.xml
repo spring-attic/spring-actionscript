@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/xsd/decoration-1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/xsd/decoration-1.0.0 https://maven.apache.org/xsd/decoration-1.0.0.xsd"
           xmlns="http://maven.apache.org/xsd/decoration-1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Spring Actionscript">
 
@@ -18,8 +18,8 @@
 	<body>
 
 		<links>
-			<item name="SpringSource" href="http://springsource.com" />
-			<item name="The Spring Framework" href="http://springframework.org" />
+			<item name="SpringSource" href="https://springsource.com" />
+			<item name="The Spring Framework" href="https://springframework.org" />
 		</links>
 
 		<menu name="Project">
@@ -33,10 +33,10 @@
 
 		<menu name="Support">
 			<item name="Discussion Forum"
-				href="http://forum.springframework.org/forumdisplay.php?f=60" />
+				href="https://forum.springframework.org/forumdisplay.php?f=60" />
 			<item name="Developers Mailing List" href="mail-lists.html" />
 			<item name="FAQ" href="faq.html" />
-			<item name="@springas on Twitter" href="http://twitter.com/springas" />
+			<item name="@springas on Twitter" href="https://twitter.com/springas" />
 		</menu>
 
 		<menu name="Documentation">

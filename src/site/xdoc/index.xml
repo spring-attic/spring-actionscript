@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://maven.apache.org/XDOC/2.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 https://maven.apache.org/xsd/xdoc-2.0.xsd">
 
 	<properties>
 		<title>Spring Actionscript</title>
@@ -12,7 +12,7 @@
 
 		<section name="THIS IS A BETA SITE CONTAINING BETA SOFTWARE">
 			<p>Anything you read and download here might be unstable and is subject to change. However, feel free to play around and test the new possibilities
-				of Spring Actionscript v2.0. <a href="http://forum.springsource.org/forumdisplay.php?60-Spring-Actionscript" target="_blank">Please refer to our forums</a> if you have any questions, criticism or suggestions.</p>
+				of Spring Actionscript v2.0. <a href="https://forum.spring.io/forumdisplay.php?60-Spring-Actionscript" target="_blank">Please refer to our forums</a> if you have any questions, criticism or suggestions.</p>
 			<hr/>
 		</section>
 
@@ -79,7 +79,7 @@
 					<li>flex-async (only for the Flex extensions of course)</li>
 				</ul>
 				<p> The .swc files for these libraries can be downloaded from the <a
-						href="http://www.as3commons.org" target="_blank">AS3Commons website</a>
+						href="https://www.as3commons.org" target="_blank">AS3Commons website</a>
 				</p>
 				<p> Once you have downloaded the files, they need to be installed in a permanent library
 					location.<br/> You need to inform your IDE that you want these libraries included in the
@@ -88,11 +88,11 @@
 			</subsection>
 			<subsection name="Maven repository">
 				<p> Spring Actionscript is also deployed to <a
-						href="http://projects.yoolab.org/maven/index.html">yoolab.org maven repository</a> where
+						href="https://projects.yoolab.org/maven/index.html">yoolab.org maven repository</a> where
 					you can find all <a
-						href="http://projects.yoolab.org/maven/content/repositories/releases/org/springextensions/actionscript/"
+						href="https://projects.yoolab.org/maven/content/repositories/releases/org/springextensions/actionscript/"
 						>releases</a> and <a
-						href="http://projects.yoolab.org/maven/content/repositories/snapshots/org/springextensions/actionscript/"
+						href="https://projects.yoolab.org/maven/content/repositories/snapshots/org/springextensions/actionscript/"
 						>snapshots</a>
 				</p>
 				<p> Use the following code to use it in your maven project: <source>
@@ -101,14 +101,14 @@
 		...
 		<repository>
 			<id>yoolab.org-releases</id>
-			<url>http://projects.yoolab.org/maven/content/repositories/releases</url>
+			<url>https://projects.yoolab.org/maven/content/repositories/releases</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
 		</repository>
 		<repository>
 			<id>yoolab.org-snapshots</id>
-			<url>http://projects.yoolab.org/maven/content/repositories/snapshots</url>
+			<url>https://projects.yoolab.org/maven/content/repositories/snapshots</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>

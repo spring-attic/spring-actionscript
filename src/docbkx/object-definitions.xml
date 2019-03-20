@@ -281,7 +281,7 @@
 				<para>If an object is encountered in the context that implements this interface its
 					dispose() method will be invoked once the context itself is being disposed.</para>
 				<para>The IDisposable interface is part of the <literal
-						xlink:href="http://www.as3commons.org/as3-commons-lang/index.html"
+						xlink:href="https://www.as3commons.org/as3-commons-lang/index.html"
 						>as3commons-lang</literal> library.</para>
 			</sect3>
 			<sect3>

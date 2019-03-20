@@ -38,8 +38,8 @@
 		<para>This document provides a reference guide to Spring Actionscript's features. Since this
 			document is still to be considered very much work-in-progress, if you have any requests or
 			comments, please post them on the user mailing list or on the support forums at <literal
-				xlink:href="http://forum.springframework.org/forumdisplay.php?f=60"
-				>http://forum.springframework.org/forumdisplay.php?f=60</literal>.</para>
+				xlink:href="https://forum.springframework.org/forumdisplay.php?f=60"
+				>https://forum.springframework.org/forumdisplay.php?f=60</literal>.</para>
 	</preface>
 
 	<part xml:id="step-by-step">
