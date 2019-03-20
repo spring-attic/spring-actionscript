@@ -27,7 +27,7 @@ package org.springextensions.actionscript.localization {
 	 * <code>IStageProcessor</code> that can assign resource values based on the value of specified property on a stage component.
 	 * @author Roland Zwaga
 	 * @productionversion SpringActionscript 2.0
-	 * @externalref http://labs.adobe.com/wiki/index.php/Flex_3:Feature_Introductions:_Runtime_Localization
+	 * @externalref https://labs.adobe.com/wiki/index.php/Flex_3:Feature_Introductions:_Runtime_Localization
 	 */
 	public class LocalizationStageProcessor extends AbstractStageObjectProcessor {
 

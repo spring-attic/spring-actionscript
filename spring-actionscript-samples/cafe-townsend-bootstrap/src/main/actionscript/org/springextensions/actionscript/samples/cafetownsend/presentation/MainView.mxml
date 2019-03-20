@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:VBox xmlns:mx="https://www.adobe.com/2006/mxml"
 		 xmlns:view="org.springextensions.actionscript.samples.cafetownsend.presentation.*"
 		 implements="org.springextensions.actionscript.samples.cafetownsend.ITownsendView">
 

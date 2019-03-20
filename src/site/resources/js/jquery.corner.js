@@ -3,8 +3,8 @@
  * Examples and documentation at: http://jquery.malsup.com/corner/
  * version 2.01 (08-SEP-2009)
  * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
+ * https://www.opensource.org/licenses/mit-license.php
+ * https://www.gnu.org/licenses/gpl.html
  */
 
 /**

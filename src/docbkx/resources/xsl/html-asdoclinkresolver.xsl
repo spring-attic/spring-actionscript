@@ -33,7 +33,7 @@ if (!RunPlayer(
     // Flash Player is too old for the auto-update or not installed at all
     // Place alternative content here
     document.write('This content requires the Adobe Flash Player 9.0.38 or higher. '
-        + '<a href=http://www.adobe.com/go/getflash/>Get Flash</a>');
+        + '<a href=https://www.adobe.com/go/getflash/>Get Flash</a>');
   }
 }
 -->]]>

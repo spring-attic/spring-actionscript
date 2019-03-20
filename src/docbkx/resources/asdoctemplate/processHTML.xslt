@@ -9,7 +9,7 @@
 	in accordance with the terms of the license agreement accompanying it.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="http://saxon.sourceforge.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
   exclude-result-prefixes="saxon xs ifn">
   <xsl:import href="asdoc-util.xslt"/>
   <xsl:output method="html" encoding="UTF-8" omit-xml-declaration="yes" use-character-maps="disable" indent="no"/>
@@ -135,7 +135,7 @@
       </xsl:when>
       <xsl:when test="$config/options[@livedocs='true']">
         <td class="titleTableSearch" align="center">
-          <form class="searchForm" method="get" action="http://www.adobe.com/cfusion/search/index.cfm" target="adbe_window"
+          <form class="searchForm" method="get" action="https://www.adobe.com/cfusion/search/index.cfm" target="adbe_window"
             onsubmit="this.term.value= this.termPrefix.value + &quot;\&quot;&quot; + this.search_text.value + &quot;\&quot;&quot;;">
             <input class="hidden" name="loc" value="en" type="hidden"/>
             <input class="hidden" name="termPrefix" value="site:livedocs.adobe.com/labs/flex3   " type="hidden"/>

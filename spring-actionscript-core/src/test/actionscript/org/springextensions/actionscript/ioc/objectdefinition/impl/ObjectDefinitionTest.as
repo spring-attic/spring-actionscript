@@ -56,27 +56,27 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			assertNull(_definition.properties);
 			var propDef:PropertyDefinition = new PropertyDefinition('name', 'value');
 			_definition.addPropertyDefinition(propDef);
-			var propDef2:PropertyDefinition = new PropertyDefinition('name', 'value', 'http://www.mydomain.com/mynamespace');
+			var propDef2:PropertyDefinition = new PropertyDefinition('name', 'value', 'https://www.mydomain.com/mynamespace');
 			_definition.addPropertyDefinition(propDef2);
 			assertNotNull(_definition.properties);
 			assertEquals(2, _definition.properties.length);
 			assertStrictlyEquals(propDef, _definition.properties[0]);
 			assertStrictlyEquals(propDef2, _definition.properties[1]);
 			assertStrictlyEquals(propDef, _definition.getPropertyDefinitionByName('name'));
-			assertStrictlyEquals(propDef2, _definition.getPropertyDefinitionByName('name', 'http://www.mydomain.com/mynamespace'));
+			assertStrictlyEquals(propDef2, _definition.getPropertyDefinitionByName('name', 'https://www.mydomain.com/mynamespace'));
 		}
 
 		[Test]
 		public function testAddPropertiesWithSameNameAndSameNamespace():void {
 			assertNull(_definition.properties);
-			var propDef:PropertyDefinition = new PropertyDefinition('name', 'value', 'http://www.mydomain.com/mynamespace');
+			var propDef:PropertyDefinition = new PropertyDefinition('name', 'value', 'https://www.mydomain.com/mynamespace');
 			_definition.addPropertyDefinition(propDef);
-			var propDef2:PropertyDefinition = new PropertyDefinition('name', 'value', 'http://www.mydomain.com/mynamespace');
+			var propDef2:PropertyDefinition = new PropertyDefinition('name', 'value', 'https://www.mydomain.com/mynamespace');
 			_definition.addPropertyDefinition(propDef2);
 			assertNotNull(_definition.properties);
 			assertEquals(1, _definition.properties.length);
 			assertStrictlyEquals(propDef, _definition.properties[0]);
-			assertStrictlyEquals(propDef, _definition.getPropertyDefinitionByName('name', 'http://www.mydomain.com/mynamespace'));
+			assertStrictlyEquals(propDef, _definition.getPropertyDefinitionByName('name', 'https://www.mydomain.com/mynamespace'));
 		}
 
 		[Test]
@@ -95,14 +95,14 @@ package org.springextensions.actionscript.ioc.objectdefinition.impl {
 			assertNull(_definition.properties);
 			var methInvoc:MethodInvocation = new MethodInvocation('name');
 			_definition.addMethodInvocation(methInvoc);
-			var methInvoc2:MethodInvocation = new MethodInvocation('name', null, 'http://www.mydomain.com/mynamespace');
+			var methInvoc2:MethodInvocation = new MethodInvocation('name', null, 'https://www.mydomain.com/mynamespace');
 			_definition.addMethodInvocation(methInvoc2);
 			assertNotNull(_definition.methodInvocations);
 			assertEquals(2, _definition.methodInvocations.length);
 			assertStrictlyEquals(methInvoc, _definition.methodInvocations[0]);
 			assertStrictlyEquals(methInvoc2, _definition.methodInvocations[1]);
 			assertStrictlyEquals(methInvoc, _definition.getMethodInvocationByName('name'));
-			assertStrictlyEquals(methInvoc2, _definition.getMethodInvocationByName('name', 'http://www.mydomain.com/mynamespace'));
+			assertStrictlyEquals(methInvoc2, _definition.getMethodInvocationByName('name', 'https://www.mydomain.com/mynamespace'));
 		}
 
 	}

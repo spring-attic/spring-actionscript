@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:Application xmlns:mx="https://www.adobe.com/2006/mxml"
 				layout="vertical"
 				backgroundColor="#000000"
 				preinitialize="application1_preinitializeHandler(event)"
