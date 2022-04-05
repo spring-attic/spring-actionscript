@@ -9,7 +9,7 @@
 	in accordance with the terms of the license agreement accompanying it.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="http://sf.net/saxon" xmlns:str="http://exslt.org/strings" xmlns:ifn="urn:internal:functions"
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="https://sf.net/saxon" xmlns:str="http://exslt.org/strings" xmlns:ifn="urn:internal:functions"
 	exclude-result-prefixes="saxon str ifn">
 	<xsl:import href="asdoc-util.xslt"/>
 	<xsl:output encoding="UTF-8" method="html" omit-xml-declaration="yes" saxon:indent="3" use-character-maps="disable" indent="yes"/>

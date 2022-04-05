@@ -9,8 +9,8 @@
 	in accordance with the terms of the license agreement accompanying it.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="http://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
-	xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/" exclude-result-prefixes="saxon xs ifn ditaarch">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="https://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
+	xmlns:ditaarch="https://dita.oasis-open.org/architecture/2005/" exclude-result-prefixes="saxon xs ifn ditaarch">
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="no"/>
 	<xsl:param name="ditaFileDir" select="''"/>
 	<xsl:variable name="isConst" select="'false'"/>

@@ -95,12 +95,12 @@ function RunPlayer() {
 
   var url = "GraphMLViewer/GraphMLViewer.swf";
   if (location.href.substr(0, 5) != "file:") {
-    url = "http://www.yworks.com/products/graphmlviewer/1.1/GraphMLViewer.swf";
+    url = "https://www.yworks.com/products/graphmlviewer/1.1/GraphMLViewer.swf";
   }
 
   var str = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
             'id="viewer'+ params["id"] + '" width="' + params["width"] + '" height="' + params["height"] + '"' +
-            ' codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">' +
+            ' codebase="https://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">' +
             ' <param name="movie" value="' + url + '" />' +
             ' <param name="quality" value="high" />' +
             ' <param name="bgcolor" value="#ffffff" />' +
@@ -112,7 +112,7 @@ function RunPlayer() {
             '  loop="false"' +
             '  allowScriptAccess="always"' +
             '  type="application/x-shockwave-flash"' +
-            '  pluginspage="http://www.adobe.com/go/getflashplayer"' +
+            '  pluginspage="https://www.adobe.com/go/getflashplayer"' +
             '  FlashVars="' + params["flashvars"] + '">' +
             '</embed>' +
             '</object>';
@@ -410,20 +410,20 @@ function InstallFlashUpdate() {
     var fv = "MMredirectURL=" + MMredirectURL + '&MMplayerType=' + MMPlayerType + '&MMdoctitle=' + MMdoctitle;
     document.write('<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
                    'id="GraphMLViewer" width="' + params["width"] + '" height="' + params["height"] + '"' +
-                   ' codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">' +
-                   ' <param name="movie" value="http://www.yworks.com/products/graphmlviewer/1.0.1/playerProductInstall.swf" />' +
+                   ' codebase="https://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">' +
+                   ' <param name="movie" value="https://www.yworks.com/products/graphmlviewer/1.0.1/playerProductInstall.swf" />' +
                    ' <param name="quality" value="high" />' +
                    ' <param name="bgcolor" value="#ffffff" />' +
                    ' <param name="allowScriptAccess" value="sameDomain" />' +
                    ' <param name="FlashVars" value="' + fv + '" />' +
-                   ' <embed src="http://www.yworks.com/products/graphmlviewer/1.1/playerProductInstall.swf" quality="high" bgcolor="#ffffff"' +
+                   ' <embed src="https://www.yworks.com/products/graphmlviewer/1.1/playerProductInstall.swf" quality="high" bgcolor="#ffffff"' +
                    '  width="' + params["width"] + '" height="' + params["height"] + '" name="yEdViewer.graphml" align="middle"' +
                    '  play="true"' +
                    '  loop="false"' +
                    '  quality="high"' +
                    '  allowScriptAccess="sameDomain"' +
                    '  type="application/x-shockwave-flash"' +
-                   '  pluginspage="http://www.adobe.com/go/getflashplayer"' +
+                   '  pluginspage="https://www.adobe.com/go/getflashplayer"' +
                    '  FlashVars="' + fv + '">' +
                    '</embed>' +
                    '</object>');

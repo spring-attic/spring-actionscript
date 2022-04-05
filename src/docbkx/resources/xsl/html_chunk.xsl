@@ -89,11 +89,11 @@
     <xsl:param name="nav.context"/>
     <xsl:if test="count($prev)>0">
       <div style="background-color:white;border:none;height:73px;border:1px solid black;">
-        <a style="border:none;" href="http://forum.springframework.org/forumdisplay.php?f=60"
+        <a style="border:none;" href="https://forum.springframework.org/forumdisplay.php?f=60"
            title="The Spring Framework - Spring Actionscript">
           <img style="border:none;" src="images/xdev-spring_logo.jpg"/>
         </a>
-        <a style="border:none;" href="http://www.springsource.com/" title="SpringSource">
+        <a style="border:none;" href="https://www.springsource.com/" title="SpringSource">
           <img style="border:none;position:absolute;padding-top:5px;right:42px;" src="images/s2-banner-rhs.png"/>
         </a>
       </div>
@@ -208,7 +208,7 @@
                                 </td>
                                 <td width="20%" align="center">
                                     <span style="color:white;font-size:90%;">
-                                        <a href="http://www.springsource.com/"
+                                        <a href="https://www.springsource.com/"
                                            title="SpringSource"
                                            target="_blank">Sponsored by SpringSource
                                         </a>
@@ -235,7 +235,7 @@
           <div class="navfooter" align="center">
             <hr width="100%"/>
             <span style="color:white;font-size:90%;">
-              <a href="http://www.springsource.com/"
+              <a href="https://www.springsource.com/"
                  title="SpringSource"
                  target="_blank">
                 Sponsored by SpringSource
@@ -248,7 +248,7 @@
     
     <xsl:template name="user.footer.content">
 						<script type="text/javascript">
-							var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+							var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "https://www.");
 							document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 						</script>
 						<script type="text/javascript">

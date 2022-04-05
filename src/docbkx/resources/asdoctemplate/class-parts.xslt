@@ -9,7 +9,7 @@
 	in accordance with the terms of the license agreement accompanying it.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="http://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions" xmlns:fn="http://www.w3.org/2005/xpath-functions"
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="https://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions" xmlns:fn="https://www.w3.org/2005/xpath-functions"
 	exclude-result-prefixes="saxon xs ifn">
 	<xsl:import href="asdoc-util.xslt"/>
 	<xsl:param name="ditaFileDir" select="''"/>

@@ -9,7 +9,7 @@
 	in accordance with the terms of the license agreement accompanying it.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="http://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="https://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
 	exclude-result-prefixes="saxon xs ifn">
 	<xsl:import href="asdoc-util.xslt"/>
 	<xsl:import href="class-parts.xslt"/>
@@ -411,7 +411,7 @@
 										<xsl:comment>END IONCOMMENTS</xsl:comment>
 										<xsl:comment>#include virtual="ionComments.ssi"</xsl:comment>
 										<p id="creativecommons" class="creativecommons">
-											<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">
+											<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">
 												<img id="creativecommons_img" src="{$baseRef}images/CC.png"/>
 											</a>
 										</p>
@@ -4143,7 +4143,7 @@
 				<xsl:comment> AC_FL_RunContent( "src", "<xsl:value-of select="substring-before($filename,'.swf')"/>", "width", "100%",
 					"height","400px", "salign", "TL", "id", "<xsl:value-of select="$pluginId"/>", "quality", "high", "bgcolor", "", "name",
 						"<xsl:value-of select="$pluginId"/>", "flashvars","", "allowScriptAccess","sameDomain", "type",
-					"application/x-shockwave-flash","pluginspage", "http://www.macromedia.com/go/getflashplayer" ); </xsl:comment>
+					"application/x-shockwave-flash","pluginspage", "https://www.macromedia.com/go/getflashplayer" ); </xsl:comment>
 			</script>
 		</xsl:if>
 	</xsl:template>

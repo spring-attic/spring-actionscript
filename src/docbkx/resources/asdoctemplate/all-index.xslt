@@ -9,7 +9,7 @@
 	in accordance with the terms of the license agreement accompanying it.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="http://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:saxon="https://sf.net/saxon" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ifn="urn:internal:functions"
 	exclude-result-prefixes="saxon xs ifn">
 	<xsl:import href="asdoc-util.xslt"/>
 	<xsl:output encoding="UTF-8" method="html" omit-xml-declaration="yes" use-character-maps="disable"/>
@@ -992,7 +992,7 @@
 					<xsl:comment>END IONCOMMENTS</xsl:comment>
 					<xsl:comment>#include virtual="ionComments.ssi"</xsl:comment>
 					<p id="creativecommons" class="creativecommons">
-						<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">
+						<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">
 							<img id="creativecommons_img" src="images/CC.png"/>
 						</a>
 					</p>
