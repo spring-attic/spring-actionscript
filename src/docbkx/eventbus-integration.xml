@@ -5,11 +5,11 @@
 	<sect1 xml:id="eventbus-introduction">
 		<title>Introduction</title>
 		<para>Spring Actionscript uses the <literal
-				xlink:href="http://as3commons.org/as3-commons-eventbus/index.html"
+				xlink:href="https://as3commons.org/as3-commons-eventbus/index.html"
 				>as3commons-eventbus</literal> project internally to facilitate decoupled
 			communication between objects. To learn more about about as3commons's eventbus, take a
 			look at its <literal
-				xlink:href="http://as3commons.org/as3-commons-eventbus/introduction.html"
+				xlink:href="https://as3commons.org/as3-commons-eventbus/introduction.html"
 				>introduction page</literal>.</para>
 		<para>As an extension to this functionality Spring Actionscript offers a number of
 			configuration shortcuts that will make using the eventbus a lot easier. Actually, the
@@ -104,9 +104,9 @@ public class MyEventDispatcher {
 	&lt;sas:EventHandlerConfiguration />
 &lt;/sas:Object></programlisting></para></sect2>
 		<sect2><title>Event interception</title>
-			<para>The <literal xlink:href="http://as3commons.org/as3-commons-eventbus/index.html"
+			<para>The <literal xlink:href="https://as3commons.org/as3-commons-eventbus/index.html"
 					>AS3commons-eventbus</literal> supports the concept of <literal
-					xlink:href="http://as3commons.org/as3-commons-eventbus/introduction.html#EventBus_event_intercepting"
+					xlink:href="https://as3commons.org/as3-commons-eventbus/introduction.html#EventBus_event_intercepting"
 					>event interceptors</literal>. These interceptors can be easily defined in the
 				Spring configuration in the following ways.</para>
 			<para>Using <abbrev>XML</abbrev> configuration, this would be the

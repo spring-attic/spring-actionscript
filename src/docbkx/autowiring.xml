@@ -289,7 +289,7 @@
 			<note>
 				<para>The engine that is responsible for managing the stage processing in the
 						<literal>FlashStageObjectProcessorRegistry</literal> that is offered by the <literal
-						xlink:href="http://www.as3commons.org/as3-commons-stageprocessing/index.html"
+						xlink:href="https://www.as3commons.org/as3-commons-stageprocessing/index.html"
 						>AS3Commons-stageprocessing library</literal>.</para>
 			</note>
 			<para>To make use of the metadata processor that handles all of the functionality described in

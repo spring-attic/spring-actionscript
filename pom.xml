@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.springextensions.actionscript</groupId>
     <artifactId>spring-actionscript-superpom</artifactId>
@@ -65,7 +65,7 @@
 
     <issueManagement>
         <system>jira</system>
-        <url>http://jira.springframework.org/browse/SESPRINGACTIONSCRIPTAS</url>
+        <url>https://jira.springframework.org/browse/SESPRINGACTIONSCRIPTAS</url>
     </issueManagement>
 
     <mailingLists>
@@ -74,7 +74,7 @@
             <subscribe>springactionscript-dev+subscribe@googlegroups.com</subscribe>
             <unsubscribe>springactionscript-dev+unsubscribe@googlegroups.com</unsubscribe>
             <post>springactionscript-dev@googlegroups.com</post>
-            <archive>http://groups.google.com/group/springactionscript-dev</archive>
+            <archive>https://groups.google.com/group/springactionscript-dev</archive>
         </mailingList>
     </mailingLists>
 
@@ -83,7 +83,7 @@
             <id>cherreman</id>
             <name>Christophe Herreman</name>
             <email>christophe.herreman [at] stackandheap.com</email>
-            <url>http://www.herrodius.com</url>
+            <url>https://www.herrodius.com</url>
             <organization>Stack &amp; Heap</organization>
             <organizationUrl>http://www.stackandheap.com</organizationUrl>
             <timezone>+1</timezone>
@@ -92,7 +92,7 @@
             <id>rzwaga</id>
             <name>Roland Zwaga</name>
             <email>roland.zwaga [at] stackandheap.com</email>
-            <url>http://zwaga.blogspot.com/</url>
+            <url>https://zwaga.blogspot.com/</url>
             <organization>Stack &amp; Heap</organization>
             <organizationUrl>http://www.stackandheap.com</organizationUrl>
             <timezone>+1</timezone>
@@ -342,7 +342,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <!--
                         Must not be 2.2-beta-1 which is distributed with Maven 2.2.0 because of
-                        http://jira.codehaus.org/browse/MASSEMBLY-285
+                        https://jira.codehaus.org/browse/MASSEMBLY-285
                         -->
                 <version>2.2-beta-4</version>
                 <inherited>false</inherited>
@@ -830,7 +830,7 @@
         </repository>
         <repository>
             <id>flex-mojos-repository</id>
-            <url>http://repository.sonatype.org/content/groups/public</url>
+            <url>https://repository.sonatype.org/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -840,7 +840,7 @@
         </repository>
         <repository>
             <id>flex-mojos-flex-repository</id>
-            <url>http://repository.sonatype.org/content/groups/flexgroup</url>
+            <url>https://repository.sonatype.org/content/groups/flexgroup</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -850,14 +850,14 @@
         </repository>
         <repository>
             <id>yoolab.org-releases</id>
-            <url>http://projects.yoolab.org/maven/content/repositories/releases</url>
+            <url>https://projects.yoolab.org/maven/content/repositories/releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
         </repository>
         <repository>
             <id>yoolab.org-snapshots</id>
-            <url>http://projects.yoolab.org/maven/content/repositories/snapshots</url>
+            <url>https://projects.yoolab.org/maven/content/repositories/snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -867,7 +867,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>flexmojos-plugin</id>
-            <url>http://repository.sonatype.org/content/groups/flexgroup</url>
+            <url>https://repository.sonatype.org/content/groups/flexgroup</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

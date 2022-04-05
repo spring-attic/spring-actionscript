@@ -233,9 +233,9 @@ public class PropertyBindingPostProcessor implements IObjectPostProcessor {
 	<sect1 xml:id="metadata-processors">
 		<title>Metadata processors</title>
 		<para> Spring Actionscript offers an easy way to process actionscript metadata annotations. An
-				<literal xlink:href="http://www.as3commons.org">AS3Commons</literal> library is used
+				<literal xlink:href="https://www.as3commons.org">AS3Commons</literal> library is used
 			to faciliate this functionality: <literal
-				xlink:href="http://www.as3commons.org/as3-commons-metadata/index.html"
+				xlink:href="https://www.as3commons.org/as3-commons-metadata/index.html"
 				>as3commons-metadata</literal>.</para>
 		<para>The main interface of interest in this library
 				is <literal>IMetadataProcessor</literal>. It looks like
@@ -316,14 +316,14 @@ public class PropertyBindingPostProcessor implements IObjectPostProcessor {
 		<note>
 			<para>Credit where credit is due: This type of metadata handling is similar to the
 					<literal
-					xlink:href="http://www.spicefactory.org/parsley/docs/2.3/api/parsley-flex/org/spicefactory/parsley/config/ObjectDefinitionDecorator.html"
+					xlink:href="https://www.spicefactory.org/parsley/docs/2.3/api/parsley-flex/org/spicefactory/parsley/config/ObjectDefinitionDecorator.html"
 					>ObjectDefinitionDecorator</literal> in the <literal
-					xlink:href="http://www.spicefactory.org/parsley/">Parsley Framework</literal>
-				and the IMetadataProcessor in the <literal xlink:href="http://www.swizframework.org"
+					xlink:href="https://www.spicefactory.org/parsley/">Parsley Framework</literal>
+				and the IMetadataProcessor in the <literal xlink:href="https://www.swizframework.org"
 					>Swiz Framework</literal>, the Spring Actionscript team both acknowledges and
 				appreciates this work.</para>
 			<para>Java programmers will see obvious similarities to the <literal
-					xlink:href="http://download.oracle.com/javase/1.5.0/docs/guide/apt/mirror/com/sun/mirror/apt/AnnotationProcessor.html"
+					xlink:href="https://download.oracle.com/javase/1.5.0/docs/guide/apt/mirror/com/sun/mirror/apt/AnnotationProcessor.html"
 					>Java annotation processor</literal>.</para>
 		</note>
 		<note>
@@ -378,9 +378,9 @@ public class MyObjectFactoryPostProcessor implements IObjectFactoryPostProcessor
 			added to the stage and perform abritrary processing on them.</para>
 		<para>The logic behind this used to be an internal part of Spring Actionscript but since version
 			2.0 it has been split off and released as an autonomous API in the <literal
-				xlink:href="http://www.as3commons.org/as3-commons-stageprocessing"
+				xlink:href="https://www.as3commons.org/as3-commons-stageprocessing"
 				>as3commons-stageprocessing</literal> project. Please refer to the <literal
-				xlink:href="http://www.as3commons.org/as3-commons-stageprocessing/introduction.html"
+				xlink:href="https://www.as3commons.org/as3-commons-stageprocessing/introduction.html"
 				>documentation section on the as3commons.org</literal> site for specific info on the
 			internals.</para>
 		<para>To register your own <literal>IStageObjectProcessor</literal> and/or
@@ -462,7 +462,7 @@ public class MyObjectFactoryPostProcessor implements IObjectFactoryPostProcessor
 				<listitem>
 					<para><literal>IEventBus</literal> - For more more information about this
 						interface please refer to the <literal
-							xlink:href="http://www.as3commons.org/as3-commons-eventbus">as3commons.org/eventbus
+							xlink:href="https://www.as3commons.org/as3-commons-eventbus">as3commons.org/eventbus
 							documentation</literal>.</para>
 				</listitem>
 				<listitem>
